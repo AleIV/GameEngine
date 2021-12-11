@@ -1,4 +1,4 @@
-package me.aleiv.core.paper.events;
+package me.aleiv.core.paper.globalUtilities.events;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

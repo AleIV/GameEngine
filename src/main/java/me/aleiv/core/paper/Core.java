@@ -1,13 +1,16 @@
 package me.aleiv.core.paper;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
 import kr.entree.spigradle.annotations.SpigotPlugin;
 import lombok.Getter;
-import me.aleiv.core.paper.commands.GlobalCMD;
-import me.aleiv.core.paper.listeners.GlobalListener;
+import me.aleiv.core.paper.gamesManager.GamesManager;
+import me.aleiv.core.paper.utilities.NegativeSpaces;
+import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import us.jcedeno.libs.rapidinv.RapidInvManager;
 
@@ -15,7 +18,7 @@ import us.jcedeno.libs.rapidinv.RapidInvManager;
 public class Core extends JavaPlugin {
 
     private static @Getter Core instance;
-    private @Getter Game game;
+    private @Getter GamesManager gamesManager;
     private @Getter PaperCommandManager commandManager;
     private @Getter static MiniMessage miniMessage = MiniMessage.get();
 
@@ -26,27 +29,26 @@ public class Core extends JavaPlugin {
         RapidInvManager.register(this);
         BukkitTCT.registerPlugin(this);
         NegativeSpaces.registerCodes();
-
-        game = new Game(this);
-        game.runTaskTimerAsynchronously(this, 0L, 20L);
-
-        RapidInvManager.register(this);
-
-        //LISTENERS
-
-        Bukkit.getPluginManager().registerEvents(new GlobalListener(this), this);
-
-        //COMMANDS
+        
+        gamesManager = new GamesManager(this);
+        
+        //INIT COMMAND MANAGER
         
         commandManager = new PaperCommandManager(this);
-
-        commandManager.registerCommand(new GlobalCMD(this));
 
     }
 
     @Override
     public void onDisable() {
 
+    }
+
+    public void unregisterListener(Listener listener) {
+        HandlerList.unregisterAll(listener);
+    }
+
+    public void registerListener(Listener listener) {
+        Bukkit.getPluginManager().registerEvents(listener, instance);
     }
 
 }

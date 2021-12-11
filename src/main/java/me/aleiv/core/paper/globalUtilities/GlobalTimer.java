@@ -1,21 +1,22 @@
-package me.aleiv.core.paper;
+package me.aleiv.core.paper.globalUtilities;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import me.aleiv.core.paper.events.GameTickEvent;
+import me.aleiv.core.paper.Core;
+import me.aleiv.core.paper.globalUtilities.events.GameTickEvent;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class Game extends BukkitRunnable {
+public class GlobalTimer extends BukkitRunnable {
     Core instance;
 
     long gameTime = 0;
     long startTime = 0;
 
-    public Game(Core instance) {
+    public GlobalTimer(Core instance) {
         this.instance = instance;
         this.startTime = System.currentTimeMillis();
 
