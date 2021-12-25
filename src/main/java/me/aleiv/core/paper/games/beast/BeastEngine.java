@@ -41,4 +41,16 @@ public class BeastEngine extends BaseEngine{
         instance.unregisterListener(beastLobbyListener);
 
     }
+
+    @Override
+    public void startGame() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void restartGame() {
+        // TODO Auto-generated method stub
+        
+    }
 }

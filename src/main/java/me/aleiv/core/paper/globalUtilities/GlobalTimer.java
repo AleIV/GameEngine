@@ -6,7 +6,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import me.aleiv.core.paper.Core;
-import me.aleiv.core.paper.globalUtilities.events.GameTickEvent;
+import me.aleiv.core.paper.globalUtilities.events.gameEvents.GameTickEvent;
 
 @Data
 @EqualsAndHashCode(callSuper = false)

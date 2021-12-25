@@ -30,11 +30,9 @@ public class Core extends JavaPlugin {
         BukkitTCT.registerPlugin(this);
         NegativeSpaces.registerCodes();
         
-        gamesManager = new GamesManager(this);
-        
-        //INIT COMMAND MANAGER
-        
         commandManager = new PaperCommandManager(this);
+        
+        gamesManager = new GamesManager(this);
 
     }
 

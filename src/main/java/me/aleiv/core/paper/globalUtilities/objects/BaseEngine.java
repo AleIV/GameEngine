@@ -14,5 +14,7 @@ public abstract class BaseEngine {
 
     public abstract void enable();
     public abstract void disable();
+    public abstract void startGame();
+    public abstract void restartGame();
 
 }
