@@ -3,6 +3,7 @@ package me.aleiv.core.paper.gamesManager;
 import java.util.HashMap;
 
 import me.aleiv.core.paper.Core;
+import me.aleiv.core.paper.games.beast.BeastEngine;
 import me.aleiv.core.paper.games.towers.TowersEngine;
 import me.aleiv.core.paper.gamesManager.GameSettings.EngineGameMode;
 import me.aleiv.core.paper.globalUtilities.GlobalTimer;
@@ -14,6 +15,7 @@ public class GamesManager {
     GlobalTimer timer;
     GameSettings gameSettings;
     HashMap<EngineGameMode, BaseEngine> gameEngineList = new HashMap<>();
+
 
     public GamesManager(Core instance){
         this.instance = instance;
@@ -27,19 +29,28 @@ public class GamesManager {
 
         gameSettings.setEngineGameMode(EngineGameMode.TOWERS);
 
-        initGameEngine();
+        initGameEngines();
 
         runGame();        
     }
 
-    private void initGameEngine(){
+    public BaseEngine getCurrentGame(){
+        var engineGameMode = gameSettings.getEngineGameMode();
+        return gameEngineList.get(engineGameMode);
+    }
+
+    private void initGameEngines(){
 
         gameEngineList.put(EngineGameMode.TOWERS, new TowersEngine(instance));
+        gameEngineList.put(EngineGameMode.BEAST, new BeastEngine(instance));
 
     }
 
-    public void runGame(){
+    private void runGame(){
         var engineGameMode = gameSettings.getEngineGameMode();
+        
+        if(engineGameMode == EngineGameMode.NONE) return;
+
         gameEngineList.get(engineGameMode).enable();
     }
     

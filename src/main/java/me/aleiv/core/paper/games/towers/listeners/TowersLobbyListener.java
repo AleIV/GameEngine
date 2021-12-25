@@ -1,14 +1,13 @@
 package me.aleiv.core.paper.games.towers.listeners;
 
-import org.bukkit.event.Listener;
-
 import me.aleiv.core.paper.Core;
+import me.aleiv.core.paper.globalUtilities.objects.generic.LobbyListener;
 
-public class TowersLobbyListener implements Listener{
-    
-    Core instance;
+public class TowersLobbyListener extends LobbyListener{
 
-    public TowersLobbyListener(Core instance){
-        this.instance = instance;
+    public TowersLobbyListener(Core instance) {
+        super(instance);
+
     }
+
 }

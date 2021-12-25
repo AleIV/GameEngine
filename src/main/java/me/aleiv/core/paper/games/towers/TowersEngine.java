@@ -1,14 +1,10 @@
 package me.aleiv.core.paper.games.towers;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.games.towers.commands.TowersCMD;
 import me.aleiv.core.paper.games.towers.listeners.TowersGlobalListener;
 import me.aleiv.core.paper.games.towers.listeners.TowersInGameListener;
 import me.aleiv.core.paper.games.towers.listeners.TowersLobbyListener;
-import me.aleiv.core.paper.globalUtilities.EngineEnums.GameStage;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 
 public class TowersEngine extends BaseEngine{
@@ -19,10 +15,6 @@ public class TowersEngine extends BaseEngine{
     TowersGlobalListener towersGlobalListener;
     TowersInGameListener towersInGameListener;
     TowersLobbyListener towersLobbyListener;
-
-    GameStage gameStage;
-
-    Location lobbySpawn = new Location(Bukkit.getWorlds().get(0), 0, 180, 0);
 
     public TowersEngine(Core instance){
         this.towersCMD = new TowersCMD(instance);

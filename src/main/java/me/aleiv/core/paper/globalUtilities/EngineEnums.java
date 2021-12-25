@@ -6,5 +6,9 @@ public class EngineEnums {
         
         LOBBY, PREGAME, INGAME, POSTGAME
     }
+
+    public enum Role{
+        
+    }
     
 }

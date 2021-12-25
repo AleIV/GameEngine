@@ -6,6 +6,7 @@ import lombok.Data;
 public class GameSettings {
     
     EngineGameMode engineGameMode;
+    
 
     public GameSettings(){
         this.engineGameMode = EngineGameMode.NONE;
@@ -16,7 +17,7 @@ public class GameSettings {
     }
 
     public enum EngineGameMode {
-        NONE, TOWERS, NEXUS, UHC, BINGO
+        NONE, TOWERS, NEXUS, UHC, BINGO, BEAST
     }
 
 }
