@@ -2,18 +2,20 @@ package me.aleiv.core.paper.gamesManager;
 
 import java.util.HashMap;
 
+import lombok.Getter;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.games.beast.BeastEngine;
 import me.aleiv.core.paper.games.towers.TowersEngine;
 import me.aleiv.core.paper.gamesManager.GameSettings.EngineGameMode;
 import me.aleiv.core.paper.globalUtilities.GlobalTimer;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
+import org.bukkit.Bukkit;
 
 public class GamesManager {
     Core instance;
 
     GlobalTimer timer;
-    GameSettings gameSettings;
+    @Getter GameSettings gameSettings;
     HashMap<EngineGameMode, BaseEngine> gameEngineList = new HashMap<>();
 
 
@@ -23,9 +25,13 @@ public class GamesManager {
         timer = new GlobalTimer(instance);
         timer.runTaskTimerAsynchronously(instance, 0L, 20L);
 
-        //TODO: CHANGE TO PULL FROM JSON
-
-        gameSettings = new GameSettings();
+        try {
+            gameSettings = new GameSettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Bukkit.getConsoleSender().sendMessage("Error while loading game settings");
+            Bukkit.getPluginManager().disablePlugin(instance);
+        }
 
         gameSettings.setEngineGameMode(EngineGameMode.TOWERS);
 

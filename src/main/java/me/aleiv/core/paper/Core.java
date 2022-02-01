@@ -38,7 +38,7 @@ public class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        this.gamesManager.getGameSettings().save();
     }
 
     public void unregisterListener(Listener listener) {
