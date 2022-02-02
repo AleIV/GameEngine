@@ -13,13 +13,19 @@ import java.util.List;
 public abstract class BaseConfig {
 
     private final JsonConfig jsonConfig;
+    private final String name;
 
     public BaseConfig(String configName) throws Exception {
+        this.name = configName;
         this.jsonConfig = new JsonConfig(configName);
     }
 
     public JsonConfig getConfig() {
         return this.jsonConfig;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void save() {
