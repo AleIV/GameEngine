@@ -17,11 +17,12 @@ public class BeastEngine extends BaseEngine{
     BeastLobbyListener beastLobbyListener;
 
     public BeastEngine(Core instance){
+        this.instance = instance;
+
         this.beastCMD = new BeastCMD(instance);
         this.beastGlobalListener = new BeastGlobalListener(instance);
         this.beastInGameListener = new BeastInGameListener(instance);
         this.beastLobbyListener = new BeastLobbyListener(instance);
-
     }
 
     @Override

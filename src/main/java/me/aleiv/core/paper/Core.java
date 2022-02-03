@@ -1,5 +1,6 @@
 package me.aleiv.core.paper;
 
+import me.aleiv.core.paper.commands.ConfigCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -29,10 +30,12 @@ public class Core extends JavaPlugin {
         RapidInvManager.register(this);
         BukkitTCT.registerPlugin(this);
         NegativeSpaces.registerCodes();
-        
-        commandManager = new PaperCommandManager(this);
-        
+
         gamesManager = new GamesManager(this);
+
+        commandManager = new PaperCommandManager(this);
+        commandManager.registerCommand(new ConfigCommand(this));
+        
 
     }
 

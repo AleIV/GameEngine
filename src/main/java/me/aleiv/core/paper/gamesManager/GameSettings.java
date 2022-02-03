@@ -9,30 +9,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameSettings extends BaseConfig {
-    
-    @Getter @Setter EngineGameMode engineGameMode;
-    @Getter @Setter boolean autoStart;
-    @Getter @Setter int minStartPlayers;
 
+    enum keys {
+        engineGameMode("engineGameMode"),
+        autoStart("autoStart"),
+        minStartPlayers("minStartPlayers"),;
+
+        private String key;
+
+        keys(String key) {
+            this.key = key;
+        }
+
+        public String getKey() {
+            return this.key;
+        }
+    }
+    
     public GameSettings() throws Exception {
         super("gameconfig.json");
 
-        this.engineGameMode = EngineGameMode.getFromName(this.getString("engineGameMode", "NONE"));
-        this.autoStart = this.getBoolean("autoStart", false);
-        this.minStartPlayers = this.getInteger("minStartPlayers", 4);
+        this.add(
+                ConfigParameter.create(keys.engineGameMode.getKey(), this.getString(keys.engineGameMode.getKey(), "NONE")),
+                ConfigParameter.create(keys.autoStart.getKey(), this.getBoolean(keys.autoStart.getKey(), false)),
+                ConfigParameter.create(keys.minStartPlayers.getKey(), this.getInteger(keys.minStartPlayers.getKey(), 4))
+        );
 
         this.save();
     }
 
-    @Override
-    public List<ConfigParameter> getConfigParameters() {
-        List<ConfigParameter> parameters = new ArrayList<>();
+    public EngineGameMode getEngineGameMode() {
+        return EngineGameMode.getFromName(this.getString(keys.engineGameMode.getKey(), "NONE"));
+    }
 
-        parameters.add(ConfigParameter.create("engineGameMode", this.engineGameMode.getGameName()));
-        parameters.add(ConfigParameter.create("autoStart", this.autoStart));
-        parameters.add(ConfigParameter.create("minStartPlayers", this.minStartPlayers));
-
-        return parameters;
+    public void setEngineGameMode(EngineGameMode engineGameMode) {
+        this.set(keys.engineGameMode.getKey(), engineGameMode.getGameName());
+        this.save();
     }
 
     public enum EngineGameMode {

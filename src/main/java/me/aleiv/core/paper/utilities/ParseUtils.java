@@ -36,4 +36,14 @@ public class ParseUtils {
         return new Location(world, x, y, z, yaw, pitch);
     }
 
+    public static String getLocationLore(Location lore) {
+        return "Location" + "\n" +
+                "X: " + lore.getX() + "\n" +
+                "Y: " + lore.getY() + "\n" +
+                "Z: " + lore.getZ() + "\n" +
+                "World: " + lore.getWorld().getName() + "\n" +
+                "Yaw: " + lore.getYaw() + "\n" +
+                "Pitch: " + lore.getPitch();
+    }
+
 }

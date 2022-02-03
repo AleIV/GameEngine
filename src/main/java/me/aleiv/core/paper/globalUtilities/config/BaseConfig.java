@@ -8,16 +8,21 @@ import me.aleiv.core.paper.utilities.JsonConfig;
 import me.aleiv.core.paper.utilities.ParseUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class BaseConfig {
 
     private final JsonConfig jsonConfig;
     private final String name;
+    private final List<ConfigParameter> configParameters;
 
     public BaseConfig(String configName) throws Exception {
         this.name = configName;
         this.jsonConfig = new JsonConfig(configName);
+        this.configParameters = new ArrayList<>();
+
+        // TODO: Get values from keys from gson
     }
 
     public JsonConfig getConfig() {
@@ -91,6 +96,29 @@ public abstract class BaseConfig {
         return element == null ? defaultValue : element.getAsString();
     }
 
-    public abstract List<ConfigParameter> getConfigParameters();
+    public boolean hasKey(String key) {
+        return this.configParameters.stream().anyMatch(param -> param.getKey().equalsIgnoreCase(key));
+    }
+
+    public void set(String key, Object value) {
+        if (this.hasKey(key)) {
+            System.out.println(2);
+            this.configParameters.stream().filter(param -> param.getKey().equalsIgnoreCase(key)).findFirst().ifPresent(param -> param.set(value));
+        } else {
+            System.out.println("[Paper] Key " + key + " does not exist in config " + this.getName());
+            this.configParameters.add(ConfigParameter.create(key, value));
+        }
+        this.save();
+    }
+
+    public void add(ConfigParameter... parameters) {
+        System.out.println(Arrays.toString(parameters));
+        Arrays.stream(parameters).forEach(param -> this.set(param.getKey(), param.get()));
+        this.save();
+    }
+
+    public List<ConfigParameter> getConfigParameters() {
+        return this.configParameters;
+    }
 
 }

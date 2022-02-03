@@ -33,11 +33,12 @@ public class GamesManager {
             Bukkit.getPluginManager().disablePlugin(instance);
         }
 
-        gameSettings.setEngineGameMode(EngineGameMode.TOWERS);
+        gameSettings.setEngineGameMode(EngineGameMode.BEAST);
 
-        initGameEngines();
-
-        runGame();        
+        Bukkit.getScheduler().runTask(instance, () -> {
+            initGameEngines();
+            runGame();
+        });
     }
 
     public BaseEngine getCurrentGame(){
@@ -46,17 +47,14 @@ public class GamesManager {
     }
 
     private void initGameEngines(){
-
         gameEngineList.put(EngineGameMode.TOWERS, new TowersEngine(instance));
         gameEngineList.put(EngineGameMode.BEAST, new BeastEngine(instance));
-
     }
 
     private void runGame(){
         var engineGameMode = gameSettings.getEngineGameMode();
-        
-        if(engineGameMode == EngineGameMode.NONE) return;
 
+        if(engineGameMode == EngineGameMode.NONE) return;
         gameEngineList.get(engineGameMode).enable();
     }
     
