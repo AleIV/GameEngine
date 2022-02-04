@@ -96,7 +96,6 @@ public class ConfigParameter {
 
     public void addToNumber(double amount) {
         if (this.type == ConfigParameterType.INTEGER) {
-            System.out.println("Adding " + amount + " to " + this.getAsInt());
             this.set(this.getAsInt() + (int) amount);
         } else if (this.type == ConfigParameterType.DOUBLE) {
             this.set(this.getAsDouble() + amount);

@@ -102,17 +102,14 @@ public abstract class BaseConfig {
 
     public void set(String key, Object value) {
         if (this.hasKey(key)) {
-            System.out.println(2);
             this.configParameters.stream().filter(param -> param.getKey().equalsIgnoreCase(key)).findFirst().ifPresent(param -> param.set(value));
         } else {
-            System.out.println("[Paper] Key " + key + " does not exist in config " + this.getName());
             this.configParameters.add(ConfigParameter.create(key, value));
         }
         this.save();
     }
 
     public void add(ConfigParameter... parameters) {
-        System.out.println(Arrays.toString(parameters));
         Arrays.stream(parameters).forEach(param -> this.set(param.getKey(), param.get()));
         this.save();
     }

@@ -1,0 +1,96 @@
+package me.aleiv.core.paper.globalUtilities;
+
+import me.aleiv.core.paper.Core;
+import me.aleiv.core.paper.worlds.VoidGenerator;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.world.WorldSaveEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+public class WorldManager implements Listener {
+
+    private final Core plugin;
+
+    private final List<UUID> loadedWorlds;
+
+    public WorldManager(Core plugin) {
+        this.plugin = plugin;
+        this.loadedWorlds = new ArrayList<>();
+
+        plugin.registerListener(this);
+    }
+
+    public void load(String... worldName) {
+        for (String name : worldName) {
+            if (this.isWorldLoaded(name)) return;
+
+            WorldCreator wc = new WorldCreator(name);
+            wc.generateStructures(false);
+            wc.generator(new VoidGenerator());
+            World world = wc.createWorld();
+            if (world != null) {
+                this.loadedWorlds.add(world.getUID());
+            }
+        }
+    }
+
+    public void unloadWorld(boolean save, String... worldNames) {
+        for (String worldName : worldNames) {
+            if (this.isWorldLoaded(worldName)) return;
+
+            World unknownWorld = Bukkit.getWorld(worldName);
+            if (unknownWorld != null) {
+                this.loadedWorlds.remove(unknownWorld.getUID());
+                Bukkit.unloadWorld(unknownWorld, save);
+            }
+        }
+    }
+
+    public boolean isWorldLoaded(String worldName) {
+        World unknownWorld = Bukkit.getWorld(worldName);
+        if (unknownWorld != null) {
+            return this.isWorldLoaded(unknownWorld.getUID());
+        }
+        return false;
+    }
+
+    public boolean isWorldLoaded(UUID worldUUID) {
+        return this.loadedWorlds.contains(worldUUID);
+    }
+
+    public List<World> getLoadedWorlds() {
+        return this.loadedWorlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldDisable(WorldUnloadEvent e) {
+        if (this.isWorldLoaded(e.getWorld().getUID())) {
+            e.setCancelled(true);
+            this.loadedWorlds.remove(e.getWorld().getUID());
+            this.unloadWorld(false, e.getWorld().getName());
+        }
+    }
+
+    @EventHandler
+    public void onPluginDisable(PluginDisableEvent e) {
+        if (e.getPlugin() == this.plugin) {
+            this.loadedWorlds.forEach(wUUID -> {
+                World w = Bukkit.getWorld(wUUID);
+                if (w != null) {
+                    Bukkit.unloadWorld(w, false);
+                }
+            });
+        }
+    }
+
+}

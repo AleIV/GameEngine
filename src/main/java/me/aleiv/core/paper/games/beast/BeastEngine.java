@@ -7,6 +7,8 @@ import me.aleiv.core.paper.games.beast.listeners.BeastInGameListener;
 import me.aleiv.core.paper.games.beast.listeners.BeastLobbyListener;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 
+import java.util.List;
+
 public class BeastEngine extends BaseEngine{
 
     Core instance;
@@ -15,6 +17,7 @@ public class BeastEngine extends BaseEngine{
     BeastGlobalListener beastGlobalListener;
     BeastInGameListener beastInGameListener;
     BeastLobbyListener beastLobbyListener;
+    private final String[] worlds = new String[]{"ghost", "it", "jeison", "puppyplaytime", "slenderman"};
 
     public BeastEngine(Core instance){
         this.instance = instance;
@@ -27,15 +30,18 @@ public class BeastEngine extends BaseEngine{
 
     @Override
     public void enable(){
+        this.instance.getGamesManager().getWorldManager().load(worlds);
+
         instance.getCommandManager().registerCommand(beastCMD);
         instance.registerListener(beastGlobalListener);
         instance.registerListener(beastInGameListener);
         instance.registerListener(beastLobbyListener);
-
     }
 
     @Override
     public void disable(){
+        this.instance.getGamesManager().getWorldManager().unloadWorld(false, worlds);
+
         instance.getCommandManager().unregisterCommand(beastCMD);
         instance.unregisterListener(beastGlobalListener);
         instance.unregisterListener(beastInGameListener);

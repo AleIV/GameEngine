@@ -8,12 +8,14 @@ import me.aleiv.core.paper.games.beast.BeastEngine;
 import me.aleiv.core.paper.games.towers.TowersEngine;
 import me.aleiv.core.paper.gamesManager.GameSettings.EngineGameMode;
 import me.aleiv.core.paper.globalUtilities.GlobalTimer;
+import me.aleiv.core.paper.globalUtilities.WorldManager;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 import org.bukkit.Bukkit;
 
 public class GamesManager {
     Core instance;
 
+    @Getter WorldManager worldManager;
     GlobalTimer timer;
     @Getter GameSettings gameSettings;
     HashMap<EngineGameMode, BaseEngine> gameEngineList = new HashMap<>();
@@ -21,6 +23,7 @@ public class GamesManager {
 
     public GamesManager(Core instance){
         this.instance = instance;
+        this.worldManager = new WorldManager(instance);
 
         timer = new GlobalTimer(instance);
         timer.runTaskTimerAsynchronously(instance, 0L, 20L);

@@ -1,7 +1,9 @@
 package me.aleiv.core.paper;
 
 import me.aleiv.core.paper.commands.ConfigCommand;
+import me.aleiv.core.paper.commands.WorldCommand;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,9 +36,11 @@ public class Core extends JavaPlugin {
         gamesManager = new GamesManager(this);
 
         commandManager = new PaperCommandManager(this);
-        commandManager.registerCommand(new ConfigCommand(this));
-        
 
+        commandManager.getCommandCompletions().registerAsyncCompletion("worlds", (ctx) -> Bukkit.getWorlds().stream().map(World::getName).toList());
+
+        commandManager.registerCommand(new ConfigCommand(this));
+        commandManager.registerCommand(new WorldCommand(this));
     }
 
     @Override

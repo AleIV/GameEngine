@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.aleiv.core.paper.globalUtilities.config.ConfigParameter;
+import me.aleiv.core.paper.gui.LocationsGUI;
 import me.aleiv.core.paper.utilities.ChatUtils;
 import me.aleiv.core.paper.utilities.ObjectUtils;
 import me.aleiv.core.paper.utilities.ParseUtils;
@@ -224,7 +225,7 @@ public class ParameterComponent extends StaticPane {
 
         GuiItem guiItem = new GuiItem(item, (e) -> {
             e.setCancelled(true);
-            // TODO: open locations menu
+            new LocationsGUI(this.player, this.param, this.gui);
         });
 
         return guiItem;

@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.globalUtilities.config.BaseConfig;
 import me.aleiv.core.paper.gui.components.ParameterComponent;
+import me.aleiv.core.paper.utilities.GUIUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
@@ -34,30 +35,14 @@ public class ConfigMenu {
         this.chestGui.setOnClose(e -> this.config.save());
         this.chestGui.setOnTopClick(e -> e.setCancelled(true));
         this.chestGui.setOnTopDrag(e -> e.setCancelled(true));
-        this.buildBackground();
+        GUIUtils.buildBackground(this.chestGui);
         this.buildOptions();
 
         this.chestGui.show(player);
     }
 
-    private void buildBackground() {
-        StaticPane background = new StaticPane(0, 4, 9, 1, Pane.Priority.LOWEST);
-
-        ItemStack placeholder = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-        ItemMeta meta = placeholder.getItemMeta();
-        meta.setDisplayName("");
-        meta.setLore(List.of(""));
-        List.of(ItemFlag.values()).forEach(meta::addItemFlags);
-        placeholder.setItemMeta(meta);
-
-        background.fillWith(placeholder, (e) -> e.setCancelled(true));
-
-        this.chestGui.addPane(background);
-    }
-
     private void buildOptions() {
         AtomicInteger atomicSlot = new AtomicInteger(0);
-        System.out.println(this.config.getConfigParameters().toString());
         this.config.getConfigParameters().forEach((param) -> {
             int slot = atomicSlot.getAndIncrement();
             int x = slot > 3 ? 5 : 1;
