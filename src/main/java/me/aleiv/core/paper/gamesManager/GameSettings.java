@@ -34,8 +34,6 @@ public class GameSettings extends BaseConfig {
                 ConfigParameter.create(keys.autoStart.getKey(), this.getBoolean(keys.autoStart.getKey(), false)),
                 ConfigParameter.create(keys.minStartPlayers.getKey(), this.getInteger(keys.minStartPlayers.getKey(), 4))
         );
-
-        this.save();
     }
 
     public EngineGameMode getEngineGameMode() {
@@ -44,7 +42,6 @@ public class GameSettings extends BaseConfig {
 
     public void setEngineGameMode(EngineGameMode engineGameMode) {
         this.set(keys.engineGameMode.getKey(), engineGameMode.getGameName());
-        this.save();
     }
 
     public enum EngineGameMode {
