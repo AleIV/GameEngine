@@ -7,8 +7,6 @@ import me.aleiv.core.paper.games.beast.listeners.BeastInGameListener;
 import me.aleiv.core.paper.games.beast.listeners.BeastLobbyListener;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 
-import java.util.List;
-
 public class BeastEngine extends BaseEngine{
 
     Core instance;
@@ -17,7 +15,7 @@ public class BeastEngine extends BaseEngine{
     BeastGlobalListener beastGlobalListener;
     BeastInGameListener beastInGameListener;
     BeastLobbyListener beastLobbyListener;
-    private final String[] worlds = new String[]{"ghost", "it", "jeison", "puppyplaytime", "slenderman"};
+    public static final String[] MAPS = new String[]{"ghost", "it", "jeison", "puppyplaytime", "slenderman"};
 
     public BeastEngine(Core instance){
         this.instance = instance;
@@ -30,7 +28,7 @@ public class BeastEngine extends BaseEngine{
 
     @Override
     public void enable(){
-        this.instance.getGamesManager().getWorldManager().load(worlds);
+        this.instance.getGamesManager().getWorldManager().load(MAPS);
 
         instance.getCommandManager().registerCommand(beastCMD);
         instance.registerListener(beastGlobalListener);
@@ -40,7 +38,7 @@ public class BeastEngine extends BaseEngine{
 
     @Override
     public void disable(){
-        this.instance.getGamesManager().getWorldManager().unloadWorld(false, worlds);
+        this.instance.getGamesManager().getWorldManager().unloadWorld(false, MAPS);
 
         instance.getCommandManager().unregisterCommand(beastCMD);
         instance.unregisterListener(beastGlobalListener);
