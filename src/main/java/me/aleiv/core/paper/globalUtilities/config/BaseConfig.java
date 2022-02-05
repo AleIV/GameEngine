@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import lombok.NonNull;
 import me.aleiv.core.paper.utilities.JsonConfig;
 import me.aleiv.core.paper.utilities.ParseUtils;
+import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,6 +103,10 @@ public abstract class BaseConfig {
     public String getString(String key, String defaultValue) {
         JsonElement element = this.config.get(key);
         return element == null ? defaultValue : element.getAsString();
+    }
+
+    public ConfigParameter getConfigParameter(String key) {
+        return this.configParameters.stream().filter(param -> param.getKey().equals(key)).findFirst().orElse(null);
     }
 
     public boolean hasKey(String key) {
