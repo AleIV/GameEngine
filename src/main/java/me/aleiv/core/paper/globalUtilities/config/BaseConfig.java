@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import lombok.NonNull;
 import me.aleiv.core.paper.utilities.JsonConfig;
 import me.aleiv.core.paper.utilities.ParseUtils;
 
@@ -14,15 +15,28 @@ import java.util.List;
 public abstract class BaseConfig {
 
     private final JsonConfig jsonConfig;
+    private final JsonObject config;
     private final String name;
     private final List<ConfigParameter> configParameters;
 
-    public BaseConfig(String configName) throws Exception {
+    private boolean subConfig;
+
+    public BaseConfig(@NonNull String configName) throws Exception {
+        this(configName, "");
+    }
+
+    public BaseConfig(@NonNull String configName, @NonNull String path) throws Exception {
         this.name = configName;
         this.jsonConfig = new JsonConfig(configName);
+        this.subConfig = !path.equals("");
+        this.config = this.subConfig ? this.jsonConfig.getJsonObject().getAsJsonObject(path) : this.jsonConfig.getJsonObject();
         this.configParameters = new ArrayList<>();
 
-        // TODO: Get values from keys from gson
+        // TODO: Get values from keys from configPart
+    }
+
+    public boolean isSubConfig() {
+        return this.subConfig;
     }
 
     public JsonConfig getConfig() {
@@ -36,15 +50,15 @@ public abstract class BaseConfig {
     public void save() {
         this.getConfigParameters().forEach(param -> {
             switch (param.getType()) {
-                case BOOLEAN -> this.jsonConfig.getJsonObject().add(param.getKey(), new JsonPrimitive(param.getAsBoolean()));
-                case DOUBLE -> this.jsonConfig.getJsonObject().add(param.getKey(), new JsonPrimitive(param.getAsDouble()));
-                case INTEGER -> this.jsonConfig.getJsonObject().add(param.getKey(), new JsonPrimitive(param.getAsInt()));
-                case STRING, LOCATION -> this.jsonConfig.getJsonObject().add(param.getKey(), new JsonPrimitive(param.getAsString()));
+                case BOOLEAN -> this.config.add(param.getKey(), new JsonPrimitive(param.getAsBoolean()));
+                case DOUBLE -> this.config.add(param.getKey(), new JsonPrimitive(param.getAsDouble()));
+                case INTEGER -> this.config.add(param.getKey(), new JsonPrimitive(param.getAsInt()));
+                case STRING, LOCATION -> this.config.add(param.getKey(), new JsonPrimitive(param.getAsString()));
                 case LOCATIONLIST -> {
                     JsonArray list = new JsonArray();
                     param.getAsLocationList().stream().map(ParseUtils::locationToString).toList().forEach(list::add);
 
-                    this.jsonConfig.getJsonObject().add(param.getKey(), list);
+                    this.config.add(param.getKey(), list);
                 }
             }
         });
@@ -57,7 +71,7 @@ public abstract class BaseConfig {
     }
 
     public boolean doesKeyExist(String key) {
-        return this.jsonConfig.getJsonObject().has(key);
+        return this.config.has(key);
     }
 
     public Boolean getBoolean(String key) {
@@ -65,7 +79,7 @@ public abstract class BaseConfig {
     }
 
     public Boolean getBoolean(String key, Boolean defaultValue) {
-        JsonElement element = this.jsonConfig.getJsonObject().get(key);
+        JsonElement element = this.config.get(key);
         return element == null ? defaultValue : element.getAsBoolean();
     }
 
@@ -74,7 +88,7 @@ public abstract class BaseConfig {
     }
 
     public Double getDouble(String key, Double defaultValue) {
-        JsonElement element = this.jsonConfig.getJsonObject().get(key);
+        JsonElement element = this.config.get(key);
         return element == null ? defaultValue : element.getAsDouble();
     }
 
@@ -83,7 +97,7 @@ public abstract class BaseConfig {
     }
 
     public Integer getInteger(String key, Integer defaultValue) {
-        JsonElement element = this.jsonConfig.getJsonObject().get(key);
+        JsonElement element = this.config.get(key);
         return element == null ? defaultValue : element.getAsInt();
     }
 
@@ -92,7 +106,7 @@ public abstract class BaseConfig {
     }
 
     public String getString(String key, String defaultValue) {
-        JsonElement element = this.jsonConfig.getJsonObject().get(key);
+        JsonElement element = this.config.get(key);
         return element == null ? defaultValue : element.getAsString();
     }
 
