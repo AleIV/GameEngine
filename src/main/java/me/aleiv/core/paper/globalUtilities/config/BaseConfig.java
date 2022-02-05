@@ -25,11 +25,11 @@ public abstract class BaseConfig {
         this(configName, "");
     }
 
-    public BaseConfig(@NonNull String configName, @NonNull String path) throws Exception {
+    public BaseConfig(@NonNull String configName, @NonNull String jsonPath) throws Exception {
         this.name = configName;
-        this.jsonConfig = new JsonConfig(configName);
-        this.subConfig = !path.equals("");
-        this.config = this.subConfig ? this.jsonConfig.getJsonObject().getAsJsonObject(path) : this.jsonConfig.getJsonObject();
+        this.jsonConfig = new JsonConfig(configName.endsWith(".json") ? configName : configName + ".json");
+        this.subConfig = !jsonPath.equals("");
+        this.config = this.subConfig ? this.jsonConfig.getJsonObject().getAsJsonObject(jsonPath) : this.jsonConfig.getJsonObject();
         this.configParameters = new ArrayList<>();
 
         // TODO: Get values from keys from configPart
