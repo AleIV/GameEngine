@@ -20,7 +20,8 @@ public abstract class BaseConfig {
     private final String name;
     private final List<ConfigParameter> configParameters;
 
-    private boolean subConfig;
+    private final boolean subConfig;
+    private final String subConfigpath;
 
     public BaseConfig(@NonNull String configName) throws Exception {
         this(configName, "");
@@ -32,6 +33,7 @@ public abstract class BaseConfig {
         this.subConfig = !jsonPath.equals("");
         this.config = this.subConfig ? this.jsonConfig.getJsonObject().getAsJsonObject(jsonPath) : this.jsonConfig.getJsonObject();
         this.configParameters = new ArrayList<>();
+        this.subConfigpath = jsonPath;
 
         // TODO: Get values from keys from configPart
     }
@@ -46,6 +48,10 @@ public abstract class BaseConfig {
 
     public String getName() {
         return name;
+    }
+
+    public String getSubconfigPath() {
+        return subConfigpath;
     }
 
     public void save() {

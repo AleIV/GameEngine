@@ -53,6 +53,7 @@ public class ConfigMenu {
         GUIUtils.buildBackground(this.chestGui);
         this.buildOptions();
         this.generateNavigation();
+        this.buildSubConfigs();
         this.updateTitle();
 
         this.chestGui.show(player);
@@ -103,6 +104,46 @@ public class ConfigMenu {
         StaticPane navigation = new StaticPane(0, 5, 9, 1);
         navigation.addItem(nextPageItem, 8, 0);
         navigation.addItem(previousPageItem, 0, 0);
+    }
+
+    private void buildSubConfigs() {
+        if (this.subConfigs == null || this.subConfigs.size() == 0) return;
+
+        ChestGui subconfigs = new ChestGui(6, "Subconfigs of " + this.config.getName());
+        GUIUtils.buildBackground(subconfigs);
+        StaticPane nav = new StaticPane(0, 5, 9, 1);
+        nav.addItem(new GuiItem(GUIUtils.getBackItem(), e -> {
+            e.setCancelled(true);
+            this.chestGui.show(this.player);
+        }), 4, 0);
+        subconfigs.addPane(nav);
+
+        PaginatedPane pp = new PaginatedPane(0, 0, 9, 4);
+        pp.populateWithGuiItems(this.subConfigs.stream().map(sb -> {
+            ItemStack sc = new ItemStack(Material.PAPER);
+            ItemMeta sm = sc.getItemMeta();
+            sm.setDisplayName(ChatColor.BLUE + sb.getName() + " - " + sb.getSubconfigPath());
+            sm.setLore(List.of(ChatColor.GRAY + "Click to open"));
+            sc.setItemMeta(sm);
+
+            return new GuiItem(sc, e -> {
+                e.setCancelled(true);
+                new ConfigMenu(this.player, sb);
+            });
+        }).toList());
+        subconfigs.addPane(pp);
+
+        StaticPane subbutton = new StaticPane(6, 5, 1, 1);
+        ItemStack subbuttonItem = new ItemStack(Material.PAPER);
+        ItemMeta subbuttonItemMeta = subbuttonItem.getItemMeta();
+        subbuttonItemMeta.setDisplayName(ChatColor.BLUE + "Open Subconfigs");
+        subbuttonItemMeta.setLore(List.of(ChatColor.GRAY + "Click to see all the subconfig"));
+        subbuttonItem.setItemMeta(subbuttonItemMeta);
+
+        subbutton.addItem(new GuiItem(subbuttonItem, e -> {
+            e.setCancelled(true);
+            subconfigs.show(this.player);
+        }), 0, 0);
     }
 
     private void updateTitle() {
