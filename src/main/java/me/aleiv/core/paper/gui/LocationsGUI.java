@@ -47,22 +47,12 @@ public class LocationsGUI {
     }
 
     private void generateNavigation() {
-        ItemStack goBack = new ItemStack(Material.FEATHER);
-        ItemMeta goBackMeta = goBack.getItemMeta();
-        goBackMeta.setDisplayName("Go back");
-        goBackMeta.setLore(List.of("Go back to the previous menu"));
-        goBack.setItemMeta(goBackMeta);
-        GuiItem goBackItem = new GuiItem(goBack, e -> {
+        GuiItem goBackItem = new GuiItem(GUIUtils.getBackItem(), e -> {
             e.setCancelled(true);
             this.backGui.show(this.player);
         });
 
-        ItemStack nextPage = new ItemStack(Material.ARROW);
-        ItemMeta nextPageMeta = nextPage.getItemMeta();
-        nextPageMeta.setDisplayName("Next page");
-        nextPageMeta.setLore(List.of("Click to go to the next page"));
-        nextPage.setItemMeta(nextPageMeta);
-        GuiItem nextPageItem = new GuiItem(nextPage, e -> {
+        GuiItem nextPageItem = new GuiItem(GUIUtils.getNextPageItem(), e -> {
             e.setCancelled(true);
             if (this.paginatedPane.getPage() < this.paginatedPane.getPages() - 1) {
                 this.paginatedPane.setPage(this.paginatedPane.getPage() + 1);
@@ -72,12 +62,7 @@ public class LocationsGUI {
             }
         });
 
-        ItemStack previousPage = new ItemStack(Material.ARROW);
-        ItemMeta previousPageMeta = nextPage.getItemMeta();
-        previousPageMeta.setDisplayName("Previous page");
-        previousPageMeta.setLore(List.of("Click to go to the previous page"));
-        previousPage.setItemMeta(previousPageMeta);
-        GuiItem previousPageItem = new GuiItem(previousPage, e -> {
+        GuiItem previousPageItem = new GuiItem(GUIUtils.getPreviousPageItem(), e -> {
             e.setCancelled(true);
             if (this.paginatedPane.getPage() > 0) {
                 this.paginatedPane.setPage(this.paginatedPane.getPage() - 1);
@@ -117,9 +102,11 @@ public class LocationsGUI {
     }
 
     private void updateTitle() {
-        this.chestGui.setTitle(this.titleTemplate
-                .replaceAll("%page%", String.valueOf(this.paginatedPane.getPage() + 1))
-                .replaceAll("%maxpage%", String.valueOf(this.paginatedPane.getPages())));
+        this.chestGui.setTitle(ChatColor.translateAlternateColorCodes('&',
+                this.titleTemplate
+                        .replaceAll("%page%", String.valueOf(this.paginatedPane.getPage() + 1))
+                        .replaceAll("%maxpage%", String.valueOf(this.paginatedPane.getPages()))
+        ));
     }
 
 }
