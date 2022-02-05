@@ -53,13 +53,7 @@ public abstract class BaseConfig {
                 case BOOLEAN -> this.config.add(param.getKey(), new JsonPrimitive(param.getAsBoolean()));
                 case DOUBLE -> this.config.add(param.getKey(), new JsonPrimitive(param.getAsDouble()));
                 case INTEGER -> this.config.add(param.getKey(), new JsonPrimitive(param.getAsInt()));
-                case STRING, LOCATION -> this.config.add(param.getKey(), new JsonPrimitive(param.getAsString()));
-                case LOCATIONLIST -> {
-                    JsonArray list = new JsonArray();
-                    param.getAsLocationList().stream().map(ParseUtils::locationToString).toList().forEach(list::add);
-
-                    this.config.add(param.getKey(), list);
-                }
+                case STRING, LOCATION, LOCATIONLIST -> this.config.add(param.getKey(), new JsonPrimitive(param.getAsString()));
             }
         });
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ConfigParameter {
 
@@ -135,7 +136,12 @@ public class ConfigParameter {
         if (type == ConfigParameterType.LOCATION) {
             value = ParseUtils.locationToString((Location) value);
         } else if (type == ConfigParameterType.LOCATIONLIST) {
-            value = ((List<Location>) value).stream().map(ParseUtils::locationToString).toList();
+            List<Location> locList = ((List<Location>) value).stream().filter(Objects::nonNull).collect(Collectors.toList());
+            if (locList.isEmpty()) {
+                value = ParseUtils.locationStart + "||";
+            } else {
+                value = locList.stream().map(ParseUtils::locationToString).toList();
+            }
         }
 
         return value;
@@ -166,6 +172,16 @@ public class ConfigParameter {
             throw new IllegalArgumentException("Invalid type");
         }
         return new ConfigParameter(key, type.getDefaultValue(), type);
+    }
+
+    public static ConfigParameter create(String key, Object value, ConfigParameterType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Invalid type");
+        }
+        if (value == null) {
+
+        }
+        return new ConfigParameter(key, value, type);
     }
 
 }

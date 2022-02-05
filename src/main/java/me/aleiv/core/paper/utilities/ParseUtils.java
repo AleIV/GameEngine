@@ -9,6 +9,7 @@ public class ParseUtils {
     public static String locationStart = "LOCATION=";
 
     public static String locationToString(Location loc) {
+        if (loc == null) return locationStart;
         double x = loc.getX();
         double y = loc.getY();
         double z = loc.getZ();
