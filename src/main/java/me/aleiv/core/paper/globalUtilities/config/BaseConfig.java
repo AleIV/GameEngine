@@ -1,13 +1,12 @@
 package me.aleiv.core.paper.globalUtilities.config;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import lombok.NonNull;
 import me.aleiv.core.paper.utilities.JsonConfig;
-import me.aleiv.core.paper.utilities.ParseUtils;
-import org.bukkit.Location;
+import me.aleiv.core.paper.Core;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,15 +22,30 @@ public abstract class BaseConfig {
     private final boolean subConfig;
     private final String subConfigpath;
 
-    public BaseConfig(@NonNull String configName) throws Exception {
+    public BaseConfig(@NonNull String configName) {
         this(configName, "");
     }
 
-    public BaseConfig(@NonNull String configName, @NonNull String jsonPath) throws Exception {
+    public BaseConfig(@NonNull String configName, @NonNull String jsonPath) {
         this.name = configName;
-        this.jsonConfig = new JsonConfig(configName.endsWith(".json") ? configName : configName + ".json");
+        JsonConfig jsonConfig1 = null;
+        try {
+            jsonConfig1 = JsonConfig.loadConfig(configName.endsWith(".json") ? configName : configName + ".json");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("CANNOT CREATE CONFIG. DISABLING PLUGIN...");
+            Bukkit.getPluginManager().disablePlugin(Core.getInstance());
+        }
+        this.jsonConfig = jsonConfig1;
         this.subConfig = !jsonPath.equals("");
-        this.config = this.subConfig ? this.jsonConfig.getJsonObject().getAsJsonObject(jsonPath) : this.jsonConfig.getJsonObject();
+        if (this.subConfig) {
+            if (!this.jsonConfig.getJsonObject().has(jsonPath)) {
+                this.jsonConfig.getJsonObject().add(jsonPath, new JsonObject());
+            }
+            this.config = this.jsonConfig.getJsonObject().getAsJsonObject(jsonPath);
+        } else {
+            this.config = this.jsonConfig.getJsonObject();
+        }
         this.configParameters = new ArrayList<>();
         this.subConfigpath = jsonPath;
 

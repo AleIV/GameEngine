@@ -1,13 +1,15 @@
 package me.aleiv.core.paper.games.beast;
 
+import lombok.Getter;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.games.beast.commands.BeastCMD;
+import me.aleiv.core.paper.games.beast.config.BeastConfig;
 import me.aleiv.core.paper.games.beast.listeners.BeastGlobalListener;
 import me.aleiv.core.paper.games.beast.listeners.BeastInGameListener;
 import me.aleiv.core.paper.games.beast.listeners.BeastLobbyListener;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 
-public class BeastEngine extends BaseEngine{
+public class BeastEngine extends BaseEngine {
 
     Core instance;
 
@@ -15,9 +17,12 @@ public class BeastEngine extends BaseEngine{
     BeastGlobalListener beastGlobalListener;
     BeastInGameListener beastInGameListener;
     BeastLobbyListener beastLobbyListener;
+    private @Getter final BeastConfig beastConfig;
     public static final String[] MAPS = new String[]{"ghost", "it", "jeison", "puppyplaytime", "slenderman"};
 
-    public BeastEngine(Core instance){
+    public BeastEngine(Core instance) {
+        super(new BeastConfig(MAPS));
+        this.beastConfig = (BeastConfig) this.getGameConfig();
         this.instance = instance;
 
         this.beastCMD = new BeastCMD(instance);

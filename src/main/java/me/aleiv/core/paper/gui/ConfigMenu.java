@@ -39,6 +39,10 @@ public class ConfigMenu {
         this(player, config, new ArrayList<>(0));
     }
 
+    public ConfigMenu(Player player, BaseConfig config, BaseConfig subconfig) {
+        this(player, config, List.of(subconfig));
+    }
+
     public ConfigMenu(Player player, BaseConfig config, final List<BaseConfig> subConfigs) {
         this.instance = Core.getInstance();
 

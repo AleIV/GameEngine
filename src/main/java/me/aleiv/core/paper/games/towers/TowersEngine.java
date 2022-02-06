@@ -2,6 +2,7 @@ package me.aleiv.core.paper.games.towers;
 
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.games.towers.commands.TowersCMD;
+import me.aleiv.core.paper.games.towers.config.TowersConfig;
 import me.aleiv.core.paper.games.towers.listeners.TowersGlobalListener;
 import me.aleiv.core.paper.games.towers.listeners.TowersInGameListener;
 import me.aleiv.core.paper.games.towers.listeners.TowersLobbyListener;
@@ -17,6 +18,7 @@ public class TowersEngine extends BaseEngine{
     TowersLobbyListener towersLobbyListener;
 
     public TowersEngine(Core instance){
+        super(new TowersConfig());
         this.towersCMD = new TowersCMD(instance);
         this.towersGlobalListener = new TowersGlobalListener(instance);
         this.towersInGameListener = new TowersInGameListener(instance);

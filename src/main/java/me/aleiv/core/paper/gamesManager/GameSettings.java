@@ -13,7 +13,8 @@ public class GameSettings extends BaseConfig {
     enum keys {
         engineGameMode("engineGameMode"),
         autoStart("autoStart"),
-        minStartPlayers("minStartPlayers"),;
+        minStartPlayers("minStartPlayers"),
+        gameDuration("gameDuration"),;
 
         private String key;
 
@@ -32,7 +33,8 @@ public class GameSettings extends BaseConfig {
         this.add(
                 ConfigParameter.create(keys.engineGameMode.getKey(), this.getString(keys.engineGameMode.getKey(), "NONE")),
                 ConfigParameter.create(keys.autoStart.getKey(), this.getBoolean(keys.autoStart.getKey(), false)),
-                ConfigParameter.create(keys.minStartPlayers.getKey(), this.getInteger(keys.minStartPlayers.getKey(), 4))
+                ConfigParameter.create(keys.minStartPlayers.getKey(), this.getInteger(keys.minStartPlayers.getKey(), 4)),
+                ConfigParameter.create(keys.gameDuration.getKey(), this.getInteger(keys.gameDuration.getKey(), 5*60))
         );
     }
 

@@ -20,7 +20,7 @@ public class ConfigCommand extends BaseCommand {
 
     @Default
     public void onDefault(Player player) {
-        new ConfigMenu(player, plugin.getGamesManager().getGameSettings());
+        new ConfigMenu(player, plugin.getGamesManager().getGameSettings(), plugin.getGamesManager().getCurrentGame().getGameConfig());
     }
 
 }

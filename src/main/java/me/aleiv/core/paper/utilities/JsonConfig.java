@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -14,10 +16,12 @@ import lombok.Setter;
 public class JsonConfig {
     private static Gson gson = new Gson();
 
+    private static List<JsonConfig> loadedConfigs;
+
     private @Getter @Setter JsonObject jsonObject = new JsonObject();
     private @Getter File file;
 
-    public JsonConfig(String filename, String path) throws Exception {
+    protected JsonConfig(String filename, String path) throws Exception {
         this.file = new File(path + File.separatorChar + filename);
 
         if (!file.exists()) {
@@ -26,10 +30,6 @@ public class JsonConfig {
         } else {
             readFile(file);
         }
-    }
-
-    public JsonConfig(String filename) throws Exception {
-        this(filename, System.getProperty("user.dir") + File.separatorChar + "secrets");
     }
 
     public void save() throws Exception {
@@ -56,10 +56,23 @@ public class JsonConfig {
 
         jsonObject = object;
     }
-    
-    public String getRedisUri() {
-        var uri = jsonObject.get("redisUri");
-        return uri != null ? uri.getAsString() : null;
+
+    public static JsonConfig loadConfig(String filename, String path) throws Exception {
+        if (loadedConfigs == null) {
+            loadedConfigs = new ArrayList<>();
+        }
+
+        JsonConfig cachedConfig = loadedConfigs.stream().filter(config -> config.getFile().getName().equals(filename)).findFirst().orElse(null);
+        if (cachedConfig != null) {
+            return cachedConfig;
+        }
+        JsonConfig cfg = new JsonConfig(filename, path);
+        loadedConfigs.add(cfg);
+        return cfg;
+    }
+
+    public static JsonConfig loadConfig(String filename) throws Exception {
+        return loadConfig(filename, System.getProperty("user.dir") + File.separatorChar + "secrets");
     }
 
 }
