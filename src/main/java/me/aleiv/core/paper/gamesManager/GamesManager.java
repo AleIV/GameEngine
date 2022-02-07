@@ -1,6 +1,7 @@
 package me.aleiv.core.paper.gamesManager;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import lombok.Getter;
 import me.aleiv.core.paper.Core;
@@ -15,15 +16,16 @@ import org.bukkit.Bukkit;
 public class GamesManager {
     Core instance;
 
-    @Getter WorldManager worldManager;
     GlobalTimer timer;
     @Getter GameSettings gameSettings;
     HashMap<EngineGameMode, BaseEngine> gameEngineList = new HashMap<>();
-
+    @Getter private final WorldManager worldManager;
+    @Getter private final RoleManager roleManager;
 
     public GamesManager(Core instance){
         this.instance = instance;
         this.worldManager = new WorldManager(instance);
+        this.roleManager = new RoleManager(instance);
 
         timer = new GlobalTimer(instance);
         timer.runTaskTimerAsynchronously(instance, 0L, 20L);
