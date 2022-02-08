@@ -1,6 +1,7 @@
 package me.aleiv.core.paper;
 
 import me.aleiv.core.paper.commands.ConfigCommand;
+import me.aleiv.core.paper.commands.RoleCommand;
 import me.aleiv.core.paper.commands.WorldCommand;
 import me.aleiv.core.paper.gamesManager.PlayerRole;
 import org.bukkit.Bukkit;
@@ -44,6 +45,7 @@ public class Core extends JavaPlugin {
         commandManager.getCommandCompletions().registerStaticCompletion("roles", Arrays.stream(PlayerRole.values()).map(PlayerRole::getName).toList());
 
         commandManager.registerCommand(new ConfigCommand(this));
+        commandManager.registerCommand(new RoleCommand(this));
         commandManager.registerCommand(new WorldCommand(this));
     }
 
