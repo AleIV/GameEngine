@@ -39,21 +39,27 @@ public class WorldManager implements Listener {
             wc.generator(new VoidGenerator());
             World world = wc.createWorld();
             if (world != null) {
+                world.setAutoSave(false);
                 this.loadedWorlds.add(world.getUID());
             }
         }
     }
 
-    public void unloadWorld(boolean save, String... worldNames) {
-        for (String worldName : worldNames) {
-            if (this.isWorldLoaded(worldName)) return;
+    public void unloadWorld(boolean save, String... worldName) {
+        for (String name : worldName) {
+            if (this.isWorldLoaded(name)) return;
 
-            World unknownWorld = Bukkit.getWorld(worldName);
+            World unknownWorld = Bukkit.getWorld(name);
             if (unknownWorld != null) {
                 this.loadedWorlds.remove(unknownWorld.getUID());
                 Bukkit.unloadWorld(unknownWorld, save);
             }
         }
+    }
+
+    public void resetWorld(String... worldName) {
+        this.unloadWorld(false, worldName);
+        this.load(worldName);
     }
 
     public boolean isWorldLoaded(String worldName) {
@@ -84,12 +90,7 @@ public class WorldManager implements Listener {
     @EventHandler
     public void onPluginDisable(PluginDisableEvent e) {
         if (e.getPlugin() == this.plugin) {
-            this.loadedWorlds.forEach(wUUID -> {
-                World w = Bukkit.getWorld(wUUID);
-                if (w != null) {
-                    Bukkit.unloadWorld(w, false);
-                }
-            });
+            this.loadedWorlds.stream().map(Bukkit::getWorld).filter(Objects::nonNull).toList().forEach(world -> this.unloadWorld(false, world.getName()));
         }
     }
 

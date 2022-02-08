@@ -1,22 +1,41 @@
 package me.aleiv.core.paper.globalUtilities.objects;
 
-import java.util.UUID;
+import me.aleiv.core.paper.gamesManager.PlayerRole;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
-import lombok.Getter;
+import java.util.UUID;
 
 public class Participant {
 
-    @Getter UUID uuid;
-    
-    public Participant(UUID uuid){
-        this.uuid = uuid;
+    private final UUID playerUUID;
+    private final String playerName;
+    private PlayerRole playerRole;
 
+    public Participant(Player player, PlayerRole playerRole) {
+        this.playerUUID = player.getUniqueId();
+        this.playerName = player.getName();
+        this.playerRole = playerRole;
     }
 
-    public boolean is(UUID uuid){
-        return this.uuid.getMostSignificantBits() == uuid.getMostSignificantBits();
+    public UUID getPlayerUUID() {
+        return playerUUID;
     }
 
+    public Player getPlayer() {
+        return Bukkit.getPlayer(playerUUID);
+    }
 
+    public boolean isConnnected() {
+        return getPlayer() != null;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public PlayerRole getPlayerRole() {
+        return playerRole;
+    }
 
 }

@@ -1,6 +1,5 @@
 package me.aleiv.core.paper.games.beast.config;
 
-import lombok.SneakyThrows;
 import me.aleiv.core.paper.globalUtilities.config.BaseConfig;
 import me.aleiv.core.paper.globalUtilities.config.ConfigParameter;
 
@@ -15,7 +14,9 @@ public class BeastConfig extends BaseConfig {
         super("beastgame");
 
         this.add(
-                ConfigParameter.create("map", this.getActiveMap())
+                ConfigParameter.create("map", this.getActiveMap()),
+                ConfigParameter.create("beasts", this.getBeastsNumber()),
+                ConfigParameter.create("playerGracePeriod", this.getPlayerGracePeriod())
         );
 
         this.maps = new ArrayList<>();
@@ -26,6 +27,14 @@ public class BeastConfig extends BaseConfig {
 
     public String getActiveMap() {
         return this.getString("map", "it");
+    }
+
+    public int getBeastsNumber() {
+        return this.getInteger("beasts", 1);
+    }
+
+    public int getPlayerGracePeriod() {
+        return this.getInteger("playerGracePeriod", 20);
     }
 
     public BeastMapConfig getMap(String mapName) {

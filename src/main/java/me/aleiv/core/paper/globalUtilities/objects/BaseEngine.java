@@ -6,6 +6,11 @@ import org.bukkit.Location;
 
 import lombok.Data;
 import me.aleiv.core.paper.globalUtilities.EngineEnums.GameStage;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Data
 public abstract class BaseEngine {
@@ -21,6 +26,9 @@ public abstract class BaseEngine {
     public abstract void enable();
     public abstract void disable();
     public abstract void startGame();
+    public abstract void stopGame();
     public abstract void restartGame();
+    public abstract void joinPlayer(Player player);
+    public abstract void leavePlayer(Player player);
 
 }

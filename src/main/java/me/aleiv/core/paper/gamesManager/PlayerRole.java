@@ -31,4 +31,13 @@ public enum PlayerRole {
         return this.permission;
     }
 
+    public static PlayerRole getFromName(String name) {
+        for (PlayerRole role : PlayerRole.values()) {
+            if (role.getName().equalsIgnoreCase(name)) {
+                return role;
+            }
+        }
+        return null;
+    }
+
 }

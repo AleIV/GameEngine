@@ -27,6 +27,7 @@ public class PlayerListener implements Listener {
         if (plugin.getGamesManager().getRoleManager().isPlayer(player)) {
             plugin.getGamesManager().getCurrentGame().joinPlayer(player);
             e.setJoinMessage(joinMessage.replaceAll("%player%", e.getPlayer().getName()));
+            plugin.getGamesManager().updatePlayerCount();
         }
     }
 
@@ -37,6 +38,7 @@ public class PlayerListener implements Listener {
         if (plugin.getGamesManager().getRoleManager().isPlayer(player)) {
             plugin.getGamesManager().getCurrentGame().leavePlayer(player);
             e.setQuitMessage(leaveMessage.replaceAll("%player%", e.getPlayer().getName()));
+            plugin.getGamesManager().updatePlayerCount();
         }
     }
 

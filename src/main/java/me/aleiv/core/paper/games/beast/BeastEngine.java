@@ -7,7 +7,17 @@ import me.aleiv.core.paper.games.beast.config.BeastConfig;
 import me.aleiv.core.paper.games.beast.listeners.BeastGlobalListener;
 import me.aleiv.core.paper.games.beast.listeners.BeastInGameListener;
 import me.aleiv.core.paper.games.beast.listeners.BeastLobbyListener;
+import me.aleiv.core.paper.gamesManager.PlayerRole;
+import me.aleiv.core.paper.globalUtilities.EngineEnums;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class BeastEngine extends BaseEngine {
 
@@ -18,12 +28,15 @@ public class BeastEngine extends BaseEngine {
     BeastInGameListener beastInGameListener;
     BeastLobbyListener beastLobbyListener;
     private @Getter final BeastConfig beastConfig;
+    private @Getter final List<Player> beasts;
     public static final String[] MAPS = new String[]{"ghost", "it", "jeison", "puppyplaytime", "slenderman"};
 
     public BeastEngine(Core instance) {
         super(new BeastConfig(MAPS));
-        this.beastConfig = (BeastConfig) this.getGameConfig();
         this.instance = instance;
+
+        this.beastConfig = (BeastConfig) this.getGameConfig();
+        this.beasts = new ArrayList<>();
 
         this.beastCMD = new BeastCMD(instance);
         this.beastGlobalListener = new BeastGlobalListener(instance);
@@ -54,13 +67,59 @@ public class BeastEngine extends BaseEngine {
 
     @Override
     public void startGame() {
-        // TODO Auto-generated method stub
-        
+        int beastsCount = this.getBeastConfig().getBeastsNumber();
+        List<Player> players = this.instance.getGamesManager().getRoleManager().filter(PlayerRole.PLAYER);
+        // Get beastsCount players randomly from players list without repeating
+        for (int i = 0; i < beastsCount; i++) {
+            int random = (int) (Math.random() * players.size());
+            Player beast = players.get(random);
+            players.remove(random);
+            this.beasts.add(beast);
+        }
+        players.forEach(p -> p.teleport(this.getBeastConfig().getMap().getPlayerLoc()));
+        this.beasts.forEach(p -> p.teleport(this.getBeastConfig().getMap().getBeastLoc()));
+
+        Bukkit.getScheduler().runTaskLater(this.instance, () -> {
+            if (this.getGameStage() == EngineEnums.GameStage.INGAME) {
+                this.beasts.forEach(p -> p.teleport(this.getBeastConfig().getMap().getPlayerLoc()));
+            }
+        }, this.getBeastConfig().getPlayerGracePeriod() * 20L);
+
+        // TODO: Titles and stuff
+    }
+
+    @Override
+    public void stopGame() {
+
     }
 
     @Override
     public void restartGame() {
-        // TODO Auto-generated method stub
-        
+        this.instance.getGamesManager().getWorldManager().resetWorld(this.getBeastConfig().getActiveMap());
+
+        this.instance.getGamesManager().getRoleManager().filter(PlayerRole.PLAYER).forEach(p -> {
+            p.teleport(this.getBeastConfig().getMap().getLobbyLoc());
+            p.getInventory().clear();
+            p.setHealth(p.getMaxHealth());
+            p.setFoodLevel(20);
+            p.getActivePotionEffects().forEach(pe -> p.removePotionEffect(pe.getType()));
+            p.setGameMode(GameMode.ADVENTURE);
+        });
+    }
+
+
+
+    @Override
+    public void joinPlayer(Player player) {
+        if (this.getGameStage() == EngineEnums.GameStage.LOBBY) {
+            player.teleport(this.getBeastConfig().getMap().getLobbyLoc());
+        } else {
+            player.kickPlayer("Game is already running!");
+        }
+    }
+
+    @Override
+    public void leavePlayer(Player player) {
+        // TODO: Check for beasts. If 0, players win
     }
 }

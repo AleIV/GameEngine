@@ -14,7 +14,10 @@ public class GameSettings extends BaseConfig {
         engineGameMode("engineGameMode"),
         autoStart("autoStart"),
         minStartPlayers("minStartPlayers"),
-        gameDuration("gameDuration"),;
+        maxPlayers("maxPlayers"),
+        startCountdown("startCountdown"),
+        gameDuration("gameDuration"),
+        kickOnDeath("kickOnDeath"),;
 
         private String key;
 
@@ -32,9 +35,12 @@ public class GameSettings extends BaseConfig {
 
         this.add(
                 ConfigParameter.create(keys.engineGameMode.getKey(), this.getString(keys.engineGameMode.getKey(), "NONE")),
-                ConfigParameter.create(keys.autoStart.getKey(), this.getBoolean(keys.autoStart.getKey(), false)),
-                ConfigParameter.create(keys.minStartPlayers.getKey(), this.getInteger(keys.minStartPlayers.getKey(), 4)),
-                ConfigParameter.create(keys.gameDuration.getKey(), this.getInteger(keys.gameDuration.getKey(), 5*60))
+                ConfigParameter.create(keys.autoStart.getKey(), this.getMinStartPlayers()),
+                ConfigParameter.create(keys.minStartPlayers.getKey(), this.getMinStartPlayers()),
+                ConfigParameter.create(keys.maxPlayers.getKey(), this.getMaxPlayers()),
+                ConfigParameter.create(keys.startCountdown.getKey(), this.getPreGameCountdown()),
+                ConfigParameter.create(keys.gameDuration.getKey(), this.getGameDuration()),
+                ConfigParameter.create(keys.kickOnDeath.getKey(), this.getKickOnDeath())
         );
     }
 
@@ -44,6 +50,30 @@ public class GameSettings extends BaseConfig {
 
     public void setEngineGameMode(EngineGameMode engineGameMode) {
         this.set(keys.engineGameMode.getKey(), engineGameMode.getGameName());
+    }
+
+    public boolean getAutoStart() {
+        return this.getBoolean(keys.autoStart.getKey(), false);
+    }
+
+    public int getMinStartPlayers() {
+        return this.getInteger(keys.minStartPlayers.getKey(), 4);
+    }
+
+    public int getMaxPlayers() {
+        return this.getInteger(keys.maxPlayers.getKey(), 24);
+    }
+
+    public int getPreGameCountdown() {
+        return this.getInteger(keys.startCountdown.getKey(), 30);
+    }
+
+    public int getGameDuration() {
+        return this.getInteger(keys.gameDuration.getKey(), 5*60);
+    }
+
+    public boolean getKickOnDeath() {
+        return this.getBoolean(keys.kickOnDeath.getKey(), true);
     }
 
     public enum EngineGameMode {

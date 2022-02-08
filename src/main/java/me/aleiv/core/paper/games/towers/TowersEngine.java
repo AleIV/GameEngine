@@ -7,6 +7,7 @@ import me.aleiv.core.paper.games.towers.listeners.TowersGlobalListener;
 import me.aleiv.core.paper.games.towers.listeners.TowersInGameListener;
 import me.aleiv.core.paper.games.towers.listeners.TowersLobbyListener;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
+import org.bukkit.entity.Player;
 
 public class TowersEngine extends BaseEngine{
 
@@ -51,9 +52,24 @@ public class TowersEngine extends BaseEngine{
     }
 
     @Override
+    public void stopGame() {
+
+    }
+
+    @Override
     public void restartGame() {
         // TODO Auto-generated method stub
         
     }
-    
+
+    @Override
+    public void joinPlayer(Player player) {
+
+    }
+
+    @Override
+    public void leavePlayer(Player player) {
+
+    }
+
 }
