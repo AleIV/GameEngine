@@ -1,22 +1,21 @@
 package me.aleiv.core.paper;
 
+import co.aikar.commands.PaperCommandManager;
+import kr.entree.spigradle.annotations.SpigotPlugin;
+import lombok.Getter;
 import me.aleiv.core.paper.commands.ConfigCommand;
 import me.aleiv.core.paper.commands.RoleCommand;
 import me.aleiv.core.paper.commands.WorldCommand;
+import me.aleiv.core.paper.gamesManager.GamesManager;
 import me.aleiv.core.paper.gamesManager.PlayerRole;
+import me.aleiv.core.paper.utilities.NegativeSpaces;
+import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import co.aikar.commands.PaperCommandManager;
-import kr.entree.spigradle.annotations.SpigotPlugin;
-import lombok.Getter;
-import me.aleiv.core.paper.gamesManager.GamesManager;
-import me.aleiv.core.paper.utilities.NegativeSpaces;
-import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import us.jcedeno.libs.rapidinv.RapidInvManager;
 
 import java.util.Arrays;

@@ -1,16 +1,11 @@
 package me.aleiv.core.paper.globalUtilities.objects;
 
+import lombok.Data;
+import me.aleiv.core.paper.globalUtilities.EngineEnums.GameStage;
 import me.aleiv.core.paper.globalUtilities.config.BaseConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-
-import lombok.Data;
-import me.aleiv.core.paper.globalUtilities.EngineEnums.GameStage;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Data
 public abstract class BaseEngine {

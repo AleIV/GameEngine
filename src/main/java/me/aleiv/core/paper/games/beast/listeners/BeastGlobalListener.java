@@ -1,8 +1,7 @@
 package me.aleiv.core.paper.games.beast.listeners;
 
-import org.bukkit.event.Listener;
-
 import me.aleiv.core.paper.Core;
+import org.bukkit.event.Listener;
 
 public class BeastGlobalListener implements Listener{
     

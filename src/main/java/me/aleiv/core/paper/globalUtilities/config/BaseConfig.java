@@ -4,8 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import lombok.NonNull;
-import me.aleiv.core.paper.utilities.JsonConfig;
 import me.aleiv.core.paper.Core;
+import me.aleiv.core.paper.utilities.JsonConfig;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;

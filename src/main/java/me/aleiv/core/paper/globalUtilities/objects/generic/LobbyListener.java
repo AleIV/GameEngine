@@ -1,5 +1,7 @@
 package me.aleiv.core.paper.globalUtilities.objects.generic;
 
+import me.aleiv.core.paper.Core;
+import me.aleiv.core.paper.globalUtilities.EngineEnums.GameStage;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,9 +11,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-
-import me.aleiv.core.paper.Core;
-import me.aleiv.core.paper.globalUtilities.EngineEnums.GameStage;
 
 public class LobbyListener implements Listener{
     

@@ -1,6 +1,5 @@
 package me.aleiv.core.paper.utilities;
 
-import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import me.aleiv.core.paper.Core;
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.*;

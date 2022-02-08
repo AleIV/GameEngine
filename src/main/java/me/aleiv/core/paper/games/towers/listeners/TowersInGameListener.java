@@ -1,12 +1,11 @@
 package me.aleiv.core.paper.games.towers.listeners;
 
+import me.aleiv.core.paper.Core;
+import me.aleiv.core.paper.globalUtilities.events.inGameEvents.ParticipantRespawnEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
-
-import me.aleiv.core.paper.Core;
-import me.aleiv.core.paper.globalUtilities.events.inGameEvents.ParticipantRespawnEvent;
 
 public class TowersInGameListener implements Listener{
     

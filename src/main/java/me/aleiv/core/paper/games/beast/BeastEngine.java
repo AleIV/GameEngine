@@ -13,11 +13,9 @@ import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class BeastEngine extends BaseEngine {
 

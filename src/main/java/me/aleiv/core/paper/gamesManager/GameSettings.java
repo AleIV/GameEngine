@@ -1,12 +1,7 @@
 package me.aleiv.core.paper.gamesManager;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.aleiv.core.paper.globalUtilities.config.BaseConfig;
 import me.aleiv.core.paper.globalUtilities.config.ConfigParameter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameSettings extends BaseConfig {
 

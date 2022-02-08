@@ -1,17 +1,16 @@
 package me.aleiv.core.paper.utilities;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
-import lombok.Getter;
-import lombok.Setter;
 
 public class JsonConfig {
     private static Gson gson = new Gson();

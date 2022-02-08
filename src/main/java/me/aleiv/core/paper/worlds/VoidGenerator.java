@@ -1,10 +1,10 @@
 package me.aleiv.core.paper.worlds;
 
-import java.util.Random;
-
 import lombok.NonNull;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
+
+import java.util.Random;
 
 public class VoidGenerator extends ChunkGenerator {
 

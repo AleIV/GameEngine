@@ -1,15 +1,13 @@
 package me.aleiv.core.paper.globalUtilities;
 
+import lombok.EqualsAndHashCode;
+import me.aleiv.core.paper.Core;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import me.aleiv.core.paper.Core;
 
 @EqualsAndHashCode(callSuper = false)
 public class GlobalTimer extends BukkitRunnable {
