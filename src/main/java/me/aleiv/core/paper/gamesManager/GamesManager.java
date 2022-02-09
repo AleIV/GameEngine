@@ -9,6 +9,7 @@ import me.aleiv.core.paper.globalUtilities.EngineEnums;
 import me.aleiv.core.paper.globalUtilities.GlobalTimer;
 import me.aleiv.core.paper.globalUtilities.WorldManager;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
+import me.aleiv.core.paper.globalUtilities.objects.Participant;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -22,12 +23,12 @@ public class GamesManager {
     @Getter GameSettings gameSettings;
     HashMap<EngineGameMode, BaseEngine> gameEngineList = new HashMap<>();
     @Getter private final WorldManager worldManager;
-    @Getter private final RoleManager roleManager;
+    @Getter private final PlayerManager playerManager;
 
     public GamesManager(Core instance){
         this.instance = instance;
         this.worldManager = new WorldManager(instance);
-        this.roleManager = new RoleManager(instance);
+        this.playerManager = new PlayerManager(instance);
 
         timer = new GlobalTimer(instance);
         timer.runTaskTimerAsynchronously(instance, 0L, 20L);
@@ -88,7 +89,7 @@ public class GamesManager {
     }
 
     public void updatePlayerCount() {
-        List<Player> players = this.getRoleManager().filter(PlayerRole.PLAYER);
+        List<Player> players = this.getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).toList();
         switch (this.getCurrentGame().getGameStage()) {
             case LOBBY -> {
                 if (!this.timer.isRunning() && this.getGameSettings().getAutoStart() && players.size() >= this.getGameSettings().getMinStartPlayers()) {

@@ -35,7 +35,7 @@ public class RoleCommand extends BaseCommand {
             return;
         }
 
-        instance.getGamesManager().getRoleManager().setPlayerRole(target, playerRole);
+        instance.getGamesManager().getPlayerManager().setPlayerRole(target.getUniqueId(), playerRole);
         player.sendMessage("§aRole set.");
     }
 
@@ -48,8 +48,8 @@ public class RoleCommand extends BaseCommand {
             return;
         }
 
-        PlayerRole defaultRole = instance.getGamesManager().getRoleManager().getPlayerDefaultRole(target);
-        instance.getGamesManager().getRoleManager().setPlayerRole(target, defaultRole);
+        PlayerRole defaultRole = instance.getGamesManager().getPlayerManager().getPlayerDefaultRole(target);
+        instance.getGamesManager().getPlayerManager().setPlayerRole(target.getUniqueId(), defaultRole);
         player.sendMessage("§aRole reset.");
     }
 
