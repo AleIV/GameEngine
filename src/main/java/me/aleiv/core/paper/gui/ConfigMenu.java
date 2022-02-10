@@ -82,6 +82,8 @@ public class ConfigMenu {
             paginatedPane.addPane(page, masonryPane);
             page++;
         }
+
+        this.chestGui.addPane(this.paginatedPane);
     }
 
     private void generateNavigation() {
@@ -108,6 +110,8 @@ public class ConfigMenu {
         StaticPane navigation = new StaticPane(0, 5, 9, 1);
         navigation.addItem(nextPageItem, 8, 0);
         navigation.addItem(previousPageItem, 0, 0);
+
+        this.chestGui.addPane(navigation);
     }
 
     private void buildSubConfigs() {
@@ -148,6 +152,8 @@ public class ConfigMenu {
             e.setCancelled(true);
             subconfigs.show(this.player);
         }), 0, 0);
+
+        this.chestGui.addPane(subbutton);
     }
 
     private void updateTitle() {
