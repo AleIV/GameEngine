@@ -23,7 +23,7 @@ public abstract class BaseEngine {
     public abstract void startGame();
     public abstract void stopGame();
     public abstract void restartGame();
-    public abstract void joinPlayer(Player player);
+    public abstract boolean joinPlayer(Player player);
     public abstract void leavePlayer(Player player);
 
 }

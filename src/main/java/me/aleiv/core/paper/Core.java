@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager;
 import kr.entree.spigradle.annotations.SpigotPlugin;
 import lombok.Getter;
 import me.aleiv.core.paper.commands.ConfigCommand;
+import me.aleiv.core.paper.commands.GameCommand;
 import me.aleiv.core.paper.commands.RoleCommand;
 import me.aleiv.core.paper.commands.WorldCommand;
 import me.aleiv.core.paper.gamesManager.GamesManager;
@@ -46,6 +47,7 @@ public class Core extends JavaPlugin {
         commandManager.registerCommand(new ConfigCommand(this));
         commandManager.registerCommand(new RoleCommand(this));
         commandManager.registerCommand(new WorldCommand(this));
+        commandManager.registerCommand(new GameCommand(this));
     }
 
     @Override

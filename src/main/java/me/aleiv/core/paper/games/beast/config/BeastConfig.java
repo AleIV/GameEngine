@@ -49,4 +49,9 @@ public class BeastConfig extends BaseConfig {
     public BeastMapConfig getMap() {
         return this.getMap(this.getActiveMap());
     }
+
+    @Override
+    public List<BaseConfig> getSubConfigs() {
+        return new ArrayList<>(this.maps);
+    }
 }

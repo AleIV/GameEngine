@@ -32,7 +32,7 @@ public class ConfigMenu {
     private Player player;
     private List<BaseConfig> subConfigs;
 
-    private final String titleTemplate = "(%page%/%maxpage%) - Config Menu - " + config.getName();
+    private final String titleTemplate;
 
     public ConfigMenu(Player player, BaseConfig config) {
         this(player, config, new ArrayList<>(0));
@@ -45,6 +45,7 @@ public class ConfigMenu {
     public ConfigMenu(Player player, BaseConfig config, final List<BaseConfig> subConfigs) {
         this.instance = Core.getInstance();
 
+        this.titleTemplate = "(%page%/%maxpage%) - Config Menu - " + config.getName();
         this.config = config;
         this.player = player;
         this.subConfigs = subConfigs;
@@ -131,7 +132,7 @@ public class ConfigMenu {
 
             return new GuiItem(sc, e -> {
                 e.setCancelled(true);
-                new ConfigMenu(this.player, sb);
+                new ConfigMenu(this.player, sb, sb.getSubConfigs());
             });
         }).toList());
         subconfigs.addPane(pp);

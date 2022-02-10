@@ -17,12 +17,14 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BeastEngine extends BaseEngine {
 
@@ -132,31 +134,43 @@ public class BeastEngine extends BaseEngine {
     }
 
     @Override
-    public void joinPlayer(Player player) {
+    public boolean joinPlayer(Player player) {
         if (this.getGameStage() == EngineEnums.GameStage.LOBBY) {
             this.resetPlayer(player);
-        } else {
-            player.kickPlayer("Game is already running!");
+            return true;
         }
+        player.kickPlayer("Game is already running!");
+        return false;
     }
 
     @Override
     public void leavePlayer(Player player) {
-        Bukkit.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.", "");
-        if (this.beasts.contains(player)) {
-            this.beasts.remove(player);
+        if (this.getGameStage() == EngineEnums.GameStage.INGAME) {
+            Bukkit.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.", "");
+            if (this.beasts.contains(player)) {
+                this.beasts.remove(player);
+            }
+            this.checkPlayerCount();
         }
-        this.checkPlayerCount();
     }
 
     private void checkPlayerCount() {
         if (this.getGameStage() != EngineEnums.GameStage.INGAME) return;
 
+        String message = "";
+        List<Player> winners = new ArrayList<>();
+        this.stopGame();
+
         if (this.beasts.size() == 0) {
-            // TODO: Las bestias ganan.
+            message = ChatColor.GREEN + "Los jugadores han ganado";
+            winners.addAll(this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).filter(p -> !this.beasts.contains(p)).toList());
         } else if (this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).parallelStream().filter(pp -> !pp.isDead()).count() == 0) {
-            // TODO: Los jugadores ganan.
+            message = ChatColor.RED + "Las bestias han ganado";
+            winners.addAll(this.beasts);
         }
+
+        String finalMessage = message;
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', finalMessage), 20, 8*20, 3*20));
     }
 
     public void giveBeastItems(Player player) {
@@ -167,9 +181,15 @@ public class BeastEngine extends BaseEngine {
         ItemStack sword = this.enchant(new ItemStack(Material.DIAMOND_SWORD));
 
         Inventory pinv = player.getInventory();
+        EntityEquipment eq = player.getEquipment();
         pinv.clear();
-        // SET ARMOR
+        // TODO: SET ARMOR
         pinv.setItem(0, sword);
+        eq.setHelmet(helmet);
+        eq.setChestplate(chestplate);
+        eq.setLeggings(leggings);
+        eq.setBoots(boots);
+        player.updateInventory();
     }
 
     private ItemStack enchant(ItemStack item) {
@@ -200,5 +220,6 @@ public class BeastEngine extends BaseEngine {
         player.setFoodLevel(20);
         player.getInventory().clear();
         player.getActivePotionEffects().forEach(pe -> player.removePotionEffect(pe.getType()));
+        instance.getGamesManager().getPlayerManager().getParticipant(player).setDead(false);
     }
 }

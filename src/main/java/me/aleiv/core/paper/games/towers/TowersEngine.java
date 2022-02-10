@@ -63,8 +63,8 @@ public class TowersEngine extends BaseEngine{
     }
 
     @Override
-    public void joinPlayer(Player player) {
-
+    public boolean joinPlayer(Player player) {
+        return true;
     }
 
     @Override

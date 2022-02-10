@@ -151,4 +151,8 @@ public abstract class BaseConfig {
         return this.configParameters;
     }
 
+    public List<BaseConfig> getSubConfigs() {
+        return new ArrayList<>();
+    }
+
 }

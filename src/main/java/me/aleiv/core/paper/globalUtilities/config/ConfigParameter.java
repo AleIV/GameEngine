@@ -133,14 +133,16 @@ public class ConfigParameter {
 
     private Object getFormattedObject(Object value) {
         ConfigParameterType type = ConfigParameterType.getType(value);
-        if (type == ConfigParameterType.LOCATION) {
-            value = ParseUtils.locationToString((Location) value);
-        } else if (type == ConfigParameterType.LOCATIONLIST) {
-            List<Location> locList = ((List<Location>) value).stream().filter(Objects::nonNull).collect(Collectors.toList());
-            if (locList.isEmpty()) {
-                value = ParseUtils.locationStart + "||";
-            } else {
-                value = locList.stream().map(ParseUtils::locationToString).toList();
+        if (!(value instanceof String)) {
+            if (type == ConfigParameterType.LOCATION) {
+                value = ParseUtils.locationToString((Location) value);
+            } else if (type == ConfigParameterType.LOCATIONLIST) {
+                List<Location> locList = ((List<Location>) value).stream().filter(Objects::nonNull).collect(Collectors.toList());
+                if (locList.isEmpty()) {
+                    value = ParseUtils.locationStart + "||";
+                } else {
+                    value = locList.stream().map(ParseUtils::locationToString).toList();
+                }
             }
         }
 
@@ -178,8 +180,10 @@ public class ConfigParameter {
         if (type == null) {
             throw new IllegalArgumentException("Invalid type");
         }
-        if (value == null) {
-
+        if (value == null || (value instanceof String && ((String) value).isEmpty())) {
+            if (type == ConfigParameterType.LOCATION || type == ConfigParameterType.LOCATIONLIST) {
+                value = ParseUtils.locationStart + (type == ConfigParameterType.LOCATIONLIST ? "||" : "");
+            }
         }
         return new ConfigParameter(key, value, type);
     }

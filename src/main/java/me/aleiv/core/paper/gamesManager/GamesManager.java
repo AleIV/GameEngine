@@ -10,7 +10,10 @@ import me.aleiv.core.paper.globalUtilities.GlobalTimer;
 import me.aleiv.core.paper.globalUtilities.WorldManager;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 import me.aleiv.core.paper.globalUtilities.objects.Participant;
+import me.aleiv.core.paper.utilities.SoundUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -83,7 +86,10 @@ public class GamesManager {
 
     private void resetGame() {
         this.getCurrentGame().setGameStage(EngineEnums.GameStage.LOBBY);
-        this.getCurrentGame().restartGame();
+        this.timer.stop();
+        if (this.isGameLoaded()) {
+            this.getCurrentGame().restartGame();
+        }
 
         this.updatePlayerCount();
     }
@@ -101,8 +107,20 @@ public class GamesManager {
                 if (this.timer.isRunning() && players.size() < this.getGameSettings().getMinStartPlayers()) {
                     this.timer.stop();
                     this.getCurrentGame().setGameStage(EngineEnums.GameStage.LOBBY);
+
+                    Bukkit.broadcast(ChatColor.RED + "No hay suficientes jugadores para empezar la partida. Esperando a mas jugadores...", "");
+                    SoundUtils.playSound(Sound.BLOCK_WOODEN_BUTTON_CLICK_OFF, 0.5f);
                 }
             }
+        }
+    }
+
+    public boolean isGameLoaded() {
+        try {
+            BaseEngine be = this.getCurrentGame();
+            return be != null;
+        } catch (Exception e) {
+            return false;
         }
     }
     

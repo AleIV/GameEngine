@@ -4,15 +4,14 @@ import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.games.beast.BeastEngine;
 import me.aleiv.core.paper.globalUtilities.events.inGameEvents.ParticipantDeathEvent;
 import me.aleiv.core.paper.globalUtilities.objects.Participant;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 public class BeastInGameListener implements Listener{
     
@@ -59,6 +58,16 @@ public class BeastInGameListener implements Listener{
             e.setDamage(10);
         } else if (damager.getInventory().getItemInMainHand().getType().toString().contains("SWORD") || damager.getInventory().getItemInOffHand().getType().toString().contains("SWORD")) {
             e.setDamage(2);
+        }
+    }
+
+    @EventHandler
+    public void onButtonInteract(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        if (e.getClickedBlock().getType() == Material.STONE_BUTTON) {
+            e.setCancelled(true);
+            this.beastEngine.giveBeastItems(e.getPlayer());
         }
     }
 

@@ -1,6 +1,7 @@
 package me.aleiv.core.paper.utilities;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonConfig {
-    private static Gson gson = new Gson();
+    private static Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
     private static List<JsonConfig> loadedConfigs;
 

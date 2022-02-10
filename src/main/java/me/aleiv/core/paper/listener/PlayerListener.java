@@ -20,8 +20,6 @@ public class PlayerListener implements Listener {
 
     private final Core plugin;
 
-    public static final String joinMessage = ChatColor.translateAlternateColorCodes('&', "&7[&a+&7] &a%player% &7se ha unido a la partida.");
-    public static final String leaveMessage = ChatColor.translateAlternateColorCodes('&', "&7[&c-&7] &a%player% &7se ha salido de la partida.");
 
     public PlayerListener(final Core plugin) {
         this.plugin = plugin;
@@ -32,9 +30,7 @@ public class PlayerListener implements Listener {
         Player player = e.getPlayer();
 
         Participant p = plugin.getGamesManager().getPlayerManager().joinPlayer(player);
-        if (p.getPlayerRole() == PlayerRole.PLAYER) {
-            e.setJoinMessage(joinMessage.replaceAll("%player%", e.getPlayer().getName()));
-        }
+        Bukkit.broadcast(ChatColor.YELLOW + "", "game.messages.join");
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -42,9 +38,7 @@ public class PlayerListener implements Listener {
         Player player = e.getPlayer();
 
         Participant p = plugin.getGamesManager().getPlayerManager().leavePlayer(player);
-        if (p.getPlayerRole() == PlayerRole.PLAYER) {
-            e.setQuitMessage(leaveMessage.replaceAll("%player%", e.getPlayer().getName()));
-        }
+        Bukkit.broadcast("", "game.messages.leave");
     }
 
     @EventHandler
