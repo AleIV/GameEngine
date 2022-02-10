@@ -183,7 +183,6 @@ public class BeastEngine extends BaseEngine {
         Inventory pinv = player.getInventory();
         EntityEquipment eq = player.getEquipment();
         pinv.clear();
-        // TODO: SET ARMOR
         pinv.setItem(0, sword);
         eq.setHelmet(helmet);
         eq.setChestplate(chestplate);
