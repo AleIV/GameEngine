@@ -1,8 +1,10 @@
 package me.aleiv.core.paper.utilities;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.Nullable;
 
 public class ParseUtils {
 
@@ -37,8 +39,8 @@ public class ParseUtils {
         return new Location(world, x, y, z, yaw, pitch);
     }
 
-    public static String getLocationLore(Location lore) {
-        return "Location" + "\n" +
+    public static String getLocationLore(@Nullable Location lore) {
+        return lore == null ? ChatColor.RED + "No Location Set" : "Location" + "\n" +
                 "X: " + lore.getX() + "\n" +
                 "Y: " + lore.getY() + "\n" +
                 "Z: " + lore.getZ() + "\n" +
