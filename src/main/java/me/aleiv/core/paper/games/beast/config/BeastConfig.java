@@ -39,7 +39,7 @@ public class BeastConfig extends BaseConfig {
 
     public BeastMapConfig getMap(String mapName) {
         for (BeastMapConfig map : this.maps) {
-            if (map.getName().equals(mapName)) {
+            if (map.getName().equalsIgnoreCase(mapName)) {
                 return map;
             }
         }
