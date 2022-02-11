@@ -30,7 +30,7 @@ public class PlayerListener implements Listener {
         Player player = e.getPlayer();
 
         Participant p = plugin.getGamesManager().getPlayerManager().joinPlayer(player);
-        Bukkit.broadcast(ChatColor.YELLOW + "", "game.messages.join");
+        Bukkit.broadcast(ChatColor.YELLOW + p.getPlayerName() + " se ha unido a la partida.", "game.messages.join");
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -38,7 +38,7 @@ public class PlayerListener implements Listener {
         Player player = e.getPlayer();
 
         Participant p = plugin.getGamesManager().getPlayerManager().leavePlayer(player);
-        Bukkit.broadcast("", "game.messages.leave");
+        Bukkit.broadcast(ChatColor.YELLOW + p.getPlayerName() + " se ha unido a la partida." , "game.messages.leave");
     }
 
     @EventHandler

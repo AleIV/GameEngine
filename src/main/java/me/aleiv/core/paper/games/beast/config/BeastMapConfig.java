@@ -11,8 +11,7 @@ public class BeastMapConfig extends BaseConfig {
         name("name"),
         lobbyloc("lobbyloc"),
         beastloc("beastloc"),
-        playerloc("playerloc"),
-        beastExitTime("beastExitTime");
+        playerloc("playerloc");
 
         private String key;
 
@@ -32,8 +31,7 @@ public class BeastMapConfig extends BaseConfig {
                 ConfigParameter.create(keys.name.getKey(), this.getString(keys.name.getKey(), "null")),
                 ConfigParameter.create(keys.lobbyloc.getKey(), this.getString(keys.lobbyloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
                 ConfigParameter.create(keys.beastloc.getKey(), this.getString(keys.beastloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
-                ConfigParameter.create(keys.playerloc.getKey(), this.getString(keys.playerloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
-                ConfigParameter.create(keys.beastExitTime.getKey(), this.getInteger(keys.beastExitTime.getKey(), 30))
+                ConfigParameter.create(keys.playerloc.getKey(), this.getString(keys.playerloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION)
         );
     }
 

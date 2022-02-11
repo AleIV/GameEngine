@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 public class ParseUtils {
 
     public static String locationStart = "LOCATION=";
@@ -24,7 +26,7 @@ public class ParseUtils {
 
     public static Location stringToLocation(String parsedLocation) {
         if (!parsedLocation.contains(locationStart)) return null;
-        String[] parameters = parsedLocation.replaceAll(locationStart, "").split(";");
+        String[] parameters = parsedLocation.replaceAll(locationStart, "").replaceAll("\\||", "").split(";");
         if (parameters.length != 6) return null;
 
         double x = Double.parseDouble(parameters[0]);

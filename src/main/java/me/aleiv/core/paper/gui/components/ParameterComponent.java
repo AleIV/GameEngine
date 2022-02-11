@@ -124,7 +124,13 @@ public class ParameterComponent extends StaticPane {
     private GuiItem getParamStatus(String value, boolean canChatChange) {
         List<String> lore = new ArrayList<>();
         lore.add("The value of this parameter");
-        lore.add("is: " + value);
+        if (value.contains("\n")) {
+            List<String> loreLines = new ArrayList<>(List.of(value.split("\n")));
+            lore.add("is: " + loreLines.remove(0));
+            lore.addAll(loreLines);
+        } else {
+            lore.add("is: " + value);
+        }
         if (canChatChange) {
             lore.add(ChatColor.GRAY + " ");
             lore.add("Left click to change");

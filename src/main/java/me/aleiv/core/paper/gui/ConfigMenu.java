@@ -2,14 +2,13 @@ package me.aleiv.core.paper.gui;
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
-import com.github.stefvanschie.inventoryframework.pane.MasonryPane;
-import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
-import com.github.stefvanschie.inventoryframework.pane.StaticPane;
+import com.github.stefvanschie.inventoryframework.pane.*;
 import com.google.common.collect.Lists;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.globalUtilities.config.BaseConfig;
 import me.aleiv.core.paper.globalUtilities.config.ConfigParameter;
 import me.aleiv.core.paper.gui.components.ParameterComponent;
+import me.aleiv.core.paper.gui.components.StaticPanelPane;
 import me.aleiv.core.paper.utilities.GUIUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -69,13 +68,18 @@ public class ConfigMenu {
         int page = 0;
 
         for (List<ConfigParameter> parameters : Lists.partition(this.config.getConfigParameters(), 8)) {
-            MasonryPane masonryPane = new MasonryPane(0, 0, 9, 4);
+            StaticPanelPane masonryPane = new StaticPanelPane(0, 0, 9, 4);
+
             AtomicInteger atomicSlot = new AtomicInteger(0);
             parameters.forEach((param) -> {
                 int slot = atomicSlot.getAndIncrement();
                 int x = slot > 3 ? 5 : 1;
                 int y = slot % 4;
+
+                System.out.println(slot + " " + x + " " + y);
+
                 ParameterComponent panel = new ParameterComponent(this.player, param, x, y, this.chestGui);
+
                 masonryPane.addPane(panel);
             });
 

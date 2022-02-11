@@ -13,10 +13,12 @@ import me.aleiv.core.paper.utilities.NegativeSpaces;
 import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 import us.jcedeno.libs.rapidinv.RapidInvManager;
 
 import java.util.Arrays;
@@ -56,11 +58,30 @@ public class Core extends JavaPlugin {
     }
 
     public void unregisterListener(Listener listener) {
+        if (!this.isListenerRegistered(listener)) return;
         HandlerList.unregisterAll(listener);
     }
 
     public void registerListener(Listener listener) {
+        if (this.isListenerRegistered(listener)) return;
         Bukkit.getPluginManager().registerEvents(listener, instance);
+    }
+
+    public boolean isListenerRegistered(Listener listener) {
+        return HandlerList.getRegisteredListeners(this).stream().anyMatch(l -> l.getListener().getClass().equals(listener.getClass()));
+    }
+
+    public void broadcast(final String message) {
+        if (message == null || message.isEmpty()) return;
+        String finalMessage = ChatColor.translateAlternateColorCodes('&', message);
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(finalMessage));
+    }
+
+    public void sendTitle(@Nullable String title, @Nullable String subtitle, int fadeIn, int stay, int fadeOut) {
+        String finalTitle = ChatColor.translateAlternateColorCodes('&', title == null ? ChatColor.GRAY + " " : title);
+        String finalSubtitle = ChatColor.translateAlternateColorCodes('&', subtitle == null ? ChatColor.GRAY + " " : subtitle);
+
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle(finalTitle, finalSubtitle, fadeIn, stay, fadeOut));
     }
 
 }

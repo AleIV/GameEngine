@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Subcommand;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.gamesManager.PlayerRole;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 @CommandAlias("role")
@@ -36,7 +37,7 @@ public class RoleCommand extends BaseCommand {
         }
 
         instance.getGamesManager().getPlayerManager().setPlayerRole(target.getUniqueId(), playerRole);
-        player.sendMessage("§aRole set.");
+        player.sendMessage("§aRole set to " + ChatColor.translateAlternateColorCodes('&', playerRole.getPrefix()));
     }
 
     @Subcommand("reset")
@@ -51,6 +52,19 @@ public class RoleCommand extends BaseCommand {
         PlayerRole defaultRole = instance.getGamesManager().getPlayerManager().getPlayerDefaultRole(target);
         instance.getGamesManager().getPlayerManager().setPlayerRole(target.getUniqueId(), defaultRole);
         player.sendMessage("§aRole reset.");
+    }
+
+    @Subcommand("info")
+    @CommandCompletion("@players")
+    public void info(Player player, String targetName) {
+        Player target = Bukkit.getPlayer(targetName);
+        if (target == null) {
+            player.sendMessage("§cPlayer not found.");
+            return;
+        }
+
+        PlayerRole playerRole = instance.getGamesManager().getPlayerManager().getPlayerRole(target);
+        player.sendMessage("§aRole: " + playerRole.getName());
     }
 
 }

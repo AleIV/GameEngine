@@ -32,7 +32,7 @@ public class BeastInGameListener implements Listener{
             player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&cHas sido expulsado de la partida porque has muerto."));
             return;
         }
-        Bukkit.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.", "");
+        this.instance.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.");
 
         Location lastLoc = player.getLocation().clone();
         Bukkit.getScheduler().runTaskLater(instance, () -> {

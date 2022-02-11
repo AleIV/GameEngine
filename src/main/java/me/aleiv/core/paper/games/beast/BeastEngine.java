@@ -60,6 +60,7 @@ public class BeastEngine extends BaseEngine {
     @Override
     public void enable(){
         this.instance.getGamesManager().getWorldManager().load(MAPS);
+        this.instance.getGamesManager().getWorldManager().load("beastlobby");
 
         instance.getCommandManager().registerCommand(beastCMD);
         instance.registerListener(beastGlobalListener);
@@ -69,6 +70,7 @@ public class BeastEngine extends BaseEngine {
     @Override
     public void disable(){
         this.instance.getGamesManager().getWorldManager().unloadWorld(false, MAPS);
+        this.instance.getGamesManager().getWorldManager().unloadWorld(false, "beastlobby");
 
         instance.getCommandManager().unregisterCommand(beastCMD);
         instance.unregisterListener(beastGlobalListener);
@@ -121,7 +123,8 @@ public class BeastEngine extends BaseEngine {
 
     @Override
     public void stopGame() {
-
+        instance.registerListener(beastLobbyListener);
+        instance.unregisterListener(beastInGameListener);
     }
 
     @Override
@@ -146,7 +149,7 @@ public class BeastEngine extends BaseEngine {
     @Override
     public void leavePlayer(Player player) {
         if (this.getGameStage() == EngineEnums.GameStage.INGAME) {
-            Bukkit.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.", "");
+            this.instance.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.");
             if (this.beasts.contains(player)) {
                 this.beasts.remove(player);
             }

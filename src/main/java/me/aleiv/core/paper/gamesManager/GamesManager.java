@@ -108,7 +108,7 @@ public class GamesManager {
                     this.timer.stop();
                     this.getCurrentGame().setGameStage(EngineEnums.GameStage.LOBBY);
 
-                    Bukkit.broadcast(ChatColor.RED + "No hay suficientes jugadores para empezar la partida. Esperando a mas jugadores...", "");
+                    this.instance.broadcast(ChatColor.RED + "No hay suficientes jugadores para empezar la partida. Esperando a mas jugadores...");
                     SoundUtils.playSound(Sound.BLOCK_WOODEN_BUTTON_CLICK_OFF, 0.5f);
                 }
             }
