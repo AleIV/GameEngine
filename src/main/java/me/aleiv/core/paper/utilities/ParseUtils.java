@@ -1,5 +1,6 @@
 package me.aleiv.core.paper.utilities;
 
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -43,12 +44,20 @@ public class ParseUtils {
 
     public static String getLocationLore(@Nullable Location lore) {
         return lore == null ? ChatColor.RED + "No Location Set" : "Location" + "\n" +
-                "X: " + lore.getX() + "\n" +
-                "Y: " + lore.getY() + "\n" +
-                "Z: " + lore.getZ() + "\n" +
+                "X: " + formatDouble(lore.getX()) + "\n" +
+                "Y: " + formatDouble(lore.getY()) + "\n" +
+                "Z: " + formatDouble(lore.getZ()) + "\n" +
                 "World: " + lore.getWorld().getName() + "\n" +
-                "Yaw: " + lore.getYaw() + "\n" +
-                "Pitch: " + lore.getPitch();
+                "Yaw: " + formatFloat(lore.getYaw()) + "\n" +
+                "Pitch: " + formatFloat(lore.getPitch());
+    }
+
+    public static String formatDouble(@NonNull Double d) {
+        return String.format("%.2f", d);
+    }
+
+    public static String formatFloat(@NonNull Float f) {
+        return String.format("%.2f", f);
     }
 
 }
