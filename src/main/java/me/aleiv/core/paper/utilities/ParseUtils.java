@@ -22,7 +22,7 @@ public class ParseUtils {
         float yaw = loc.getYaw();
         float pitch = loc.getPitch();
 
-        return locationStart + x + ";" + y + ";" + z + ";" + worldName + ";" + pitch + ";" + yaw;
+        return locationStart + x + ";" + y + ";" + z + ";" + worldName + ";" + yaw + ";" + pitch;
     }
 
     public static Location stringToLocation(String parsedLocation) {
