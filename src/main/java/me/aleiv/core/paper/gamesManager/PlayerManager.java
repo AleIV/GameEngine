@@ -39,6 +39,18 @@ public class PlayerManager {
         return participant;
     }
 
+    public Participant joinPlayer(Player player, @Nullable PlayerRole role) {
+        Participant participant = new Participant(player, role == null ? this.getPlayerDefaultRole(player) : role);
+
+        boolean successful = processRoleChange(participant.getPlayer(), null, participant.getPlayerRole());
+        if (!successful) return null;
+
+        this.participants.put(player.getUniqueId(), participant);
+        instance.getGamesManager().updatePlayerCount();
+
+        return participant;
+    }
+
     public Participant leavePlayer(Player player) {
         Participant participant = this.participants.remove(player.getUniqueId());
         try {
@@ -73,12 +85,11 @@ public class PlayerManager {
     public void setPlayerRole(UUID playerUUID, PlayerRole role) {
         Participant participant = this.getParticipant(playerUUID);
         if (participant == null) return;
-        PlayerRole oldRole = participant.getPlayerRole();
+        Player player = participant.getPlayer();
+        if (player == null) return;
 
-        if (role == oldRole) return;
-
-        participant.setPlayerRole(role);
-        processRoleChange(participant.getPlayer(), oldRole, role);
+        this.leavePlayer(player);
+        this.joinPlayer(player, role);
     }
 
     private boolean processRoleChange(Player player, @Nullable PlayerRole oldRole, PlayerRole newRole) {

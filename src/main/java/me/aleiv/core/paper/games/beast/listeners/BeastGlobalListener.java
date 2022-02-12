@@ -6,13 +6,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.event.weather.WeatherEvent;
 
 public class BeastGlobalListener implements Listener{
     
@@ -34,13 +33,15 @@ public class BeastGlobalListener implements Listener{
     }
 
     @EventHandler
-    public void onEntityDamage(EntityDamageByEntityEvent e) {
+    public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
         e.setCancelled(true);
     }
 
     @EventHandler
-    public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-        e.setCancelled(true);
+    public void onEntityDamage(EntityDamageEvent e) {
+        if (!(e instanceof EntityDamageByEntityEvent)) {
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler

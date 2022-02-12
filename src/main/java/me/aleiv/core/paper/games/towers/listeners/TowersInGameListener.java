@@ -1,7 +1,7 @@
 package me.aleiv.core.paper.games.towers.listeners;
 
 import me.aleiv.core.paper.Core;
-import me.aleiv.core.paper.globalUtilities.events.inGameEvents.ParticipantRespawnEvent;
+import me.aleiv.core.paper.globalUtilities.events.participantEvents.ParticipantRespawnEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +17,7 @@ public class TowersInGameListener implements Listener{
 
     @EventHandler
     public void setParticipantRespawnEvent(PlayerRespawnEvent e){
-        Bukkit.getPluginManager().callEvent(new ParticipantRespawnEvent());
+        Bukkit.getPluginManager().callEvent(new ParticipantRespawnEvent(e.getPlayer()));
     }
 
     @EventHandler

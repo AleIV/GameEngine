@@ -2,14 +2,14 @@ package me.aleiv.core.paper.games.beast.listeners;
 
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.games.beast.BeastEngine;
-import me.aleiv.core.paper.globalUtilities.events.inGameEvents.ParticipantDeathEvent;
+import me.aleiv.core.paper.globalUtilities.EngineEnums;
+import me.aleiv.core.paper.globalUtilities.events.participantEvents.ParticipantDeathEvent;
 import me.aleiv.core.paper.globalUtilities.objects.Participant;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -27,7 +27,12 @@ public class BeastInGameListener implements Listener{
     public void onPartDeath(ParticipantDeathEvent e) {
         Player player = e.getPlayer();
         Participant part = e.getParticipant();
+        if (part.isDead() || this.beastEngine.getGameStage() != EngineEnums.GameStage.INGAME) return;
 
+        part.setDead(true);
+
+        this.beastEngine.checkPlayerCount();
+        e.getBukkitEvent().getDrops().clear();
         if (this.instance.getGamesManager().getGameSettings().getKickOnDeath()) {
             player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&cHas sido expulsado de la partida porque has muerto."));
             return;
@@ -39,7 +44,6 @@ public class BeastInGameListener implements Listener{
             player.spigot().respawn();
             player.teleport(lastLoc);
             player.setGameMode(GameMode.SPECTATOR);
-            part.setDead(true);
         }, 1L);
     }
 
@@ -54,10 +58,14 @@ public class BeastInGameListener implements Listener{
         Player damager = (Player) e.getDamager();
 
         e.setDamage(0);
-        if (beastEngine.getBeasts().contains(damager)) {
-            e.setDamage(10);
+        if (beastEngine.getBeasts().contains(player) && beastEngine.getBeasts().contains(damager)) {
+            e.setCancelled(true);
+        } else if (beastEngine.getBeasts().contains(damager)) {
+            player.setHealth(player.getHealth()-10);
         } else if (damager.getInventory().getItemInMainHand().getType().toString().contains("SWORD") || damager.getInventory().getItemInOffHand().getType().toString().contains("SWORD")) {
-            e.setDamage(2);
+            player.setHealth(player.getHealth()-2);
+        } else {
+            e.setCancelled(true);
         }
     }
 

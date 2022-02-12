@@ -143,6 +143,7 @@ public class ParameterComponent extends StaticPane {
             if (!canChatChange) return;
 
             ChatUtils.askInput(player, "&eType in chat the value you want to change to...", (input) -> {
+                System.out.println("Consumer");
                 switch (param.getType()) {
                     case BOOLEAN -> {
                         if (ObjectUtils.canBeBoolean(input)) {

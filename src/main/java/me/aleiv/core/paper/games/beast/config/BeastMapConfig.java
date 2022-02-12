@@ -28,9 +28,9 @@ public class BeastMapConfig extends BaseConfig {
         super("beastgame", mapName);
 
         this.add(
-                ConfigParameter.create(keys.name.getKey(), this.getString(keys.name.getKey(), "null")),
-                ConfigParameter.create(keys.lobbyloc.getKey(), this.getString(keys.lobbyloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
-                ConfigParameter.create(keys.beastloc.getKey(), this.getString(keys.beastloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
+                ConfigParameter.create(keys.name.getKey(), this.getString(keys.name.getKey(), mapName)),
+        //        ConfigParameter.create(keys.lobbyloc.getKey(), this.getString(keys.lobbyloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
+        //        ConfigParameter.create(keys.beastloc.getKey(), this.getString(keys.beastloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
                 ConfigParameter.create(keys.playerloc.getKey(), this.getString(keys.playerloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION)
         );
     }
@@ -39,13 +39,13 @@ public class BeastMapConfig extends BaseConfig {
         return this.getString(keys.name.getKey());
     }
 
-    public Location getLobbyLoc() {
+    /*public Location getLobbyLoc() {
         return this.getLoc(keys.lobbyloc);
     }
 
     public Location getBeastLoc() {
         return this.getLoc(keys.beastloc);
-    }
+    }*/
 
     public Location getPlayerLoc() {
         return this.getLoc(keys.playerloc);

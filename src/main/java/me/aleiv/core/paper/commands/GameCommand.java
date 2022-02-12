@@ -21,7 +21,8 @@ public class GameCommand extends BaseCommand {
     @Subcommand("start")
     public void onStart(Player player) {
         if (instance.getGamesManager().isGameLoaded()) {
-            if (instance.getGamesManager().getCurrentGame().getGameStage() != EngineEnums.GameStage.LOBBY) {
+            EngineEnums.GameStage gs = instance.getGamesManager().getCurrentGame().getGameStage();
+            if (gs == EngineEnums.GameStage.INGAME || gs == EngineEnums.GameStage.POSTGAME) {
                 player.sendMessage("§cA game is already running!");
                 return;
             }
@@ -47,7 +48,7 @@ public class GameCommand extends BaseCommand {
             return;
         }
 
-        instance.getGamesManager().stopGame();
+        instance.getGamesManager().stopGame(true);
         player.sendMessage("§aGame stopped!");
     }
 

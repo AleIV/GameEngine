@@ -30,7 +30,7 @@ public class GameSettings extends BaseConfig {
 
         this.add(
                 ConfigParameter.create(keys.engineGameMode.getKey(), this.getString(keys.engineGameMode.getKey(), "NONE")),
-                ConfigParameter.create(keys.autoStart.getKey(), this.getMinStartPlayers()),
+                ConfigParameter.create(keys.autoStart.getKey(), this.getAutoStart()),
                 ConfigParameter.create(keys.minStartPlayers.getKey(), this.getMinStartPlayers()),
                 ConfigParameter.create(keys.maxPlayers.getKey(), this.getMaxPlayers()),
                 ConfigParameter.create(keys.startCountdown.getKey(), this.getPreGameCountdown()),

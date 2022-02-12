@@ -70,6 +70,7 @@ public class GlobalTimer extends BukkitRunnable {
     private void start() {
         this.update();
         this.bossBar.setVisible(true);
+        Bukkit.getOnlinePlayers().forEach(this.bossBar::addPlayer);
         this.running = true;
     }
 

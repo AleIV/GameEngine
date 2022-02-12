@@ -76,8 +76,6 @@ public class ConfigMenu {
                 int x = slot > 3 ? 5 : 1;
                 int y = slot % 4;
 
-                System.out.println(slot + " " + x + " " + y);
-
                 ParameterComponent panel = new ParameterComponent(this.player, param, x, y, this.chestGui);
 
                 masonryPane.addPane(panel);

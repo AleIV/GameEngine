@@ -1,16 +1,12 @@
-package me.aleiv.core.paper.globalUtilities.events.inGameEvents;
+package me.aleiv.core.paper.globalUtilities.events.participantEvents;
 
-import lombok.Getter;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.globalUtilities.objects.Participant;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
 
-public class ParticipantEvent extends Event {
-
-    public static HandlerList handlerList;
+public abstract class ParticipantEvent extends Event {
 
     private final Participant participant;
 
@@ -20,12 +16,6 @@ public class ParticipantEvent extends Event {
 
     public ParticipantEvent(Player player) {
         this.participant = Core.getInstance().getGamesManager().getPlayerManager().getParticipant(player);
-    }
-
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
-        return handlerList;
     }
 
     public Participant getParticipant() {

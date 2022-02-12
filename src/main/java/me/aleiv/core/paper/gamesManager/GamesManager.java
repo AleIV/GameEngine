@@ -74,14 +74,19 @@ public class GamesManager {
 
         this.getCurrentGame().setGameStage(EngineEnums.GameStage.INGAME);
         this.getCurrentGame().startGame();
-        this.timer.runCountdown(this.getGameSettings().getGameDuration(), this::stopGame);
+        this.timer.runCountdown(this.getGameSettings().getGameDuration(), () -> this.stopGame(false));
     }
 
-    public void stopGame() {
+    public void stopGame(boolean force) {
         if (this.getCurrentGame().getGameStage() == EngineEnums.GameStage.POSTGAME) return;
 
-        this.getCurrentGame().setGameStage(EngineEnums.GameStage.POSTGAME);
-        this.timer.runCountdown(15, this::resetGame);
+        if (force) {
+            this.resetGame();
+        } else {
+            this.getCurrentGame().setGameStage(EngineEnums.GameStage.POSTGAME);
+            this.timer.runCountdown(15, this::resetGame);
+            this.getCurrentGame().stopGame();
+        }
     }
 
     private void resetGame() {
@@ -95,11 +100,12 @@ public class GamesManager {
     }
 
     public void updatePlayerCount() {
-        List<Player> players = this.getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).toList();
+        List<Player> players = this.playerManager.filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).toList();
         switch (this.getCurrentGame().getGameStage()) {
             case LOBBY -> {
                 if (!this.timer.isRunning() && this.getGameSettings().getAutoStart() && players.size() >= this.getGameSettings().getMinStartPlayers()) {
                     this.timer.runCountdown(this.getGameSettings().getPreGameCountdown(), this::startGame);
+                    this.instance.broadcast("&aSomos suficientes jugadores. Iniciando cuenta atras para iniciar el juego...");
                     this.getCurrentGame().setGameStage(EngineEnums.GameStage.PREGAME);
                 }
             }

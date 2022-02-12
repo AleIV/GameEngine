@@ -3,6 +3,7 @@ package me.aleiv.core.paper.globalUtilities;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.worlds.VoidGenerator;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.event.EventHandler;
@@ -39,6 +40,7 @@ public class WorldManager implements Listener {
             World world = wc.createWorld();
             if (world != null) {
                 world.setAutoSave(false);
+                world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                 this.loadedWorlds.add(world.getUID());
             }
         }

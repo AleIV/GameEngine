@@ -2,6 +2,7 @@ package me.aleiv.core.paper.games.beast.config;
 
 import me.aleiv.core.paper.globalUtilities.config.BaseConfig;
 import me.aleiv.core.paper.globalUtilities.config.ConfigParameter;
+import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,8 @@ public class BeastConfig extends BaseConfig {
 
         this.add(
                 ConfigParameter.create("map", this.getActiveMap()),
+                ConfigParameter.create(BeastMapConfig.keys.lobbyloc.getKey(), this.getString(BeastMapConfig.keys.lobbyloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
+                ConfigParameter.create(BeastMapConfig.keys.beastloc.getKey(), this.getString(BeastMapConfig.keys.beastloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
                 ConfigParameter.create("beasts", this.getBeastsNumber()),
                 ConfigParameter.create("playerGracePeriod", this.getPlayerGracePeriod())
         );
@@ -50,8 +53,21 @@ public class BeastConfig extends BaseConfig {
         return this.getMap(this.getActiveMap());
     }
 
+    public Location getLobbyLoc() {
+        return this.getLoc(BeastMapConfig.keys.lobbyloc);
+    }
+
+    public Location getBeastLoc() {
+        return this.getLoc(BeastMapConfig.keys.beastloc);
+    }
+
     @Override
     public List<BaseConfig> getSubConfigs() {
         return new ArrayList<>(this.maps);
+    }
+
+    private Location getLoc(BeastMapConfig.keys key) {
+        ConfigParameter param = this.getConfigParameter(key.getKey());
+        return param == null ? null : param.getAsLocation();
     }
 }

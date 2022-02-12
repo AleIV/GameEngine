@@ -11,6 +11,7 @@ import me.aleiv.core.paper.gamesManager.PlayerRole;
 import me.aleiv.core.paper.globalUtilities.EngineEnums;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 import me.aleiv.core.paper.globalUtilities.objects.Participant;
+import me.aleiv.core.paper.utilities.FireworkUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -82,7 +83,7 @@ public class BeastEngine extends BaseEngine {
     @Override
     public void startGame() {
         int beastsCount = this.getBeastConfig().getBeastsNumber();
-        List<Player> players = this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).toList();
+        List<Player> players = new ArrayList<>(this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).toList());
         // Get beastsCount players randomly from players list without repeating
         for (int i = 0; i < beastsCount; i++) {
             int random = (int) (Math.random() * players.size());
@@ -98,7 +99,7 @@ public class BeastEngine extends BaseEngine {
             p.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
         });
         this.beasts.forEach(p -> {
-            p.teleport(this.getBeastConfig().getMap().getBeastLoc());
+            p.teleport(this.getBeastConfig().getBeastLoc());
             String message = "&7&l======= &cERES LA BESTIA &7&l=======\n\n" +
                     "&fEn " + this.getBeastConfig().getPlayerGracePeriod() +
                     " segundos, podrás salir. Tu objetivo es eliminar a todos los jugadores.\n";
@@ -132,18 +133,20 @@ public class BeastEngine extends BaseEngine {
         this.instance.getGamesManager().getWorldManager().resetWorld(this.getBeastConfig().getActiveMap());
         instance.registerListener(beastLobbyListener);
         instance.unregisterListener(beastInGameListener);
+        this.beasts.clear();
 
         this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).forEach(this::resetPlayer);
     }
 
     @Override
     public boolean joinPlayer(Player player) {
-        if (this.getGameStage() == EngineEnums.GameStage.LOBBY) {
-            this.resetPlayer(player);
-            return true;
+        if (this.getGameStage() == EngineEnums.GameStage.INGAME || this.getGameStage() == EngineEnums.GameStage.POSTGAME) {
+            player.kickPlayer("Game is already running!");
+            return false;
         }
-        player.kickPlayer("Game is already running!");
-        return false;
+
+        this.resetPlayer(player);
+        return true;
     }
 
     @Override
@@ -157,26 +160,38 @@ public class BeastEngine extends BaseEngine {
         }
     }
 
-    private void checkPlayerCount() {
+    public void checkPlayerCount() {
         if (this.getGameStage() != EngineEnums.GameStage.INGAME) return;
 
-        String message = "";
-        List<Player> winners = new ArrayList<>();
-        this.stopGame();
+        boolean beastsDead = this.beasts.parallelStream().map(p -> this.instance.getGamesManager().getPlayerManager().getParticipant(p)).allMatch(Participant::isDead);
+        List<Participant> normalPlayers = this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).parallelStream().filter(part -> !this.beasts.contains(part.getPlayer())).toList();
+        boolean playersDead = normalPlayers.parallelStream().allMatch(Participant::isDead);
 
-        if (this.beasts.size() == 0) {
-            message = ChatColor.GREEN + "Los jugadores han ganado";
-            winners.addAll(this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).filter(p -> !this.beasts.contains(p)).toList());
-        } else if (this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).parallelStream().filter(pp -> !pp.isDead()).count() == 0) {
-            message = ChatColor.RED + "Las bestias han ganado";
+        if (!beastsDead && !playersDead) return;
+
+        String message;
+        List<Player> winners = new ArrayList<>();
+        this.instance.getGamesManager().stopGame(false);
+
+        if (beastsDead) {
+            message = ChatColor.GREEN + "Los jugadores han ganado!";
+            winners.addAll(normalPlayers.stream().map(Participant::getPlayer).toList());
+        } else {
+            message = ChatColor.RED + "Las bestias han ganado!";
             winners.addAll(this.beasts);
         }
 
-        String finalMessage = message;
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', finalMessage), 20, 8*20, 3*20));
+        for (int i = 0; i < 15; i += 3) {
+            Bukkit.getScheduler().runTaskLater(this.instance, () -> winners.forEach(p -> FireworkUtils.spawnWinnerFirework(p.getLocation())), i*20L);
+        }
+
+        this.instance.broadcast(message);
+        this.instance.sendTitle(null, message, 20, 8*20, 3*20);
     }
 
     public void giveBeastItems(Player player) {
+        if (this.beasts.contains(player)) return;
+
         ItemStack helmet = this.enchant(new ItemStack(Material.DIAMOND_HELMET));
         ItemStack chestplate = this.enchant(new ItemStack(Material.DIAMOND_CHESTPLATE));
         ItemStack leggings = this.enchant(new ItemStack(Material.DIAMOND_LEGGINGS));
@@ -217,7 +232,7 @@ public class BeastEngine extends BaseEngine {
     private void resetPlayer(Player player) {
         player.setNoDamageTicks(20);
         player.setGameMode(GameMode.ADVENTURE);
-        player.teleport(this.getBeastConfig().getMap().getLobbyLoc());
+        player.teleport(this.getBeastConfig().getLobbyLoc());
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
         player.getInventory().clear();

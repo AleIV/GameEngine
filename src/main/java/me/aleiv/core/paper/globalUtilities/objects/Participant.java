@@ -1,6 +1,7 @@
 package me.aleiv.core.paper.globalUtilities.objects;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import me.aleiv.core.paper.gamesManager.PlayerRole;
 import org.bukkit.Bukkit;
@@ -10,19 +11,15 @@ import java.util.UUID;
 
 public class Participant {
 
-    private final UUID playerUUID;
+    private @Getter final UUID playerUUID;
     private final String playerName;
     private @Getter @Setter PlayerRole playerRole;
     private @Getter @Setter boolean dead;
 
-    public Participant(Player player, PlayerRole playerRole) {
+    public Participant(@NonNull Player player, @NonNull PlayerRole playerRole) {
         this.playerUUID = player.getUniqueId();
         this.playerName = player.getName();
         this.playerRole = playerRole;
-    }
-
-    public UUID getPlayerUUID() {
-        return playerUUID;
     }
 
     public Player getPlayer() {

@@ -2,12 +2,10 @@ package me.aleiv.core.paper.listener;
 
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.gamesManager.PlayerRole;
-import me.aleiv.core.paper.globalUtilities.events.inGameEvents.ParticipantDeathEvent;
+import me.aleiv.core.paper.globalUtilities.events.participantEvents.ParticipantDeathEvent;
 import me.aleiv.core.paper.globalUtilities.objects.Participant;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,6 +28,8 @@ public class PlayerListener implements Listener {
         Player player = e.getPlayer();
 
         Participant p = plugin.getGamesManager().getPlayerManager().joinPlayer(player);
+        if (p == null) return; // Cannot enter/already kicked
+
         Bukkit.broadcast(ChatColor.YELLOW + p.getPlayerName() + " se ha unido a la partida.", "game.messages.join");
     }
 
@@ -38,6 +38,8 @@ public class PlayerListener implements Listener {
         Player player = e.getPlayer();
 
         Participant p = plugin.getGamesManager().getPlayerManager().leavePlayer(player);
+        if (p == null) return; // Cannot enter/already kicked
+
         Bukkit.broadcast(ChatColor.YELLOW + p.getPlayerName() + " se ha unido a la partida." , "game.messages.leave");
     }
 
@@ -49,7 +51,7 @@ public class PlayerListener implements Listener {
         e.setDeathMessage(null);
 
         if (p.getPlayerRole() == PlayerRole.PLAYER && !p.isDead()) {
-            Bukkit.getPluginManager().callEvent(new ParticipantDeathEvent(p, player.getKiller()));
+            Bukkit.getPluginManager().callEvent(new ParticipantDeathEvent(p, player.getKiller(), e));
         }
     }
 

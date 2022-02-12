@@ -9,6 +9,8 @@ import me.aleiv.core.paper.commands.RoleCommand;
 import me.aleiv.core.paper.commands.WorldCommand;
 import me.aleiv.core.paper.gamesManager.GamesManager;
 import me.aleiv.core.paper.gamesManager.PlayerRole;
+import me.aleiv.core.paper.listener.PlayerListener;
+import me.aleiv.core.paper.listener.WorldListener;
 import me.aleiv.core.paper.utilities.NegativeSpaces;
 import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -21,7 +23,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 import us.jcedeno.libs.rapidinv.RapidInvManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @SpigotPlugin
 public class Core extends JavaPlugin {
@@ -30,10 +34,13 @@ public class Core extends JavaPlugin {
     private @Getter GamesManager gamesManager;
     private @Getter PaperCommandManager commandManager;
     private @Getter static MiniMessage miniMessage = MiniMessage.get();
+    private List<Listener> registeredListeners;
 
     @Override
     public void onEnable() {
         instance = this;
+
+        this.registeredListeners = new ArrayList<>();
 
         RapidInvManager.register(this);
         BukkitTCT.registerPlugin(this);
@@ -50,6 +57,9 @@ public class Core extends JavaPlugin {
         commandManager.registerCommand(new RoleCommand(this));
         commandManager.registerCommand(new WorldCommand(this));
         commandManager.registerCommand(new GameCommand(this));
+
+        registerListener(new PlayerListener(this));
+        registerListener(new WorldListener(this));
     }
 
     @Override
@@ -60,15 +70,17 @@ public class Core extends JavaPlugin {
     public void unregisterListener(Listener listener) {
         if (!this.isListenerRegistered(listener)) return;
         HandlerList.unregisterAll(listener);
+        this.registeredListeners.remove(listener);
     }
 
     public void registerListener(Listener listener) {
         if (this.isListenerRegistered(listener)) return;
-        Bukkit.getPluginManager().registerEvents(listener, instance);
+        Bukkit.getPluginManager().registerEvents(listener, this);
+        this.registeredListeners.add(listener);
     }
 
     public boolean isListenerRegistered(Listener listener) {
-        return HandlerList.getRegisteredListeners(this).stream().anyMatch(l -> l.getListener().getClass().equals(listener.getClass()));
+        return this.registeredListeners.contains(listener);
     }
 
     public void broadcast(final String message) {
