@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 public class BeastInGameListener implements Listener{
     
@@ -76,6 +77,13 @@ public class BeastInGameListener implements Listener{
         if (e.getClickedBlock().getType() == Material.STONE_BUTTON) {
             e.setCancelled(true);
             this.beastEngine.giveBeastItems(e.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent e) {
+        if (e.getTo().getBlockY() < 0) {
+            e.getPlayer().setHealth(0);
         }
     }
 
