@@ -61,13 +61,17 @@ public class BeastInGameListener implements Listener{
         e.setDamage(0);
         if (beastEngine.getBeasts().contains(player) && beastEngine.getBeasts().contains(damager)) {
             e.setCancelled(true);
-        } else if (beastEngine.getBeasts().contains(damager)) {
-            player.setHealth(player.getHealth()-10);
         } else if (damager.getInventory().getItemInMainHand().getType().toString().contains("SWORD") || damager.getInventory().getItemInOffHand().getType().toString().contains("SWORD")) {
             player.setHealth(player.getHealth()-2);
+        } else if (beastEngine.getBeasts().contains(damager)) {
+            player.setHealth(player.getHealth()-(hasArmor(player) ? 2 : 10));
         } else {
             e.setCancelled(true);
         }
+    }
+
+    private boolean hasArmor(Player player) {
+        return player.getInventory().getHelmet() != null && player.getInventory().getChestplate() != null && player.getInventory().getLeggings() != null && player.getInventory().getBoots() != null;
     }
 
     @EventHandler
@@ -82,7 +86,7 @@ public class BeastInGameListener implements Listener{
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (e.getTo().getBlockY() < 0) {
+        if (e.getTo().getBlockY() < 0 || e.getTo().getBlock().getType() == Material.LAVA) {
             e.getPlayer().setHealth(0);
         }
     }

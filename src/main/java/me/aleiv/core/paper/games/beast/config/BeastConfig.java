@@ -17,7 +17,6 @@ public class BeastConfig extends BaseConfig {
         this.add(
                 ConfigParameter.create("map", this.getActiveMap()),
                 ConfigParameter.create(BeastMapConfig.keys.lobbyloc.getKey(), this.getString(BeastMapConfig.keys.lobbyloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
-                ConfigParameter.create(BeastMapConfig.keys.beastloc.getKey(), this.getString(BeastMapConfig.keys.beastloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
                 ConfigParameter.create("beasts", this.getBeastsNumber()),
                 ConfigParameter.create("playerGracePeriod", this.getPlayerGracePeriod())
         );
@@ -57,9 +56,9 @@ public class BeastConfig extends BaseConfig {
         return this.getLoc(BeastMapConfig.keys.lobbyloc);
     }
 
-    public Location getBeastLoc() {
+    /*public Location getBeastLoc() {
         return this.getLoc(BeastMapConfig.keys.beastloc);
-    }
+    }*/
 
     @Override
     public List<BaseConfig> getSubConfigs() {

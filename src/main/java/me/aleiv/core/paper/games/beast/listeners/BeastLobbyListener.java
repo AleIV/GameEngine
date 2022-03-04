@@ -4,6 +4,7 @@ import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.globalUtilities.objects.generic.LobbyListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 public class BeastLobbyListener extends LobbyListener{
 
