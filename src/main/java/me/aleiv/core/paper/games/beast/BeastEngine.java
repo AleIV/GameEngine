@@ -12,6 +12,7 @@ import me.aleiv.core.paper.globalUtilities.EngineEnums;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 import me.aleiv.core.paper.globalUtilities.objects.Participant;
 import me.aleiv.core.paper.utilities.FireworkUtils;
+import me.aleiv.core.paper.utilities.ResourcePackManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -66,6 +67,12 @@ public class BeastEngine extends BaseEngine {
         instance.getCommandManager().registerCommand(beastCMD);
         instance.registerListener(beastGlobalListener);
         instance.registerListener(beastLobbyListener);
+
+        ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
+        // TODO: Set rp
+        rpm.setResoucePackURL("https://download.mc-packs.net/pack/bf6ddb0714a7161f847c16cf9b730a812cd4213a.zip");
+        rpm.setResourcePackHash("bf6ddb0714a7161f847c16cf9b730a812cd4213a");
+        rpm.setEnabled(true);
     }
 
     @Override
@@ -99,7 +106,6 @@ public class BeastEngine extends BaseEngine {
             p.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
         });
         this.beasts.forEach(p -> {
-            p.teleport(this.getBeastConfig().getBeastLoc());
             String message = "&7&l======= &cERES LA BESTIA &7&l=======\n\n" +
                     "&fEn " + this.getBeastConfig().getPlayerGracePeriod() +
                     " segundos, podrás salir. Tu objetivo es eliminar a todos los jugadores.\n";
@@ -120,6 +126,10 @@ public class BeastEngine extends BaseEngine {
 
         instance.registerListener(beastInGameListener);
         instance.unregisterListener(beastLobbyListener);
+    }
+
+    private void beastsExit() {
+
     }
 
     @Override

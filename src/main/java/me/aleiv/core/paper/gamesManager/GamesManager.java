@@ -10,6 +10,7 @@ import me.aleiv.core.paper.globalUtilities.GlobalTimer;
 import me.aleiv.core.paper.globalUtilities.WorldManager;
 import me.aleiv.core.paper.globalUtilities.objects.BaseEngine;
 import me.aleiv.core.paper.globalUtilities.objects.Participant;
+import me.aleiv.core.paper.utilities.ResourcePackManager;
 import me.aleiv.core.paper.utilities.SoundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,11 +28,13 @@ public class GamesManager {
     HashMap<EngineGameMode, BaseEngine> gameEngineList = new HashMap<>();
     @Getter private final WorldManager worldManager;
     @Getter private final PlayerManager playerManager;
+    @Getter private final ResourcePackManager resourcePackManager;
 
     public GamesManager(Core instance){
         this.instance = instance;
         this.worldManager = new WorldManager(instance);
         this.playerManager = new PlayerManager(instance);
+        this.resourcePackManager = new ResourcePackManager(instance);
 
         timer = new GlobalTimer(instance);
         timer.runTaskTimerAsynchronously(instance, 0L, 20L);
