@@ -1,6 +1,7 @@
 package me.aleiv.core.paper.globalUtilities.objects;
 
 import lombok.Data;
+import me.aleiv.core.paper.exceptions.GameStartException;
 import me.aleiv.core.paper.globalUtilities.EngineEnums.GameStage;
 import me.aleiv.core.paper.globalUtilities.config.BaseConfig;
 import org.bukkit.Bukkit;
@@ -20,7 +21,7 @@ public abstract class BaseEngine {
 
     public abstract void enable();
     public abstract void disable();
-    public abstract void startGame();
+    public abstract void startGame() throws GameStartException;
     public abstract void stopGame();
     public abstract void restartGame();
     public abstract boolean joinPlayer(Player player);

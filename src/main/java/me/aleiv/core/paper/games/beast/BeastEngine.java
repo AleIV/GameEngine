@@ -5,6 +5,7 @@ import lombok.Getter;
 import me.aleiv.cinematicCore.paper.core.NPCManager;
 import me.aleiv.cinematicCore.paper.objects.NPCInfo;
 import me.aleiv.core.paper.Core;
+import me.aleiv.core.paper.exceptions.GameStartException;
 import me.aleiv.core.paper.games.beast.commands.BeastCMD;
 import me.aleiv.core.paper.games.beast.config.BeastConfig;
 import me.aleiv.core.paper.games.beast.config.BeastMapConfig;
@@ -149,9 +150,12 @@ public class BeastEngine extends BaseEngine {
     }
 
     @Override
-    public void startGame() {
+    public void startGame() throws GameStartException {
         int beastsCount = this.getBeastConfig().getBeastsNumber();
         List<Player> players = new ArrayList<>(this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).toList());
+        if (players.size() <= beastsCount) {
+            throw new GameStartException(GameStartException.GameStartExceptionReason.NOT_ENOUGTH_PLAYERS);
+        }
         // Get beastsCount players randomly from players list without repeating
         for (int i = 0; i < beastsCount; i++) {
             int random = (int) (Math.random() * players.size());

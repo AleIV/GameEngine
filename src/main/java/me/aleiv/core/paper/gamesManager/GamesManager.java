@@ -2,6 +2,7 @@ package me.aleiv.core.paper.gamesManager;
 
 import lombok.Getter;
 import me.aleiv.core.paper.Core;
+import me.aleiv.core.paper.exceptions.GameStartException;
 import me.aleiv.core.paper.games.beast.BeastEngine;
 import me.aleiv.core.paper.games.towers.TowersEngine;
 import me.aleiv.core.paper.gamesManager.GameSettings.EngineGameMode;
@@ -72,11 +73,26 @@ public class GamesManager {
         gameEngineList.get(engineGameMode).enable();
     }
 
-    public void startGame() {
-        if (this.getCurrentGame().getGameStage() == EngineEnums.GameStage.INGAME) return;
+    public void startGame() throws GameStartException {
+        if (!this.isGameLoaded()) {
+            throw new GameStartException(GameStartException.GameStartExceptionReason.GAME_NOT_LOADED);
+        }
+
+        if (this.getCurrentGame().getGameStage() == EngineEnums.GameStage.INGAME || this.getCurrentGame().getGameStage() == EngineEnums.GameStage.POSTGAME) {
+            throw new GameStartException(GameStartException.GameStartExceptionReason.GAME_ALREADY_STARTED);
+        }
 
         this.getCurrentGame().setGameStage(EngineEnums.GameStage.INGAME);
-        this.getCurrentGame().startGame();
+        try {
+            this.getCurrentGame().startGame();
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.stopGame(true);
+            if (e instanceof GameStartException) {
+                throw (GameStartException) e;
+            }
+            throw new GameStartException(GameStartException.GameStartExceptionReason.UNKNOWN_EXCEPTION);
+        }
         this.timer.runCountdown(this.getGameSettings().getGameDuration(), () -> this.stopGame(false));
     }
 
@@ -107,7 +123,20 @@ public class GamesManager {
         switch (this.getCurrentGame().getGameStage()) {
             case LOBBY -> {
                 if (!this.timer.isRunning() && this.getGameSettings().getAutoStart() && players.size() >= this.getGameSettings().getMinStartPlayers()) {
-                    this.timer.runCountdown(this.getGameSettings().getPreGameCountdown(), this::startGame);
+                    this.timer.runCountdown(this.getGameSettings().getPreGameCountdown(), () -> {
+                        try {
+                            this.startGame();
+                        } catch (GameStartException e) {
+                            e.printStackTrace();
+                            if (e.getUnknownException() != null) {
+                                e.getUnknownException().printStackTrace();
+                            }
+
+                            this.instance.broadcast("&cHa habido un fallo iniciando el juego. Intentandolo de nuevo en breves...");
+                            this.getCurrentGame().setGameStage(EngineEnums.GameStage.LOBBY);
+                            Bukkit.getScheduler().runTaskLater(this.instance, this::updatePlayerCount, 20);
+                        }
+                    });
                     this.instance.broadcast("&aSomos suficientes jugadores. Iniciando cuenta atras para iniciar el juego...");
                     this.getCurrentGame().setGameStage(EngineEnums.GameStage.PREGAME);
                 }
