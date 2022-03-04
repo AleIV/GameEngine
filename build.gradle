@@ -88,7 +88,7 @@ shadowJar {
     relocate 'acf-core_', 'shadded.acf.properties.acf-core_'
     relocate 'us.jcedeno.libs.rapidinv', 'com.yourpackage.rapidinv'
 
-    relocate 'me.aleiv', 'shadded.own'
+    relocate 'me.aleiv.modeltool', 'shadded.own'
 }
 
 
