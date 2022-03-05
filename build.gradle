@@ -64,7 +64,7 @@ dependencies {
 
     //modelapi
     compileOnly 'com.ticxo.modelengine:api:R2.4.0'
-    implementation files('lib/ModelTool.jar')
+    implementation files('lib/ModelTool-1.0.1.jar')
 
 
     // CinematicTool
@@ -88,7 +88,7 @@ shadowJar {
     relocate 'acf-core_', 'shadded.acf.properties.acf-core_'
     relocate 'us.jcedeno.libs.rapidinv', 'com.yourpackage.rapidinv'
 
-    relocate 'me.aleiv.modeltool', 'shadded.own'
+    relocate 'me.aleiv.modeltool', 'shadded.own.modeltool'
 }
 
 
