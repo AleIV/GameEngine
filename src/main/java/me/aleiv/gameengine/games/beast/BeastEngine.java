@@ -240,6 +240,40 @@ public class BeastEngine extends BaseEngine {
             this.beasts.forEach(p -> p.removePotionEffect(PotionEffectType.SLOW));
         }, 3*20L));
         this.isBeastWaiting = false;
+
+        // Starting sound schedulers
+        switch (Maps.getMap(this.getBeastConfig().getMap().getName())) {
+            case slenderman -> {
+                // TODO: Estatica de titulo
+                this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
+                    if (new Random().nextInt(100) < 20) {
+                        SoundUtils.playBeastSound(this.beasts, "escape.slenderman");
+                    }
+                }, 40L, 3*20L));
+            }
+            case ghost -> {
+                this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
+                    if (new Random().nextInt(100) < 20) {
+                        SoundUtils.playBeastSound(this.beasts, "escape.ghostface");
+                    }
+                }, 40L, 2*20L));
+            }
+            case jeison -> {
+                this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
+                    if (new Random().nextInt(100) < 20) {
+                        SoundUtils.playBeastSound(this.beasts, "escape.jason");
+                    }
+                }, 40L, 2*20L));
+            }
+            case it -> {
+                String[] pennySounds = new String[]{"escape.clownlaugh1", "escape.clownlaugh2", "escape.clownlaugh3"};
+                this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
+                    if (new Random().nextInt(100) < 20) {
+                        SoundUtils.playBeastSound(this.beasts, pennySounds[new Random().nextInt(pennySounds.length)]);
+                    }
+                }, 40L, 3*20L));
+            }
+        }
     }
 
     private void playPrisonBreak() {
@@ -261,11 +295,14 @@ public class BeastEngine extends BaseEngine {
             List<Block> toBreak = barrotesList.get(i);
             BukkitTask task = Bukkit.getScheduler().runTaskLater(this.instance, () -> {
                 toBreak.forEach(Block::breakNaturally);
-                // TODO: Break sound?
+                // TODO: Break sound
+                SoundUtils.playSound("escape.ironbars", 1.4f);
             }, delay[i]);
             this.gameTasks.add(task);
             if (i == barrotesList.size() - 1) {
                 // TODO: Final sound
+                SoundUtils.playSound(Sound.ENTITY_HUSK_CONVERTED_TO_ZOMBIE, 1.0f);
+                SoundUtils.playSound("escape.ironbars", 0.8f);
             }
         }
     }
@@ -314,7 +351,7 @@ public class BeastEngine extends BaseEngine {
     }
 
     private void randomizeMap() {
-        this.beastConfig.set("map", MAPS[new Random().nextInt(MAPS.length)-1]);
+        this.beastConfig.set("map", MAPS[new Random().nextInt(MAPS.length)]);
     }
 
     @Override
@@ -336,6 +373,18 @@ public class BeastEngine extends BaseEngine {
                 this.beasts.remove(player);
             }
             this.checkPlayerCount();
+        }
+    }
+
+    public void playKillSound(Location loc) {
+        if (this.beasts.size() == 0) return;
+
+        switch (Maps.getMap(this.beastConfig.getMap().getName())) {
+            case puppyplaytime -> SoundUtils.playDirectionalSound(loc, "escape.huggywuggy", 1.0f);
+            case jeison -> SoundUtils.playDirectionalSound(loc, "escape.jasonattack", 1.0f);
+            case ghost -> SoundUtils.playDirectionalSound(loc, "escape.ghostfaceattack", 1.0f);
+            case slenderman -> SoundUtils.playDirectionalSound(loc, "escape.slendermanstatic", 1.0f);
+            case it -> SoundUtils.playDirectionalSound(loc, "escape.clownlaugh4", 1.0f);
         }
     }
 

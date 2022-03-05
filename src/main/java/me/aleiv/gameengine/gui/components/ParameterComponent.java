@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ParameterComponent extends StaticPane {
@@ -142,8 +143,7 @@ public class ParameterComponent extends StaticPane {
             e.setCancelled(true);
             if (!canChatChange) return;
 
-            ChatUtils.askInput(player, "&eType in chat the value you want to change to...", (input) -> {
-                System.out.println("Consumer");
+            Consumer<String> callback = (input) -> {
                 switch (param.getType()) {
                     case BOOLEAN -> {
                         if (ObjectUtils.canBeBoolean(input)) {
@@ -168,10 +168,13 @@ public class ParameterComponent extends StaticPane {
                     }
                     case STRING -> this.param.set(input);
                 }
-            });
 
-            this.update();
-            this.gui.show(player);
+                this.update();
+                this.gui.show(player);
+            };
+
+            this.player.closeInventory();
+            ChatUtils.askInput(player, "&eType in chat the value you want to change to...", callback);
         });
 
 
@@ -249,7 +252,7 @@ public class ParameterComponent extends StaticPane {
         return item;
     }
 
-    private void update() {
+    public void update() {
         this.updateMainItem();
         this.gui.update();
     }

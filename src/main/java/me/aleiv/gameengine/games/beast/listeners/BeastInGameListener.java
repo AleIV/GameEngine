@@ -33,6 +33,8 @@ public class BeastInGameListener implements Listener{
         part.setDead(true);
 
         this.beastEngine.checkPlayerCount();
+        this.beastEngine.playKillSound(player.getLocation());
+        player.getLocation().getWorld().strikeLightningEffect(player.getLocation());
         e.getBukkitEvent().getDrops().clear();
         if (this.instance.getGamesManager().getGameSettings().getKickOnDeath()) {
             player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&cHas sido expulsado de la partida porque has muerto."));

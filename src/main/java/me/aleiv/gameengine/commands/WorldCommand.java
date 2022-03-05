@@ -52,4 +52,21 @@ public class WorldCommand extends BaseCommand {
         player.teleport(w.getSpawnLocation());
     }
 
+    @Subcommand("weather")
+    @CommandCompletion("rain|storm|clear")
+    public void onWeather(Player player, String weather) {
+        World world = player.getLocation().getWorld();
+        if (weather.equalsIgnoreCase("rain")) {
+            world.setStorm(true);
+            world.setWeatherDuration(999999);
+            player.sendMessage("§aWeather set to rain!");
+        } else if (weather.equalsIgnoreCase("storm")) {
+            world.setStorm(true);
+            player.sendMessage("§aWeather set to storm!");
+        } else if (weather.equalsIgnoreCase("clear")) {
+            world.setStorm(false);
+            player.sendMessage("§aWeather set to clear!");
+        }
+    }
+
 }
