@@ -18,6 +18,7 @@ import me.aleiv.gameengine.globalUtilities.objects.BaseEngine;
 import me.aleiv.gameengine.globalUtilities.objects.Participant;
 import me.aleiv.gameengine.listener.FreezeListener;
 import me.aleiv.gameengine.utilities.FireworkUtils;
+import me.aleiv.gameengine.utilities.Frames;
 import me.aleiv.gameengine.utilities.ResourcePackManager;
 import me.aleiv.gameengine.utilities.SoundUtils;
 import me.aleiv.modeltool.core.EntityModel;
@@ -27,6 +28,9 @@ import me.aleiv.modeltool.exceptions.InvalidModelIdException;
 import me.aleiv.modeltool.models.EntityMood;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -39,6 +43,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BeastEngine extends BaseEngine {
 
@@ -46,6 +51,8 @@ public class BeastEngine extends BaseEngine {
 
     private NPCManager npcManager;
     private final EntityModelManager entityModelManager;
+
+    private BossBar logoBossBar;
 
     BeastCMD beastCMD;
     BeastGlobalListener beastGlobalListener;
@@ -56,6 +63,10 @@ public class BeastEngine extends BaseEngine {
     private @Getter final BeastConfig beastConfig;
     private @Getter final List<Player> beasts;
     private final List<BukkitTask> gameTasks;
+
+    private final List<Character> LOWSTATIC = Frames.getFramesChars(3401, 3407);
+    private final List<Character> NORMALSTATIC = Frames.getFramesChars(3408, 3414);
+    private final List<Character> HIGHSTATIC = Frames.getFramesChars(3415, 3421);
 
     public static final String[] MAPS = new String[]{"ghost", "it", "jeison", "puppyplaytime", "slenderman"};
     enum Maps {
@@ -85,6 +96,9 @@ public class BeastEngine extends BaseEngine {
         this.npcManager = new NPCManager(instance);
         this.entityModelManager = new EntityModelManager(instance);
 
+        this.logoBossBar = Bukkit.createBossBar("\uE201", BarColor.WHITE, BarStyle.SOLID);
+        this.logoBossBar.setVisible(false);
+
         this.beastConfig = (BeastConfig) this.getGameConfig();
         this.beasts = new ArrayList<>();
         this.gameTasks = new ArrayList<>();
@@ -109,6 +123,7 @@ public class BeastEngine extends BaseEngine {
         instance.registerListener(beastGlobalListener);
         instance.registerListener(beastLobbyListener);
         instance.registerListener(beastInGameListener);
+        this.logoBossBar.setVisible(true);
 
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
         // TODO: Set rp
@@ -121,6 +136,7 @@ public class BeastEngine extends BaseEngine {
     public void disable(){
         this.instance.getGamesManager().getWorldManager().unloadWorld(false, MAPS);
         this.instance.getGamesManager().getWorldManager().unloadWorld(false, "beastlobby");
+        this.logoBossBar.setVisible(false);
 
         instance.getCommandManager().unregisterCommand(beastCMD);
         instance.unregisterListener(beastGlobalListener);
@@ -259,26 +275,29 @@ public class BeastEngine extends BaseEngine {
                 }, 0L, 3 * 20L));
 
                 // TODO: Estatica de titulo
-                String LOW = "";
-                String NORMAL = "";
-                String HIGH = "";
+                AtomicInteger frameCounter = new AtomicInteger(0);
                 this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance,
                         () -> this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).forEach(p -> {
                     int d = this.beasts.stream().map(b -> (int) b.getLocation().distance(p.getPlayer().getLocation())).min(Comparator.naturalOrder()).orElse(99);
+                    Character titleChar = ' ';
 
-                    String c = "";
+                    int frame = frameCounter.getAndIncrement();
+                    if (frame == 6) {
+                        frameCounter.set(0);
+                        frame = 0;
+                    }
                     if (d < 4) {
-                        c = LOW;
+                        titleChar = LOWSTATIC.get(frame);
                     } else if (d < 8) {
-                        c = NORMAL;
+                        titleChar = NORMALSTATIC.get(frame);
                     } else if (d < 12) {
-                        c = HIGH;
+                        titleChar = HIGHSTATIC.get(frame);
                     }
 
-                    if (!c.isEmpty()) {
-                        p.getPlayer().sendTitle(c, ChatColor.BLACK.toString() + " ", 0, 20, 10);
+                    if (titleChar != ' ') {
+                        p.getPlayer().sendTitle(String.valueOf(titleChar), ChatColor.BLACK.toString() + " ", 0, 5, 5);
                     }
-                }), 0L, 4L));
+                }), 0L, 2L));
             }
             case ghost -> this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
                 if (new Random().nextInt(100) < 20) {
@@ -388,6 +407,7 @@ public class BeastEngine extends BaseEngine {
             return false;
         }
 
+        this.logoBossBar.addPlayer(player);
         this.resetPlayer(player);
         return true;
     }
@@ -402,6 +422,7 @@ public class BeastEngine extends BaseEngine {
             this.checkPlayerCount();
             this.resetPlayer(player);
         }
+        this.logoBossBar.removePlayer(player);
     }
 
     public void playKillSound(Location loc) {
