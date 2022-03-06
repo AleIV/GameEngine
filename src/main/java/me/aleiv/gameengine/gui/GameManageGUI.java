@@ -1,16 +1,16 @@
-package me.aleiv.gameengine.games.beast.gui;
+package me.aleiv.gameengine.gui;
 
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.aleiv.gameengine.utilities.GameUtils;
 import org.bukkit.entity.Player;
 
-public class BeastsGUI {
+public class GameManageGUI {
 
     private final Player player;
     private ChestGui chestGui;
 
-    public BeastsGUI(Player player) {
+    public GameManageGUI(Player player) {
         this.player = player;
         this.chestGui = new ChestGui(3, "§f ");
 
@@ -20,13 +20,13 @@ public class BeastsGUI {
     }
 
     private void build() {
-        StaticPane startButton = new StaticPane(0, 0 , 2, 3);
+        StaticPane startButton = new StaticPane(0, 0 , 3, 3);
         startButton.setOnClick(e -> {
             player.closeInventory();
             GameUtils.formalGameStart(player);
         });
 
-        StaticPane stopButton = new StaticPane(7, 0 , 2, 3);
+        StaticPane stopButton = new StaticPane(6, 0 , 3, 3);
         stopButton.setOnClick(e -> {
             player.closeInventory();
             GameUtils.formalGameFinish(player);
