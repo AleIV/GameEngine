@@ -496,6 +496,11 @@ public class BeastEngine extends BaseEngine {
         eq.setLeggings(leggings);
         eq.setBoots(boots);
         player.updateInventory();
+
+        player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_DIAMOND, 1.0f, 0.9f);
+        Bukkit.getScheduler().runTaskLater(this.instance, () -> player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_DIAMOND, 1.0f, 1.2f), 2L);
+
+        player.sendTitle("", ChatColor.translateAlternateColorCodes('&', "&8[&a!&8] &fTe has equipado &8[&a!&8]"), 0, 2*20, 20);
     }
 
     private ItemStack enchant(ItemStack item) {

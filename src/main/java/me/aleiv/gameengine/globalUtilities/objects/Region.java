@@ -3,6 +3,7 @@ package me.aleiv.gameengine.globalUtilities.objects;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 public class Region {
@@ -35,10 +36,11 @@ public class Region {
         this.worldName = loc1.getWorld().getName();
     }
 
-    public boolean isInside(LivingEntity e) {
-        Location loc = e.getLocation();
+    public boolean contains(Entity e) {
+        return this.contains(e.getLocation());
+    }
 
-        // Check if coords x, y, z are inside the region (x1, y1, z1) and (x2, y2, z2)
+    public boolean contains(Location loc) {
         return loc.getBlockX() >= x1 && loc.getBlockX() <= x2 &&
                 loc.getBlockY() >= y1 && loc.getBlockY() <= y2 &&
                 loc.getBlockZ() >= z1 && loc.getBlockZ() <= z2 &&

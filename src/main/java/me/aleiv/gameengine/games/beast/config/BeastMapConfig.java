@@ -3,6 +3,7 @@ package me.aleiv.gameengine.games.beast.config;
 import lombok.NonNull;
 import me.aleiv.gameengine.globalUtilities.config.BaseConfig;
 import me.aleiv.gameengine.globalUtilities.config.ConfigParameter;
+import me.aleiv.gameengine.globalUtilities.objects.Region;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
@@ -17,6 +18,8 @@ public class BeastMapConfig extends BaseConfig {
         beastloc("beastloc"),
         barrotesloc("barrotesloc"),
         cinematicloc("cinematicloc"),
+        equipmentPos1loc("equipmentPos1loc"),
+        equipmentPos2loc("equipmentPos2loc"),
         playerloc("playerloc");
 
         private String key;
@@ -41,7 +44,9 @@ public class BeastMapConfig extends BaseConfig {
                 ConfigParameter.create(keys.beastloc.getKey(), this.getString(keys.beastloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
                 ConfigParameter.create(keys.barrotesloc.getKey(), this.getString(keys.barrotesloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
                 ConfigParameter.create(keys.cinematicloc.getKey(), this.getString(keys.cinematicloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
-                ConfigParameter.create(keys.playerloc.getKey(), this.getString(keys.playerloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION)
+                ConfigParameter.create(keys.playerloc.getKey(), this.getString(keys.playerloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
+                ConfigParameter.create(keys.equipmentPos1loc.getKey(), this.getString(keys.equipmentPos1loc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
+                ConfigParameter.create(keys.equipmentPos2loc.getKey(), this.getString(keys.equipmentPos2loc.getKey()), ConfigParameter.ConfigParameterType.LOCATION)
         );
     }
 
@@ -72,6 +77,10 @@ public class BeastMapConfig extends BaseConfig {
 
     public List<Block> getBarrotes() {
         return this.barrotes;
+    }
+
+    public Region getEquipmentRegion() {
+        return new Region(this.getLoc(keys.equipmentPos1loc), this.getLoc(keys.equipmentPos2loc));
     }
 
 }

@@ -15,14 +15,22 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public class BeastInGameListener implements Listener{
     
     Core instance;
     BeastEngine beastEngine;
 
+    private List<UUID> equipedPlayers;
+
     public BeastInGameListener(Core instance, BeastEngine beastEngine){
         this.instance = instance;
         this.beastEngine = beastEngine;
+
+        this.equipedPlayers = new ArrayList<>();
     }
 
     @EventHandler
@@ -78,19 +86,19 @@ public class BeastInGameListener implements Listener{
     }
 
     @EventHandler
-    public void onButtonInteract(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-
-        if (e.getClickedBlock().getType() == Material.STONE_BUTTON) {
-            e.setCancelled(true);
-            this.beastEngine.giveBeastItems(e.getPlayer());
-        }
-    }
-
-    @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         if (e.getTo().getBlockY() < 0 || e.getTo().getBlock().getType() == Material.LAVA) {
             e.getPlayer().setHealth(0);
+            return;
+        }
+
+        boolean inside = this.beastEngine.getBeastConfig().getMap().getEquipmentRegion().contains(e.getTo());
+        boolean alreadyInside = this.equipedPlayers.contains(e.getPlayer().getUniqueId());
+        if (!alreadyInside && inside) {
+            this.equipedPlayers.add(e.getPlayer().getUniqueId());
+            this.beastEngine.giveBeastItems(e.getPlayer());
+        } else if (alreadyInside && !inside) {
+            this.equipedPlayers.remove(e.getPlayer().getUniqueId());
         }
     }
 
