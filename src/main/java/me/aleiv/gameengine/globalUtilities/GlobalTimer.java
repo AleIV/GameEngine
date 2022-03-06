@@ -45,7 +45,7 @@ public class GlobalTimer extends BukkitRunnable {
             Bukkit.getScheduler().runTask(instance, this.finishRunnable);
             stop();
         } else {
-            Bukkit.getPluginManager().callEvent(new GlobalTimerSecondEvent(this, (int) this.timer));
+            Bukkit.getScheduler().runTask(instance, () -> Bukkit.getPluginManager().callEvent(new GlobalTimerSecondEvent(this, (int) this.timer)));
         }
     }
 
@@ -93,7 +93,7 @@ public class GlobalTimer extends BukkitRunnable {
         this.finishRunnable = null;
         this.bossBar.setVisible(false);
 
-        Bukkit.getPluginManager().callEvent(new GlobalTimerStopEvent(this, forced));
+        Bukkit.getScheduler().runTask(instance, () -> Bukkit.getPluginManager().callEvent(new GlobalTimerStopEvent(this, forced)));
     }
 
     public boolean isRunning() {
