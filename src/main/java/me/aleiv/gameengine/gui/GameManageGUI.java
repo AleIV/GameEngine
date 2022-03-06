@@ -14,8 +14,9 @@ public class GameManageGUI {
         this.player = player;
         this.chestGui = new ChestGui(3, "§f ");
 
-        this.build();
         // TODO: ADD TEXTURED GUI
+        this.chestGui.setTitle("\uF808\uE200");
+        this.build();
         this.chestGui.show(player);
     }
 
