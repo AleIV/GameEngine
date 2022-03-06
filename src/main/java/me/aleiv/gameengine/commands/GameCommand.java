@@ -20,7 +20,7 @@ public class GameCommand extends BaseCommand {
 
     @Subcommand("start")
     public void onStart(Player player) {
-        GameUtils.formalGameFinish(player);
+        GameUtils.formalGameStart(player);
     }
 
     @Subcommand("stop")
