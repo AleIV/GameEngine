@@ -89,6 +89,8 @@ shadowJar {
     relocate 'us.jcedeno.libs.rapidinv', 'com.yourpackage.rapidinv'
 
     relocate 'me.aleiv.modeltool', 'shadded.own.modeltool'
+
+    minimize();
 }
 
 
