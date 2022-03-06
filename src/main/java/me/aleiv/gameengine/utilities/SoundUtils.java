@@ -10,7 +10,7 @@ import java.util.List;
 public class SoundUtils {
 
     public static void playSound(String sound, float pitch) {
-        Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), sound, 10L, pitch));
+        Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), sound, 100L, pitch));
     }
 
     public static void playSound(Sound sound, float pitch) {

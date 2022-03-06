@@ -1,6 +1,9 @@
 package me.aleiv.gameengine.games.beast;
 
 import com.google.common.collect.Lists;
+import com.ticxo.modelengine.api.ModelEngineAPI;
+import com.ticxo.modelengine.api.model.ActiveModel;
+import com.ticxo.modelengine.api.model.ModeledEntity;
 import lombok.Getter;
 import me.aleiv.cinematicCore.paper.core.NPCManager;
 import me.aleiv.cinematicCore.paper.objects.NPCInfo;
@@ -21,11 +24,6 @@ import me.aleiv.gameengine.utilities.FireworkUtils;
 import me.aleiv.gameengine.utilities.Frames;
 import me.aleiv.gameengine.utilities.ResourcePackManager;
 import me.aleiv.gameengine.utilities.SoundUtils;
-import me.aleiv.modeltool.core.EntityModel;
-import me.aleiv.modeltool.core.EntityModelManager;
-import me.aleiv.modeltool.exceptions.AlreadyUsedNameException;
-import me.aleiv.modeltool.exceptions.InvalidModelIdException;
-import me.aleiv.modeltool.models.EntityMood;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
@@ -50,7 +48,6 @@ public class BeastEngine extends BaseEngine {
     Core instance;
 
     private NPCManager npcManager;
-    private final EntityModelManager entityModelManager;
 
     private BossBar logoBossBar;
 
@@ -94,7 +91,6 @@ public class BeastEngine extends BaseEngine {
         this.instance = instance;
 
         this.npcManager = new NPCManager(instance);
-        this.entityModelManager = new EntityModelManager(instance);
 
         this.logoBossBar = Bukkit.createBossBar("\uE201", BarColor.WHITE, BarStyle.SOLID);
         this.logoBossBar.setVisible(false);
@@ -149,25 +145,33 @@ public class BeastEngine extends BaseEngine {
         instance.unregisterListener(beastInGameListener);
     }
 
-    private void disguiseBeast(Player player, String modelName) {
-        String randomString = UUID.randomUUID().toString().substring(0, 8);
-        try {
-            EntityModel em = this.entityModelManager.spawnEntityModel(randomString, 20, modelName, player.getLocation(), EntityType.ARMOR_STAND, EntityMood.STATIC);
-            this.entityModelManager.disguisePlayer(player, em);
-            em.setInvisible(true);
-            em.setSeeSelf(true);
-        } catch (InvalidModelIdException|AlreadyUsedNameException e) {
-            e.printStackTrace();
+    private ModeledEntity getModeledEntity(Player player) {
+        ModeledEntity modeledEntity = ModelEngineAPI.api.getModelManager().getModeledEntity(player.getUniqueId());
+        if (modeledEntity == null) {
+            return ModelEngineAPI.api.getModelManager().createModeledEntity(player);
         }
+        return modeledEntity;
+    }
+
+    private void disguiseBeast(Player player, String modelName) {
+        ModeledEntity modeledEntity = getModeledEntity(player);
+        ActiveModel activeModel = ModelEngineAPI.api.getModelManager().createActiveModel(modelName);
+        if (activeModel == null) {
+            // No model found
+            return;
+        }
+
+        modeledEntity.addActiveModel(activeModel);
+        modeledEntity.detectPlayers();
+        modeledEntity.setInvisible(true);
     }
 
     private void undisguiseBeast(Player player) {
-        EntityModel em = this.entityModelManager.getEntityModel(player.getUniqueId());
-        if (em == null) return;
-
-        em.setInvisible(false);
-        this.entityModelManager.undisguisePlayer(player);
-        em.remove();
+        ModeledEntity modeledEntity = getModeledEntity(player);
+        if (modeledEntity != null) {
+            modeledEntity.setInvisible(false);
+            modeledEntity.clearModels();
+        }
     }
 
     @Override
@@ -225,6 +229,8 @@ public class BeastEngine extends BaseEngine {
 
         Location cinematicLoc = this.getBeastConfig().getMap().getCinematicLoc();
 
+        int cinematicDuration = 6;
+
         // Starting cinematic
         normalPlayers.forEach(p -> {
             locationCache.put(p.getUniqueId(), p.getLocation().clone());
@@ -238,8 +244,8 @@ public class BeastEngine extends BaseEngine {
             p.setFlying(true);
             this.freezeListener.freeze(p);
             p.teleport(cinematicLoc);
-            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*3, 2, false, false, false));
-            p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20*3, 2, false, false, false));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*cinematicDuration, 3, false, false, false));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20*cinematicDuration, 2, false, false, false));
         });
 
         this.beasts.forEach(p -> {
@@ -247,7 +253,7 @@ public class BeastEngine extends BaseEngine {
             SoundUtils.playSound(Sound.BLOCK_NOTE_BLOCK_BIT, 1.4f);
         });
 
-        this.gameTasks.add(Bukkit.getScheduler().runTaskLater(this.instance, this::playPrisonBreak, 15L));
+        this.gameTasks.add(Bukkit.getScheduler().runTaskLater(this.instance, this::playPrisonBreak, 2*20L));
 
         this.gameTasks.add(Bukkit.getScheduler().runTaskLater(this.instance, () -> {
             normalPlayers.forEach((p) -> {
@@ -265,7 +271,7 @@ public class BeastEngine extends BaseEngine {
                 SoundUtils.playSound(Sound.BLOCK_NOTE_BLOCK_BIT, 1.4f);
             });
             this.beasts.forEach(p -> p.removePotionEffect(PotionEffectType.SLOW));
-        }, 3*20L));
+        }, cinematicDuration*20L));
         this.isBeastWaiting = false;
 
         // Starting sound schedulers
@@ -281,7 +287,7 @@ public class BeastEngine extends BaseEngine {
                 // TODO: Estatica de titulo
                 AtomicInteger frameCounter = new AtomicInteger(0);
                 this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance,
-                        () -> this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).forEach(p -> {
+                        () -> this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p)).forEach(p -> {
                     int d = this.beasts.stream().map(b -> (int) b.getLocation().distance(p.getPlayer().getLocation())).min(Comparator.naturalOrder()).orElse(99);
                     Character titleChar = ' ';
 
@@ -338,18 +344,20 @@ public class BeastEngine extends BaseEngine {
 
         List<List<Block>> barrotesList = Lists.partition(barrotes, (int) Math.ceil(barrotes.size() / 6d));
 
-        int[] delay = new int[]{0, 12, 20, 28, 34, 38};
+        int[] delay = new int[]{0, 15, 27, 33, 39, 43};
         for (int i = 0; i < barrotesList.size(); i++) {
             List<Block> toBreak = barrotesList.get(i);
+
+            boolean lastBreak = i == barrotesList.size() - 1;
             BukkitTask task = Bukkit.getScheduler().runTaskLater(this.instance, () -> {
-                toBreak.forEach(b -> b.breakNaturally(new ItemStack(Material.STICK)));
+                toBreak.forEach(Block::breakNaturally);
                 SoundUtils.playSound("escape.ironbar", 1f);
+                if (lastBreak) {
+                    SoundUtils.playSound(Sound.ENTITY_HUSK_CONVERTED_TO_ZOMBIE, 1.0f);
+                    SoundUtils.playSound("escape.metalhit", 1f);
+                }
             }, delay[i]);
             this.gameTasks.add(task);
-            if (i == barrotesList.size() - 1) {
-                SoundUtils.playSound(Sound.ENTITY_HUSK_CONVERTED_TO_ZOMBIE, 1.0f);
-                SoundUtils.playSound("escape.metalhit", 1f);
-            }
         }
     }
 
@@ -392,6 +400,7 @@ public class BeastEngine extends BaseEngine {
         List<Block> barrotes = this.beastConfig.getMap().getBarrotes();
         if (barrotes.size() != 0) {
             barrotes.forEach(b -> b.setType(Material.IRON_BARS));
+            barrotes.forEach(b -> b.getState().update(true));
         }
 
         this.alreadyFinished = false;
