@@ -412,7 +412,7 @@ public class BeastEngine extends BaseEngine {
             case jeison -> SoundUtils.playDirectionalSound(loc, "escape.jasonattack", 1.0f);
             case ghost -> SoundUtils.playDirectionalSound(loc, "escape.ghostfaceattack", 1.0f);
             case slenderman -> SoundUtils.playDirectionalSound(loc, "escape.slendermanstatic", 1.0f);
-            case it -> SoundUtils.playDirectionalSound(loc, "escape.clownlaugh4", 1.0f);
+            case it -> SoundUtils.playDirectionalSound(loc, "escape.clownattack", 1.0f);
         }
     }
 
