@@ -129,6 +129,7 @@ public class BeastEngine extends BaseEngine {
         // TODO: Set rp
         rpm.setResoucePackURL("https://download.mc-packs.net/pack/bf6ddb0714a7161f847c16cf9b730a812cd4213a.zip");
         rpm.setResourcePackHash("bf6ddb0714a7161f847c16cf9b730a812cd4213a");
+        rpm.setBypassPerm("rp.bypass");
         rpm.setEnabled(true);
     }
 
@@ -137,6 +138,9 @@ public class BeastEngine extends BaseEngine {
         this.instance.getGamesManager().getWorldManager().unloadWorld(false, MAPS);
         this.instance.getGamesManager().getWorldManager().unloadWorld(false, "beastlobby");
         this.logoBossBar.setVisible(false);
+
+        ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
+        rpm.setEnabled(false);
 
         instance.getCommandManager().unregisterCommand(beastCMD);
         instance.unregisterListener(beastGlobalListener);
