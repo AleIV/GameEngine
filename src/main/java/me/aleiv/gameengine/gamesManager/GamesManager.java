@@ -143,7 +143,7 @@ public class GamesManager {
             }
             case PREGAME -> {
                 if (this.timer.isRunning() && players.size() < this.getGameSettings().getMinStartPlayers()) {
-                    this.timer.stop();
+                    this.timer.stop(true);
                     this.getCurrentGame().setGameStage(EngineEnums.GameStage.LOBBY);
 
                     this.instance.broadcast(ChatColor.RED + "No hay suficientes jugadores para empezar la partida. Esperando a mas jugadores...");

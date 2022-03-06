@@ -106,7 +106,7 @@ public class BeastEngine extends BaseEngine {
         this.beastCMD = new BeastCMD(instance);
         this.beastGlobalListener = new BeastGlobalListener(instance);
         this.beastInGameListener = new BeastInGameListener(instance, this);
-        this.beastLobbyListener = new BeastLobbyListener(instance);
+        this.beastLobbyListener = new BeastLobbyListener(instance, this);
         this.freezeListener = new FreezeListener();
         this.instance.registerListener(this.freezeListener);
 

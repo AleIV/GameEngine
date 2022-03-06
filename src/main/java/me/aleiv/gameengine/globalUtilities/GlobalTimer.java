@@ -2,6 +2,8 @@ package me.aleiv.gameengine.globalUtilities;
 
 import lombok.EqualsAndHashCode;
 import me.aleiv.gameengine.Core;
+import me.aleiv.gameengine.globalUtilities.events.timerEvents.GlobalTimerSecondEvent;
+import me.aleiv.gameengine.globalUtilities.events.timerEvents.GlobalTimerStopEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.boss.BarColor;
@@ -42,6 +44,8 @@ public class GlobalTimer extends BukkitRunnable {
         if (this.timer == this.timerLimit) {
             Bukkit.getScheduler().runTask(instance, this.finishRunnable);
             stop();
+        } else {
+            Bukkit.getPluginManager().callEvent(new GlobalTimerSecondEvent(this, (int) this.timer));
         }
     }
 
@@ -80,10 +84,16 @@ public class GlobalTimer extends BukkitRunnable {
     }
 
     public void stop() {
+        this.stop(false);
+    }
+
+    public void stop(boolean forced) {
         this.timeAddition = 0;
         this.running = false;
         this.finishRunnable = null;
         this.bossBar.setVisible(false);
+
+        Bukkit.getPluginManager().callEvent(new GlobalTimerStopEvent(this, forced));
     }
 
     public boolean isRunning() {

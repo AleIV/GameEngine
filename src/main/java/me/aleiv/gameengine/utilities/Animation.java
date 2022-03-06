@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Animation {
 
-    private final List<Player> players;
     private AtomicInteger frame;
     private final List<Character> frames;
     private final boolean loop;
@@ -19,8 +18,7 @@ public class Animation {
 
     private BukkitTask task;
 
-    public Animation(List<Player> players, List<Character> frames, boolean loop) {
-        this.players = players;
+    public Animation(List<Character> frames, boolean loop) {
         this.frame = new AtomicInteger(0);
         this.frames = frames;
         this.loop = loop;
@@ -29,7 +27,7 @@ public class Animation {
 
     public void play() {
         if (playing) {
-            return;
+            stop();
         }
 
         this.playing = true;
@@ -47,7 +45,7 @@ public class Animation {
             }
 
             char c = this.frames.get(f);
-            this.players.forEach(p -> p.sendTitle(String.valueOf(c), "", 0, 5, 5));
+            Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle(String.valueOf(c), "", 0, 5, 5));
         }, 1L, 1L);
     }
 
@@ -60,6 +58,8 @@ public class Animation {
     }
 
     public void stop() {
+        if (!this.playing) return;
+
         this.playing = false;
         this.task.cancel();
         this.task = null;
