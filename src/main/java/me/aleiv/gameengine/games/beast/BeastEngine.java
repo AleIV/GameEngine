@@ -94,6 +94,7 @@ public class BeastEngine extends BaseEngine {
         this.beastInGameListener = new BeastInGameListener(instance, this);
         this.beastLobbyListener = new BeastLobbyListener(instance);
         this.freezeListener = new FreezeListener();
+        this.instance.registerListener(this.freezeListener);
 
         this.isBeastWaiting = false;
         this.alreadyFinished = false;
@@ -214,8 +215,11 @@ public class BeastEngine extends BaseEngine {
             NPCCache.put(p.getUniqueId(), npcInfo);
             p.setGameMode(GameMode.SPECTATOR);
 
+            p.setFlying(true);
             this.freezeListener.freeze(p);
             p.teleport(cinematicLoc);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*3, 2, false, false, false));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20*3, 2, false, false, false));
         });
 
         this.beasts.forEach(p -> {
@@ -231,8 +235,11 @@ public class BeastEngine extends BaseEngine {
                 this.freezeListener.unfreeze(p);
                 npcManager.removeNPC(NPCCache.remove(p.getUniqueId()));
                 p.setGameMode(GameMode.ADVENTURE);
-                p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 2, 1, false, false, false));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 4, 10, false, false, false));
                 p.teleport(locationCache.remove(p.getUniqueId()));
+                p.removePotionEffect(PotionEffectType.SLOW);
+                p.removePotionEffect(PotionEffectType.INVISIBILITY);
+                p.setFlying(false);
 
                 p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fNo dejes que la bestia de cace &8[&c&l!&8]"), 0, 50, 30);
                 SoundUtils.playSound(Sound.BLOCK_NOTE_BLOCK_BIT, 1.4f);
@@ -244,27 +251,45 @@ public class BeastEngine extends BaseEngine {
         // Starting sound schedulers
         switch (Maps.getMap(this.getBeastConfig().getMap().getName())) {
             case slenderman -> {
-                // TODO: Estatica de titulo
                 this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
+
                     if (new Random().nextInt(100) < 20) {
                         SoundUtils.playBeastSound(this.beasts, "escape.slenderman");
                     }
-                }, 40L, 3*20L));
-            }
-            case ghost -> {
-                this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
-                    if (new Random().nextInt(100) < 20) {
-                        SoundUtils.playBeastSound(this.beasts, "escape.ghostface");
+                }, 0L, 3 * 20L));
+
+                // TODO: Estatica de titulo
+                String LOW = "";
+                String NORMAL = "";
+                String HIGH = "";
+                this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance,
+                        () -> this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).forEach(p -> {
+                    int d = this.beasts.stream().map(b -> (int) b.getLocation().distance(p.getPlayer().getLocation())).min(Comparator.naturalOrder()).orElse(99);
+
+                    String c = "";
+                    if (d < 4) {
+                        c = LOW;
+                    } else if (d < 8) {
+                        c = NORMAL;
+                    } else if (d < 12) {
+                        c = HIGH;
                     }
-                }, 40L, 2*20L));
-            }
-            case jeison -> {
-                this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
-                    if (new Random().nextInt(100) < 20) {
-                        SoundUtils.playBeastSound(this.beasts, "escape.jason");
+
+                    if (!c.isEmpty()) {
+                        p.getPlayer().sendTitle(c, ChatColor.BLACK.toString() + " ", 0, 20, 10);
                     }
-                }, 40L, 2*20L));
+                }), 0L, 4L));
             }
+            case ghost -> this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
+                if (new Random().nextInt(100) < 20) {
+                    SoundUtils.playBeastSound(this.beasts, "escape.ghostface");
+                }
+            }, 40L, 2*20L));
+            case jeison -> this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
+                if (new Random().nextInt(100) < 20) {
+                    SoundUtils.playBeastSound(this.beasts, "escape.jason");
+                }
+            }, 40L, 2*20L));
             case it -> {
                 String[] pennySounds = new String[]{"escape.clownlaugh1", "escape.clownlaugh2", "escape.clownlaugh3"};
                 this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
@@ -294,15 +319,13 @@ public class BeastEngine extends BaseEngine {
         for (int i = 0; i < barrotesList.size(); i++) {
             List<Block> toBreak = barrotesList.get(i);
             BukkitTask task = Bukkit.getScheduler().runTaskLater(this.instance, () -> {
-                toBreak.forEach(Block::breakNaturally);
-                // TODO: Break sound
-                SoundUtils.playSound("escape.ironbars", 1.4f);
+                toBreak.forEach(b -> b.breakNaturally(new ItemStack(Material.STICK)));
+                SoundUtils.playSound("escape.ironbar", 1f);
             }, delay[i]);
             this.gameTasks.add(task);
             if (i == barrotesList.size() - 1) {
-                // TODO: Final sound
                 SoundUtils.playSound(Sound.ENTITY_HUSK_CONVERTED_TO_ZOMBIE, 1.0f);
-                SoundUtils.playSound("escape.ironbars", 0.8f);
+                SoundUtils.playSound("escape.metalhit", 1f);
             }
         }
     }
@@ -343,9 +366,13 @@ public class BeastEngine extends BaseEngine {
         this.gameTasks.forEach(BukkitTask::cancel);
         this.gameTasks.clear();
 
-        this.randomizeMap();
+        List<Block> barrotes = this.beastConfig.getMap().getBarrotes();
+        if (barrotes.size() != 0) {
+            barrotes.forEach(b -> b.setType(Material.IRON_BARS));
+        }
 
         this.alreadyFinished = false;
+        this.randomizeMap();
 
         this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).forEach(this::resetPlayer);
     }
@@ -373,6 +400,7 @@ public class BeastEngine extends BaseEngine {
                 this.beasts.remove(player);
             }
             this.checkPlayerCount();
+            this.resetPlayer(player);
         }
     }
 
@@ -474,6 +502,8 @@ public class BeastEngine extends BaseEngine {
         player.setFoodLevel(20);
         player.getInventory().clear();
         player.getActivePotionEffects().forEach(pe -> player.removePotionEffect(pe.getType()));
+        player.setFlying(false);
+        this.freezeListener.unfreeze(player);
         instance.getGamesManager().getPlayerManager().getParticipant(player).setDead(false);
     }
 }

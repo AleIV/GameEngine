@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -90,6 +91,13 @@ public class BeastInGameListener implements Listener{
     public void onPlayerMove(PlayerMoveEvent e) {
         if (e.getTo().getBlockY() < 0 || e.getTo().getBlock().getType() == Material.LAVA) {
             e.getPlayer().setHealth(0);
+        }
+    }
+
+    @EventHandler
+    public void onBarrotesDrop(ItemSpawnEvent e) {
+        if (e.getEntity().getItemStack().getType() == Material.IRON_BARS) {
+            e.setCancelled(true);
         }
     }
 
