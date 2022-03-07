@@ -197,13 +197,15 @@ public class BeastEngine extends BaseEngine {
         this.beasts.forEach(p -> {
             p.teleport(this.getBeastConfig().getMap().getBeastLoc());
 
-            switch (Maps.getMap(this.getBeastConfig().getMap().getName())) {
-                case it -> this.disguiseBeast(p, "pennywise");
-                case ghost -> this.disguiseBeast(p, "ghostface");
-                case jeison -> this.disguiseBeast(p, "jason");
-                case puppyplaytime -> this.disguiseBeast(p, "huggywuggy");
-                case slenderman -> this.disguiseBeast(p, "slenderman");
-            }
+            this.gameTasks.add(Bukkit.getScheduler().runTaskLater(this.instance,  () -> {
+                switch (Maps.getMap(this.getBeastConfig().getMap().getName())) {
+                    case it -> this.disguiseBeast(p, "pennywise");
+                    case ghost -> this.disguiseBeast(p, "ghostface");
+                    case jeison -> this.disguiseBeast(p, "jason");
+                    case puppyplaytime -> this.disguiseBeast(p, "huggywuggy");
+                    case slenderman -> this.disguiseBeast(p, "slenderman");
+                }
+            }, 15L));
 
             // TODO: Change message
             p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 2, false, false, false));
@@ -311,14 +313,14 @@ public class BeastEngine extends BaseEngine {
                 if (new Random().nextInt(100) < 20) {
                     SoundUtils.playBeastSound(this.beasts, "escape.ghostface");
                 }
-            }, 40L, 2*20L));
+            }, 40L, 4*20L));
             case jeison -> this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
                 if (new Random().nextInt(100) < 20) {
                     SoundUtils.playBeastSound(this.beasts, "escape.jason");
                 }
-            }, 40L, 2*20L));
+            }, 40L, 4*20L));
             case it -> {
-                String[] pennySounds = new String[]{"escape.clownlaugh1", "escape.clownlaugh2", "escape.clownlaugh3"};
+                String[] pennySounds = new String[]{"escape.clownlaugh1", "escape.clownlaugh2", "escape.clownlaugh3", "escape.clownlaugh4"};
                 this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
                     if (new Random().nextInt(100) < 20) {
                         SoundUtils.playBeastSound(this.beasts, pennySounds[new Random().nextInt(pennySounds.length)]);
