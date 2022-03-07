@@ -37,7 +37,17 @@ public class ParameterComponent extends StaticPane {
         this.gui = gui;
 
         this.param = param;
+
+        this.setMainItem();
+        this.setArrows();
+    }
+
+    private void setMainItem() {
         this.mainItem = this.getMainItem();
+        this.addItem(this.mainItem, 1, 0);
+    }
+
+    private void setArrows() {
         if (param.getType() == ConfigParameter.ConfigParameterType.BOOLEAN) {
             this.nextArrow = this.setTrueItem();
             this.previousArrow = this.setFalseItem();
@@ -50,7 +60,6 @@ public class ParameterComponent extends StaticPane {
             this.nextArrow = this.addLocation();
         }
 
-        this.addItem(this.mainItem, 1, 0);
         if (this.nextArrow != null) {
             this.addItem(this.nextArrow, 2, 0);
         }
@@ -93,9 +102,10 @@ public class ParameterComponent extends StaticPane {
     }
 
     public void updateMainItem() {
-        this.removeItem(this.mainItem);
-        this.mainItem = this.getMainItem();
-        this.addItem(this.mainItem, 1, 0);
+        this.getItems().clear();
+        this.setMainItem();
+        this.setArrows();
+        this.gui.update();
     }
 
     private GuiItem addNumberItem() {
