@@ -118,7 +118,7 @@ public class BeastEngine extends BaseEngine {
         instance.getCommandManager().registerCommand(beastCMD);
         instance.registerListener(beastGlobalListener);
         instance.registerListener(beastLobbyListener);
-        instance.registerListener(beastInGameListener);
+        //instance.registerListener(beastInGameListener);
         this.logoBossBar.setVisible(true);
 
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
