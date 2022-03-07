@@ -153,7 +153,7 @@ public class BeastEngine extends BaseEngine {
     }
 
     private void disguiseBeast(Player player, String modelName) {
-        ModeledEntity modeledEntity = getModeledEntity(player);
+        ModeledEntity modeledEntity = ModelEngineAPI.api.getModelManager().createModeledEntity(player);
         ActiveModel activeModel = ModelEngineAPI.api.getModelManager().createActiveModel(modelName);
         if (activeModel == null) {
             // No model found
@@ -192,7 +192,7 @@ public class BeastEngine extends BaseEngine {
         players.forEach(p -> {
             p.teleport(this.getBeastConfig().getMap().getPlayerLoc());
             // TODO: Change message
-            p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fEscapa de la bestia &8[&c&l!&8]"), 0, 50, 30);
+            p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fEscapa de la bestia &8[&c&l!&8]"), 0, 100, 30);
         });
         this.beasts.forEach(p -> {
             p.teleport(this.getBeastConfig().getMap().getBeastLoc());
@@ -205,11 +205,11 @@ public class BeastEngine extends BaseEngine {
                     case puppyplaytime -> this.disguiseBeast(p, "huggywuggy");
                     case slenderman -> this.disguiseBeast(p, "slenderman");
                 }
-            }, 15L));
+            }, 40L));
 
             // TODO: Change message
             p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 2, false, false, false));
-            p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fEres una bestia &8[&c&l!&8]"), 0, 50, 30);
+            p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fEres una bestia &8[&c&l!&8]"), 0, 100, 30);
         });
 
         this.instance.broadcast((this.beasts.size() == 1 ? "&cLa bestia " : "&cLas bestias ") + "saldrán en " + this.getBeastConfig().getPlayerGracePeriod() + " segundos.");
@@ -250,7 +250,7 @@ public class BeastEngine extends BaseEngine {
         });
 
         this.beasts.forEach(p -> {
-            p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fMata a todos los jugadores &8[&c&l!&8]"), 0, 50, 30);
+            p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fMata a todos los jugadores &8[&c&l!&8]"), 0, 100, 30);
             SoundUtils.playSound(Sound.BLOCK_NOTE_BLOCK_BIT, 1.4f);
         });
 
@@ -268,7 +268,7 @@ public class BeastEngine extends BaseEngine {
                 p.removePotionEffect(PotionEffectType.INVISIBILITY);
                 p.setFlying(false);
 
-                p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fNo dejes que la bestia de cace &8[&c&l!&8]"), 0, 50, 30);
+                p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fNo dejes que la bestia de cace &8[&c&l!&8]"), 0, 100, 30);
                 SoundUtils.playSound(Sound.BLOCK_NOTE_BLOCK_BIT, 1.4f);
             });
             this.beasts.forEach(p -> p.removePotionEffect(PotionEffectType.SLOW));
@@ -305,7 +305,7 @@ public class BeastEngine extends BaseEngine {
                     }
 
                     if (titleChar != ' ') {
-                        p.getPlayer().sendTitle(String.valueOf(titleChar), ChatColor.BLACK.toString() + " ", 0, 5, 5);
+                        p.getPlayer().sendTitle(String.valueOf(titleChar), ChatColor.BLACK.toString() + " test", 0, 5, 5);
                     }
                 }), 0L, 2L));
             }
@@ -508,9 +508,10 @@ public class BeastEngine extends BaseEngine {
         player.updateInventory();
 
         player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_DIAMOND, 1.0f, 0.9f);
-        Bukkit.getScheduler().runTaskLater(this.instance, () -> player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_DIAMOND, 1.0f, 1.2f), 2L);
+        Bukkit.getScheduler().runTaskLater(this.instance, () -> player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_NETHERITE, 1.0f, 1.4f), 5L);
+        Bukkit.getScheduler().runTaskLater(this.instance, () -> player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_TURTLE, 1.0f, 0.9f), 2L);
 
-        player.sendTitle("", ChatColor.translateAlternateColorCodes('&', "&8[&a!&8] &fTe has equipado &8[&a!&8]"), 0, 2*20, 20);
+        player.sendTitle(ChatColor.BLACK + " ", ChatColor.translateAlternateColorCodes('&', "&8[&a!&8] &fTe has equipado &8[&a!&8]"), 0, 2*20, 20);
     }
 
     private ItemStack enchant(ItemStack item) {
