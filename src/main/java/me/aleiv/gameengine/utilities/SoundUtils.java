@@ -23,13 +23,24 @@ public class SoundUtils {
 
     public static void playDirectionalSound(Location loc, String sound, float pitch) {
         Bukkit.getOnlinePlayers().forEach(player -> {
-            int distance = (int) loc.distance(player.getLocation())-3;
-            player.playSound(player.getLocation(), sound, (long) Math.max(distance, 0.5), pitch);
+            player.playSound(player.getLocation(), sound, (long) Math.max(getVolume(loc, player.getLocation(), -3), 0.5), pitch);
         });
     }
 
     public static void playBeastSound(List<Player> beasts, String sound) {
-        beasts.forEach(p -> p.getLocation().getWorld().playSound(p.getLocation(), sound, 15L, 1.0F));
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            if (beasts.contains(p)) {
+                p.playSound(p.getLocation(), sound, 0.5f, 1.0F);
+            } else {
+                beasts.forEach(b -> {
+                    p.playSound(b.getLocation(), sound, getVolume(b.getLocation(), p.getLocation(), -2), 1.0F);
+                });
+            }
+        });
+    }
+
+    private static float getVolume(Location loc, Location playerLoc, double addition) {
+        return (float) ((loc.distance(playerLoc)+addition)*(1/16.0));
     }
 
 }
