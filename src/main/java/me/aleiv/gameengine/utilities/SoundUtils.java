@@ -6,6 +6,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Random;
 
 public class SoundUtils {
 
@@ -28,13 +29,15 @@ public class SoundUtils {
     }
 
     public static void playBeastSound(List<Player> beasts, String sound) {
+        float randomPitch = (new Random().nextInt(6)/10.0f) + 0.65f;
+
         Bukkit.getOnlinePlayers().forEach(p -> {
             if (beasts.contains(p)) {
-                p.playSound(p.getLocation(), sound, 0.5f, 1.0F);
+                p.playSound(p.getLocation(), sound, 0.5f, randomPitch);
             } else {
                 beasts.forEach(b -> {
                     if (b.getLocation().distance(p.getLocation()) <= 15) {
-                        p.playSound(b.getLocation(), sound, getVolume(b.getLocation(), p.getLocation(), -2), 1.0F);
+                        p.playSound(b.getLocation(), sound, getVolume(b.getLocation(), p.getLocation(), -2), randomPitch);
                     }
                 });
             }
