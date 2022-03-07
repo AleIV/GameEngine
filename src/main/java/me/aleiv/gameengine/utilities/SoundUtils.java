@@ -33,14 +33,19 @@ public class SoundUtils {
                 p.playSound(p.getLocation(), sound, 0.5f, 1.0F);
             } else {
                 beasts.forEach(b -> {
-                    p.playSound(b.getLocation(), sound, getVolume(b.getLocation(), p.getLocation(), -2), 1.0F);
+                    if (b.getLocation().distance(p.getLocation()) <= 15) {
+                        p.playSound(b.getLocation(), sound, getVolume(b.getLocation(), p.getLocation(), -2), 1.0F);
+                    }
                 });
             }
         });
     }
 
     private static float getVolume(Location loc, Location playerLoc, double addition) {
-        return (float) ((loc.distance(playerLoc)+addition)*(1/16.0));
+        double distance = loc.distance(playerLoc);
+        float calculation = (float) ((distance+addition)*(1/16.0));
+
+        return distance >= 16 ? calculation : 1-calculation;
     }
 
 }
