@@ -61,9 +61,9 @@ public class BeastEngine extends BaseEngine {
     private @Getter final List<Player> beasts;
     private final List<BukkitTask> gameTasks;
 
-    private final List<Character> LOWSTATIC = Frames.getFramesCharsIntegers(3401, 3407);
-    private final List<Character> NORMALSTATIC = Frames.getFramesCharsIntegers(3408, 3414);
-    private final List<Character> HIGHSTATIC = Frames.getFramesCharsIntegers(3415, 3421);
+    private final List<Character> HIGHSTATIC = Frames.getFramesCharsIntegersAll(3401, 3407);
+    private final List<Character> NORMALSTATIC = Frames.getFramesCharsIntegersAll(3408, 3414);
+    private final List<Character> LOWSTATIC = Frames.getFramesCharsIntegersAll(3415, 3421);
 
     public static final String[] MAPS = new String[]{"ghost", "it", "jeison", "puppyplaytime", "slenderman"};
     enum Maps {
@@ -286,8 +286,7 @@ public class BeastEngine extends BaseEngine {
                 }, 0L, 5 * 20L));
 
                 AtomicInteger frameCounter = new AtomicInteger(0);
-                this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance,
-                        () -> this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p)).forEach(p -> {
+                this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance, () -> this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p.getPlayer())).forEach(p -> {
                     int d = this.beasts.stream().map(b -> (int) b.getLocation().distance(p.getPlayer().getLocation())).min(Comparator.naturalOrder()).orElse(99);
                     Character titleChar = ' ';
 
@@ -305,7 +304,7 @@ public class BeastEngine extends BaseEngine {
                     }
 
                     if (titleChar != ' ') {
-                        p.getPlayer().sendTitle(String.valueOf(titleChar), ChatColor.BLACK.toString() + " test", 0, 5, 5);
+                        p.getPlayer().sendTitle(String.valueOf(titleChar), ChatColor.BLACK.toString() + " ", 0, 5, 5);
                     }
                 }), 0L, 2L));
             }
