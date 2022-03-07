@@ -122,9 +122,8 @@ public class BeastEngine extends BaseEngine {
         this.logoBossBar.setVisible(true);
 
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
-        // TODO: Set rp
-        rpm.setResoucePackURL("https://download.mc-packs.net/pack/bf6ddb0714a7161f847c16cf9b730a812cd4213a.zip");
-        rpm.setResourcePackHash("bf6ddb0714a7161f847c16cf9b730a812cd4213a");
+        rpm.setResoucePackURL("https://download.mc-packs.net/pack/66f77d392852a78d3f5b501771f4622d3244025d.zip");
+        rpm.setResourcePackHash("66f77d392852a78d3f5b501771f4622d3244025d");
         rpm.setBypassPerm("rp.bypass");
         rpm.setEnabled(true);
     }
@@ -284,7 +283,6 @@ public class BeastEngine extends BaseEngine {
                     }
                 }, 0L, 3 * 20L));
 
-                // TODO: Estatica de titulo
                 AtomicInteger frameCounter = new AtomicInteger(0);
                 this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance,
                         () -> this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p)).forEach(p -> {
@@ -416,7 +414,7 @@ public class BeastEngine extends BaseEngine {
     @Override
     public boolean joinPlayer(Player player) {
         if (this.getGameStage() == EngineEnums.GameStage.INGAME || this.getGameStage() == EngineEnums.GameStage.POSTGAME) {
-            player.kickPlayer("Game is already running!");
+            player.kickPlayer("El juego ya ha empezado!");
             return false;
         }
 
@@ -470,13 +468,14 @@ public class BeastEngine extends BaseEngine {
         if (!beastsDead && !playersDead) return;
 
         List<Player> winners = new ArrayList<>();
+        String winChar;
         this.instance.getGamesManager().stopGame(false);
 
         if (beastsDead) {
-            // TODO: PLAYERS WIN SCREEN | BEASTS LOOSE SCREEN
+            winChar = "\uE203";
             winners.addAll(normalPlayers.stream().map(Participant::getPlayer).toList());
         } else {
-            // TODO: PLAYERS LOOSE SCREEN | BEASTS WIN SCREEN
+            winChar = "\uE202";
             winners.addAll(this.beasts);
         }
 
@@ -484,7 +483,7 @@ public class BeastEngine extends BaseEngine {
             Bukkit.getScheduler().runTaskLater(this.instance, () -> winners.forEach(p -> FireworkUtils.spawnWinnerFirework(p.getLocation())), i*20L);
         }
 
-        this.instance.sendTitle(null, "TODO PLACEHOLDER", 20, 8*20, 3*20);
+        this.instance.sendTitle(null, winChar, 20, 8*20, 3*20);
     }
 
     public void giveBeastItems(Player player) {
