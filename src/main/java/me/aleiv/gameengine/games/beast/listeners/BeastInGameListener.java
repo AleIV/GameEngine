@@ -69,15 +69,22 @@ public class BeastInGameListener implements Listener{
         Player player = (Player) e.getEntity();
         Player damager = (Player) e.getDamager();
 
+        boolean damaged = false;
         e.setDamage(0);
         if (beastEngine.getBeasts().contains(player) && beastEngine.getBeasts().contains(damager)) {
             e.setCancelled(true);
         } else if (damager.getInventory().getItemInMainHand().getType().toString().contains("SWORD") || damager.getInventory().getItemInOffHand().getType().toString().contains("SWORD")) {
             player.setHealth(player.getHealth()-2);
+            damaged = true;
         } else if (beastEngine.getBeasts().contains(damager)) {
             player.setHealth(player.getHealth()-(hasArmor(player) ? 2 : 10));
+            damaged = true;
         } else {
             e.setCancelled(true);
+        }
+
+        if (damaged) {
+            player.setNoDamageTicks(15);
         }
     }
 

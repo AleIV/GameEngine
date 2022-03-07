@@ -3,6 +3,7 @@ package me.aleiv.gameengine.gui;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.aleiv.gameengine.utilities.GameUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class GameManageGUI {
@@ -14,8 +15,7 @@ public class GameManageGUI {
         this.player = player;
         this.chestGui = new ChestGui(3, "§f ");
 
-        // TODO: ADD TEXTURED GUI
-        this.chestGui.setTitle("\uF808\uE200");
+        this.chestGui.setTitle(ChatColor.WHITE + "\uF808\uE200");
         this.build();
         this.chestGui.show(player);
     }

@@ -7,6 +7,7 @@ import me.aleiv.gameengine.globalUtilities.events.timerEvents.GlobalTimerSecondE
 import me.aleiv.gameengine.globalUtilities.events.timerEvents.GlobalTimerStopEvent;
 import me.aleiv.gameengine.utilities.Animation;
 import me.aleiv.gameengine.utilities.Frames;
+import me.aleiv.gameengine.utilities.SoundUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -103,9 +104,22 @@ public class BeastGlobalListener implements Listener{
 
     @EventHandler
     public void onTimerTick(GlobalTimerSecondEvent e) {
-        if (e.getSeconds() == 10 && engine.getGameStage() == EngineEnums.GameStage.PREGAME) {
-            animation.play();
+        if (engine.getGameStage() == EngineEnums.GameStage.PREGAME && e.getSeconds() <= 10) {
+            if (e.getSeconds() == 10) {
+                animation.play();
+            }
+            if (e.getSeconds() >= 1) {
+                SoundUtils.playSound("escape.beep", 1.3f);
+            } else if (e.getSeconds() >= 3) {
+                SoundUtils.playSound("escape.beep", 1f);
+            } else if (e.getSeconds() >= 5) {
+                SoundUtils.playSound("escape.beep", 0.8f);
+            } else {
+                SoundUtils.playSound("escape.beep", 0.75f);
+            }
+
         }
+
     }
 
     @EventHandler

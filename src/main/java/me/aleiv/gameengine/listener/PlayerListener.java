@@ -25,6 +25,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerJoin(PlayerJoinEvent e) {
+        e.setJoinMessage(null);
         Player player = e.getPlayer();
 
         Participant p = plugin.getGamesManager().getPlayerManager().joinPlayer(player);
@@ -35,12 +36,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerQuit(PlayerQuitEvent e) {
+        e.setQuitMessage(null);
         Player player = e.getPlayer();
 
         Participant p = plugin.getGamesManager().getPlayerManager().leavePlayer(player);
         if (p == null) return; // Cannot enter/already kicked
 
-        Bukkit.broadcast(ChatColor.YELLOW + p.getPlayerName() + " se ha unido a la partida." , "game.messages.leave");
+        Bukkit.broadcast(ChatColor.YELLOW + p.getPlayerName() + " ha abandonado la partida." , "game.messages.leave");
     }
 
     @EventHandler

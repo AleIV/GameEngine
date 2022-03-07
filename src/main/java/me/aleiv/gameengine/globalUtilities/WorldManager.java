@@ -41,6 +41,7 @@ public class WorldManager implements Listener {
             if (world != null) {
                 world.setAutoSave(false);
                 world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+                world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
                 this.loadedWorlds.add(world.getUID());
             }
         }
