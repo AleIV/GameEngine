@@ -1,6 +1,12 @@
 package me.aleiv.gameengine.games.beast.listeners;
 
 import me.aleiv.gameengine.Core;
+import me.aleiv.gameengine.games.beast.BeastEngine;
+import me.aleiv.gameengine.globalUtilities.EngineEnums;
+import me.aleiv.gameengine.globalUtilities.events.timerEvents.GlobalTimerSecondEvent;
+import me.aleiv.gameengine.globalUtilities.events.timerEvents.GlobalTimerStopEvent;
+import me.aleiv.gameengine.utilities.Animation;
+import me.aleiv.gameengine.utilities.Frames;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,9 +20,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class BeastGlobalListener implements Listener{
     
     Core instance;
+    private final BeastEngine engine;
+    private final Animation animation;
 
-    public BeastGlobalListener(Core instance){
+    public BeastGlobalListener(Core instance, BeastEngine engine){
         this.instance = instance;
+        this.engine = engine;
+        this.animation = new Animation(Frames.getFramesCharsIntegers(0, 281), false);
     }
 
     @EventHandler
@@ -90,5 +100,17 @@ public class BeastGlobalListener implements Listener{
     private boolean check(Player player) {
         return !instance.getGamesManager().getPlayerManager().isAdmin(player);
     }
-    
+
+    @EventHandler
+    public void onTimerTick(GlobalTimerSecondEvent e) {
+        if (e.getSeconds() == 10 && engine.getGameStage() == EngineEnums.GameStage.PREGAME) {
+            animation.play();
+        }
+    }
+
+    @EventHandler
+    public void onTimerStop(GlobalTimerStopEvent e) {
+        animation.stop();
+    }
+
 }

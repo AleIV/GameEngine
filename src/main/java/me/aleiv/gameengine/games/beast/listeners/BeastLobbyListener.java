@@ -13,13 +13,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class BeastLobbyListener extends LobbyListener{
 
-    private final BeastEngine engine;
-    private final Animation animation;
 
-    public BeastLobbyListener(Core instance, BeastEngine engine) {
+    public BeastLobbyListener(Core instance) {
         super(instance);
-        this.engine = engine;
-        this.animation = new Animation(Frames.getFramesChars(0, 281), false);
     }
 
     @EventHandler
@@ -27,16 +23,6 @@ public class BeastLobbyListener extends LobbyListener{
         e.setCancelled(true);
     }
 
-    @EventHandler
-    public void onTimerTick(GlobalTimerSecondEvent e) {
-        if (e.getSeconds() == 10 && engine.getGameStage() == EngineEnums.GameStage.PREGAME) {
-            animation.play();
-        }
-    }
 
-    @EventHandler
-    public void onTimerStop(GlobalTimerStopEvent e) {
-        animation.stop();
-    }
 
 }
