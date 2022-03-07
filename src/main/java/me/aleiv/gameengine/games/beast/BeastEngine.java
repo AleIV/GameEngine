@@ -61,9 +61,9 @@ public class BeastEngine extends BaseEngine {
     private @Getter final List<Player> beasts;
     private final List<BukkitTask> gameTasks;
 
-    private final List<Character> LOWSTATIC = Frames.getFramesChars(3401, 3407);
-    private final List<Character> NORMALSTATIC = Frames.getFramesChars(3408, 3414);
-    private final List<Character> HIGHSTATIC = Frames.getFramesChars(3415, 3421);
+    private final List<Character> LOWSTATIC = Frames.getFramesCharsIntegers(3401, 3407);
+    private final List<Character> NORMALSTATIC = Frames.getFramesCharsIntegers(3408, 3414);
+    private final List<Character> HIGHSTATIC = Frames.getFramesCharsIntegers(3415, 3421);
 
     public static final String[] MAPS = new String[]{"ghost", "it", "jeison", "puppyplaytime", "slenderman"};
     enum Maps {
@@ -100,9 +100,9 @@ public class BeastEngine extends BaseEngine {
         this.gameTasks = new ArrayList<>();
 
         this.beastCMD = new BeastCMD(instance);
-        this.beastGlobalListener = new BeastGlobalListener(instance);
+        this.beastGlobalListener = new BeastGlobalListener(instance, this);
         this.beastInGameListener = new BeastInGameListener(instance, this);
-        this.beastLobbyListener = new BeastLobbyListener(instance, this);
+        this.beastLobbyListener = new BeastLobbyListener(instance);
         this.freezeListener = new FreezeListener();
         this.instance.registerListener(this.freezeListener);
 
