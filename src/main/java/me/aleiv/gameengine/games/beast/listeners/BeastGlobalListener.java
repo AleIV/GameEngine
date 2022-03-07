@@ -26,7 +26,7 @@ public class BeastGlobalListener implements Listener{
     public BeastGlobalListener(Core instance, BeastEngine engine){
         this.instance = instance;
         this.engine = engine;
-        this.animation = new Animation(Frames.getFramesCharsIntegers(0, 281), false);
+        this.animation = new Animation(Frames.getFramesCharsIntegers(0, 184), false);
     }
 
     @EventHandler
