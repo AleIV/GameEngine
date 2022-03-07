@@ -8,12 +8,12 @@ import org.bukkit.entity.LivingEntity;
 
 public class Region {
 
-    private final int x1;
-    private final int y1;
-    private final int z1;
-    private final int x2;
-    private final int y2;
-    private final int z2;
+    private int x1;
+    private int y1;
+    private int z1;
+    private int x2;
+    private int y2;
+    private int z2;
     private final String worldName;
 
     public Region(int x1, int y1, int z1, int x2, int y2, int z2, String worldName) {
@@ -24,6 +24,7 @@ public class Region {
         this.y2 = y2;
         this.z2 = z2;
         this.worldName = worldName;
+        this.fixCoords();
     }
 
     public Region(Location loc1, Location loc2) {
@@ -34,6 +35,26 @@ public class Region {
         this.y2 = loc2.getBlockY();
         this.z2 = loc2.getBlockZ();
         this.worldName = loc1.getWorld().getName();
+        this.fixCoords();
+    }
+
+    private void fixCoords() {
+        // x1, y1, z1 should be the maximum point, so x2, y2, z2 should be the minimum point
+        if (x1 > x2) {
+            int temp = x1;
+            x1 = x2;
+            x2 = temp;
+        }
+        if (y1 > y2) {
+            int temp = y1;
+            y1 = y2;
+            y2 = temp;
+        }
+        if (z1 > z2) {
+            int temp = z1;
+            z1 = z2;
+            z2 = temp;
+        }
     }
 
     public boolean contains(Entity e) {
