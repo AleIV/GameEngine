@@ -123,7 +123,6 @@ public class BeastEngine extends BaseEngine {
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
         rpm.setResoucePackURL("https://download.mc-packs.net/pack/29b94e500020003c36998476183f891e77e106d4.zip");
         rpm.setResourcePackHash("29b94e500020003c36998476183f891e77e106d4");
-        rpm.setBypassPerm("rp.bypass");
         rpm.setEnabled(true);
     }
 
@@ -241,7 +240,6 @@ public class BeastEngine extends BaseEngine {
             NPCCache.put(p.getUniqueId(), npcInfo);
             p.setGameMode(GameMode.SPECTATOR);
 
-            p.setFlying(true);
             this.freezeListener.freeze(p);
             p.teleport(cinematicLoc);
             p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20*cinematicDuration, 3, false, false, false));
@@ -265,9 +263,8 @@ public class BeastEngine extends BaseEngine {
                 p.teleport(locationCache.remove(p.getUniqueId()));
                 p.removePotionEffect(PotionEffectType.SLOW);
                 p.removePotionEffect(PotionEffectType.INVISIBILITY);
-                p.setFlying(false);
 
-                p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fNo dejes que la bestia de cace &8[&c&l!&8]"), 0, 100, 30);
+                p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fNo dejes que la bestia te cace &8[&c&l!&8]"), 0, 100, 30);
                 SoundUtils.playSound(Sound.BLOCK_NOTE_BLOCK_BIT, 1.4f);
             });
             this.beasts.forEach(p -> p.removePotionEffect(PotionEffectType.SLOW));
@@ -277,12 +274,7 @@ public class BeastEngine extends BaseEngine {
         // Starting sound schedulers
         switch (Maps.getMap(this.getBeastConfig().getMap().getName())) {
             case slenderman -> {
-                this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
-
-                    if (new Random().nextInt(100) < 50) {
-                        SoundUtils.playBeastSound(this.beasts, "escape.slenderman");
-                    }
-                }, 0L, 5 * 20L));
+                this.startBeastSoundTask("escape.slenderman");
 
                 AtomicInteger frameCounter = new AtomicInteger(0);
                 this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance, () -> this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p.getPlayer())).forEach(p -> {
@@ -305,25 +297,19 @@ public class BeastEngine extends BaseEngine {
                     }
                 }), 0L, 2L));
             }
-            case ghost -> this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
-                if (new Random().nextInt(100) < 50) {
-                    SoundUtils.playBeastSound(this.beasts, "escape.ghostface");
-                }
-            }, 40L, 5*20L));
-            case jeison -> this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
-                if (new Random().nextInt(100) < 50) {
-                    SoundUtils.playBeastSound(this.beasts, "escape.jason");
-                }
-            }, 40L, 5*20L));
-            case it -> {
-                String[] pennySounds = new String[]{"escape.clownlaugh1", "escape.clownlaugh2", "escape.clownlaugh3", "escape.clownlaugh4"};
-                this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
-                    if (new Random().nextInt(100) < 50) {
-                        SoundUtils.playBeastSound(this.beasts, pennySounds[new Random().nextInt(pennySounds.length)]);
-                    }
-                }, 40L, 5*20L));
-            }
+            case ghost -> this.startBeastSoundTask("escape.ghostface");
+            case jeison -> this.startBeastSoundTask("escape.jason");
+            case it -> this.startBeastSoundTask("escape.clownlaugh1", "escape.clownlaugh2", "escape.clownlaugh3", "escape.clownlaugh4");
         }
+    }
+
+    private void startBeastSoundTask(String... sound) {
+        this.gameTasks.add(Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
+            if (this.getGameStage() != EngineEnums.GameStage.INGAME) return;
+            Bukkit.getScheduler().runTaskLater(this.instance, () -> {
+                SoundUtils.playBeastSound(this.beasts, sound[new Random().nextInt(sound.length)]);
+            }, new Random().nextInt(60));
+        }, 0L, 8 * 20L));
     }
 
     private void playPrisonBreak() {

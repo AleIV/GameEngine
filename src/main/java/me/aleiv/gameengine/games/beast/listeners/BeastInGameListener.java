@@ -12,6 +12,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -112,6 +115,27 @@ public class BeastInGameListener implements Listener{
     @EventHandler
     public void onBarrotesDrop(ItemSpawnEvent e) {
         if (e.getEntity().getItemStack().getType() == Material.IRON_BARS) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDrop(PlayerDropItemEvent e) {
+        if (instance.getGamesManager().getPlayerManager().isPlayer(e.getPlayer())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent e) {
+        if (instance.getGamesManager().getPlayerManager().isPlayer((Player) e.getWhoClicked())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent e) {
+        if (instance.getGamesManager().getPlayerManager().isPlayer((Player) e.getWhoClicked())) {
             e.setCancelled(true);
         }
     }
