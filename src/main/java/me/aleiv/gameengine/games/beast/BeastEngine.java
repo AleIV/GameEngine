@@ -120,8 +120,8 @@ public class BeastEngine extends BaseEngine {
         this.logoBossBar.setVisible(true);
 
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
-        rpm.setResoucePackURL("https://download.mc-packs.net/pack/4ba0b0392b4e3261f6e1ad4acc42c876eb07ca7b.zip");
-        rpm.setResourcePackHash("4ba0b0392b4e3261f6e1ad4acc42c876eb07ca7b");
+        rpm.setResoucePackURL("https://download.mc-packs.net/pack/5f9cb2247bed3ca409c7b3616a96dc44f95f421a.zip");
+        rpm.setResourcePackHash("5f9cb2247bed3ca409c7b3616a96dc44f95f421a");
         rpm.setEnabled(true);
     }
 
