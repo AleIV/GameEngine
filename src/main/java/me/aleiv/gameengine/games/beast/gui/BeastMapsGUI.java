@@ -22,11 +22,11 @@ public class BeastMapsGUI {
     private final ChestGui chestGui;
 
     private enum BeastMaps {
-        SLENDERMAN("Slenderman", "slenderman", 3),
-        JASON("Jason", "jeison", 4),
+        SLENDERMAN("Slenderman", "slenderman", 7),
+        JASON("Jason", "jeison", 6),
         IT("IT", "it", 5),
-        POPPYPLAYTIME("Poppy Playtime", "puppyplaytime", 6),
-        GHOSTFACE("Ghostface", "ghost", 7);
+        POPPYPLAYTIME("Poppy Playtime", "puppyplaytime", 4),
+        GHOSTFACE("Ghostface", "ghost", 3);
 
         private String name;
         private String mapname;
@@ -55,7 +55,7 @@ public class BeastMapsGUI {
         this.player = player;
         this.engine = engine;
 
-        this.chestGui = new ChestGui(3, ChatColor.WHITE + "\uF808\uE204");
+        this.chestGui = new ChestGui(1, ChatColor.WHITE + "\uF808\uE204");
 
         this.build();
 
@@ -63,7 +63,7 @@ public class BeastMapsGUI {
     }
 
     private void build() {
-        StaticPane pane = new StaticPane(2, 2, 5, 1);
+        StaticPane pane = new StaticPane(2, 0, 5, 1);
 
         for (int i = 0; i < BeastMaps.values().length; i++) {
             pane.addItem(this.getBeastItem(BeastMaps.values()[i]), i, 0);
