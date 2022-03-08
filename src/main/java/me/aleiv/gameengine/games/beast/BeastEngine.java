@@ -9,7 +9,7 @@ import me.aleiv.cinematicCore.paper.core.NPCManager;
 import me.aleiv.cinematicCore.paper.objects.NPCInfo;
 import me.aleiv.gameengine.Core;
 import me.aleiv.gameengine.exceptions.GameStartException;
-import me.aleiv.gameengine.games.beast.commands.BeastCMD;
+import me.aleiv.gameengine.games.beast.commands.BeastMapsCMD;
 import me.aleiv.gameengine.games.beast.config.BeastConfig;
 import me.aleiv.gameengine.games.beast.config.BeastMapConfig;
 import me.aleiv.gameengine.games.beast.listeners.BeastGlobalListener;
@@ -30,7 +30,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
@@ -51,7 +50,7 @@ public class BeastEngine extends BaseEngine {
 
     private BossBar logoBossBar;
 
-    BeastCMD beastCMD;
+    BeastMapsCMD beastCMD;
     BeastGlobalListener beastGlobalListener;
     BeastInGameListener beastInGameListener;
     BeastLobbyListener beastLobbyListener;
@@ -98,7 +97,7 @@ public class BeastEngine extends BaseEngine {
         this.beasts = new ArrayList<>();
         this.gameTasks = new ArrayList<>();
 
-        this.beastCMD = new BeastCMD(instance);
+        this.beastCMD = new BeastMapsCMD(this);
         this.beastGlobalListener = new BeastGlobalListener(instance, this);
         this.beastInGameListener = new BeastInGameListener(instance, this);
         this.beastLobbyListener = new BeastLobbyListener(instance);
@@ -121,8 +120,8 @@ public class BeastEngine extends BaseEngine {
         this.logoBossBar.setVisible(true);
 
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
-        rpm.setResoucePackURL("https://download.mc-packs.net/pack/29b94e500020003c36998476183f891e77e106d4.zip");
-        rpm.setResourcePackHash("29b94e500020003c36998476183f891e77e106d4");
+        rpm.setResoucePackURL("https://download.mc-packs.net/pack/4ba0b0392b4e3261f6e1ad4acc42c876eb07ca7b.zip");
+        rpm.setResourcePackHash("4ba0b0392b4e3261f6e1ad4acc42c876eb07ca7b");
         rpm.setEnabled(true);
     }
 
