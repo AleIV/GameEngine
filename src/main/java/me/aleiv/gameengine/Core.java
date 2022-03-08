@@ -9,6 +9,7 @@ import me.aleiv.gameengine.commands.RoleCommand;
 import me.aleiv.gameengine.commands.WorldCommand;
 import me.aleiv.gameengine.gamesManager.GamesManager;
 import me.aleiv.gameengine.gamesManager.PlayerRole;
+import me.aleiv.gameengine.listener.GamemodeHiderListener;
 import me.aleiv.gameengine.listener.PlayerListener;
 import me.aleiv.gameengine.listener.WorldListener;
 import me.aleiv.gameengine.utilities.NegativeSpaces;
@@ -60,6 +61,7 @@ public class Core extends JavaPlugin {
 
         registerListener(new PlayerListener(this));
         registerListener(new WorldListener(this));
+        registerListener(new GamemodeHiderListener(this));
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -114,6 +115,11 @@ public class BeastInGameListener implements Listener{
         if (e.getEntity().getItemStack().getType() == Material.IRON_BARS) {
             e.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onPlayerDrop(PlayerDropItemEvent e) {
+        e.setCancelled(true);
     }
 
 }
