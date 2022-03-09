@@ -37,32 +37,6 @@ public class BeastInGameListener implements Listener{
     }
 
     @EventHandler
-    public void onPartDeath(ParticipantDeathEvent e) {
-        Player player = e.getPlayer();
-        Participant part = e.getParticipant();
-        if (part.isDead() || this.beastEngine.getGameStage() != EngineEnums.GameStage.INGAME) return;
-
-        part.setDead(true);
-
-        this.beastEngine.checkPlayerCount();
-        this.beastEngine.playKillSound(player.getLocation());
-        player.getLocation().getWorld().strikeLightningEffect(player.getLocation());
-        e.getBukkitEvent().getDrops().clear();
-        if (this.instance.getGamesManager().getGameSettings().getKickOnDeath()) {
-            player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&cHas sido expulsado de la partida porque has muerto."));
-            return;
-        }
-        this.instance.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.");
-
-        Location lastLoc = player.getLocation().clone();
-        Bukkit.getScheduler().runTaskLater(instance, () -> {
-            player.spigot().respawn();
-            player.teleport(lastLoc);
-            player.setGameMode(GameMode.SPECTATOR);
-        }, 1L);
-    }
-
-    @EventHandler
     public void onDamage(EntityDamageByEntityEvent e) {
         if (!(e.getEntity() instanceof Player) && !(e.getDamager() instanceof Player)) {
             e.setCancelled(true);
@@ -74,13 +48,15 @@ public class BeastInGameListener implements Listener{
 
         boolean damaged = false;
         e.setDamage(0);
-        if (beastEngine.getBeasts().contains(player) && beastEngine.getBeasts().contains(damager)) {
+        if ((beastEngine.getBeasts().contains(player) && beastEngine.getBeasts().contains(damager)) || (!beastEngine.getBeasts().contains(player) && !beastEngine.getBeasts().contains(damager))) {
             e.setCancelled(true);
         } else if (damager.getInventory().getItemInMainHand().getType().toString().contains("SWORD") || damager.getInventory().getItemInOffHand().getType().toString().contains("SWORD")) {
-            player.setHealth(player.getHealth()-2);
+            double newHealth = player.getHealth()-8;
+            player.setHealth(newHealth >= 0 ? newHealth : 0);
             damaged = true;
         } else if (beastEngine.getBeasts().contains(damager)) {
-            player.setHealth(player.getHealth()-(hasArmor(player) ? 2 : 10));
+            double newHealth = player.getHealth()-(hasArmor(player) ? 4 : 10);
+            player.setHealth(newHealth >= 0 ? newHealth : 0);
             damaged = true;
         } else {
             e.setCancelled(true);
@@ -102,6 +78,10 @@ public class BeastInGameListener implements Listener{
             return;
         }
 
+        if (e.getPlayer().getGameMode() == GameMode.SPECTATOR) {
+            return;
+        }
+
         boolean inside = this.beastEngine.getBeastConfig().getMap().getEquipmentRegion().contains(e.getTo());
         boolean alreadyInside = this.equipedPlayers.contains(e.getPlayer().getUniqueId());
         if (!alreadyInside && inside) {
@@ -114,9 +94,7 @@ public class BeastInGameListener implements Listener{
 
     @EventHandler
     public void onBarrotesDrop(ItemSpawnEvent e) {
-        if (e.getEntity().getItemStack().getType() == Material.IRON_BARS) {
-            e.setCancelled(true);
-        }
+        e.setCancelled(true);
     }
 
     @EventHandler

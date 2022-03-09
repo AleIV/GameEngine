@@ -58,6 +58,7 @@ public class BeastEngine extends BaseEngine {
 
     private @Getter final BeastConfig beastConfig;
     private @Getter final List<Player> beasts;
+    private final List<Player> playersArrivedFinal;
     private final List<BukkitTask> gameTasks;
 
     private final List<Character> LOWSTATIC = Frames.getFramesCharsIntegersAll(3401, 3407);
@@ -95,6 +96,7 @@ public class BeastEngine extends BaseEngine {
 
         this.beastConfig = (BeastConfig) this.getGameConfig();
         this.beasts = new ArrayList<>();
+        this.playersArrivedFinal = new ArrayList<>();
         this.gameTasks = new ArrayList<>();
 
         this.beastCMD = new BeastMapsCMD(this);
@@ -374,6 +376,7 @@ public class BeastEngine extends BaseEngine {
         instance.registerListener(beastLobbyListener);
         instance.unregisterListener(beastInGameListener);
         this.beasts.clear();
+        this.playersArrivedFinal.clear();
 
         this.gameTasks.forEach(BukkitTask::cancel);
         this.gameTasks.clear();
@@ -440,12 +443,16 @@ public class BeastEngine extends BaseEngine {
     private void checkPlayerCount(boolean forced) {
         this.alreadyFinished = true;
         List<Participant> beastsP = this.beasts.parallelStream().map(p -> this.instance.getGamesManager().getPlayerManager().getParticipant(p)).toList();
+        List<Participant> normalPlayers = this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).parallelStream().filter(part -> !this.beasts.contains(part.getPlayer())).toList();
         if (forced) {
-            beastsP.forEach(p -> p.setDead(true));
+            if (this.playersArrivedFinal.size() >= normalPlayers.size()) {
+                beastsP.forEach(p -> p.setDead(true));
+            } else {
+                normalPlayers.forEach(p -> p.setDead(true));
+            }
         }
 
         boolean beastsDead = beastsP.stream().allMatch(Participant::isDead);
-        List<Participant> normalPlayers = this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).parallelStream().filter(part -> !this.beasts.contains(part.getPlayer())).toList();
         boolean playersDead = normalPlayers.parallelStream().allMatch(Participant::isDead);
 
         if (!beastsDead && !playersDead) return;
@@ -492,6 +499,10 @@ public class BeastEngine extends BaseEngine {
         Bukkit.getScheduler().runTaskLater(this.instance, () -> player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_NETHERITE, 1.0f, 1.4f), 5L);
         Bukkit.getScheduler().runTaskLater(this.instance, () -> player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_TURTLE, 1.0f, 0.9f), 2L);
 
+        if (!this.playersArrivedFinal.contains(player)) {
+            this.playersArrivedFinal.add(player);
+        }
+
         player.sendTitle(ChatColor.BLACK + " ", ChatColor.translateAlternateColorCodes('&', "&8[&a!&8] &fTe has equipado &8[&a!&8]"), 0, 2*20, 20);
     }
 
@@ -525,6 +536,7 @@ public class BeastEngine extends BaseEngine {
         player.getInventory().clear();
         player.getActivePotionEffects().forEach(pe -> player.removePotionEffect(pe.getType()));
         player.setFlying(false);
+        player.setFireTicks(0);
         this.freezeListener.unfreeze(player);
         instance.getGamesManager().getPlayerManager().getParticipant(player).setDead(false);
     }

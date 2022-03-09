@@ -3,11 +3,17 @@ package me.aleiv.gameengine.games.beast.listeners;
 import me.aleiv.gameengine.Core;
 import me.aleiv.gameengine.games.beast.BeastEngine;
 import me.aleiv.gameengine.globalUtilities.EngineEnums;
+import me.aleiv.gameengine.globalUtilities.events.participantEvents.ParticipantDeathEvent;
 import me.aleiv.gameengine.globalUtilities.events.timerEvents.GlobalTimerSecondEvent;
 import me.aleiv.gameengine.globalUtilities.events.timerEvents.GlobalTimerStopEvent;
+import me.aleiv.gameengine.globalUtilities.objects.Participant;
 import me.aleiv.gameengine.utilities.Animation;
 import me.aleiv.gameengine.utilities.Frames;
 import me.aleiv.gameengine.utilities.SoundUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -125,6 +131,32 @@ public class BeastGlobalListener implements Listener{
     @EventHandler
     public void onTimerStop(GlobalTimerStopEvent e) {
         animation.stop();
+    }
+
+    @EventHandler
+    public void onPartDeath(ParticipantDeathEvent e) {
+        Player player = e.getPlayer();
+        Participant part = e.getParticipant();
+        if (part.isDead() || (this.engine.getGameStage() != EngineEnums.GameStage.INGAME && this.engine.getGameStage() != EngineEnums.GameStage.POSTGAME)) return;
+
+        part.setDead(true);
+
+        this.engine.checkPlayerCount();
+        this.engine.playKillSound(player.getLocation());
+        player.getLocation().getWorld().strikeLightningEffect(player.getLocation());
+        e.getBukkitEvent().getDrops().clear();
+        if (this.instance.getGamesManager().getGameSettings().getKickOnDeath()) {
+            player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&cHas sido expulsado de la partida porque has muerto."));
+            return;
+        }
+        this.instance.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.");
+
+        Location lastLoc = player.getLocation().clone();
+        Bukkit.getScheduler().runTaskLater(instance, () -> {
+            player.spigot().respawn();
+            player.teleport(lastLoc);
+            player.setGameMode(GameMode.SPECTATOR);
+        }, 1L);
     }
 
 }
