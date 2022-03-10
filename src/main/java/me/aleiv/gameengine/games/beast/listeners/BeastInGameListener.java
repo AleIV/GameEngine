@@ -48,7 +48,7 @@ public class BeastInGameListener implements Listener{
 
         boolean damaged = false;
         e.setDamage(0);
-        if ((beastEngine.getBeasts().contains(player) && beastEngine.getBeasts().contains(damager)) || (!beastEngine.getBeasts().contains(player) && !beastEngine.getBeasts().contains(damager))) {
+        if (this.beastEngine.isBeastWaiting() || (beastEngine.getBeasts().contains(player) && beastEngine.getBeasts().contains(damager)) || (!beastEngine.getBeasts().contains(player) && !beastEngine.getBeasts().contains(damager))) {
             e.setCancelled(true);
         } else if (damager.getInventory().getItemInMainHand().getType().toString().contains("SWORD") || damager.getInventory().getItemInOffHand().getType().toString().contains("SWORD")) {
             double newHealth = player.getHealth()-8;
