@@ -66,6 +66,9 @@ public class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (this.gamesManager.isGameLoaded()) {
+            this.gamesManager.stopGame(true);
+        }
         this.gamesManager.getGameSettings().save();
     }
 
