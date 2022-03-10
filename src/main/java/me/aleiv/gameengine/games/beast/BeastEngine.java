@@ -122,8 +122,8 @@ public class BeastEngine extends BaseEngine {
         this.logoBossBar.setVisible(true);
 
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
-        rpm.setResoucePackURL("https://download.mc-packs.net/pack/5f9cb2247bed3ca409c7b3616a96dc44f95f421a.zip");
-        rpm.setResourcePackHash("5f9cb2247bed3ca409c7b3616a96dc44f95f421a");
+        rpm.setResoucePackURL("https://download.mc-packs.net/pack/4a7fdb267bb4241a84ee755e7991524542031ef8.zip");
+        rpm.setResourcePackHash("4a7fdb267bb4241a84ee755e7991524542031ef8");
         rpm.setEnabled(true);
     }
 
@@ -209,6 +209,26 @@ public class BeastEngine extends BaseEngine {
             // TODO: Change message
             p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 2, false, false, false));
             p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fEres una bestia &8[&c&l!&8]"), 0, 100, 30);
+
+            switch (Maps.getMap(this.getBeastConfig().getMap().getName())) {
+                case ghost -> {
+                    this.equipMask(p, 8);
+                    this.setBeastItem(p, Material.IRON_SWORD, 2, "&cCuchillo");
+                }
+                case puppyplaytime -> this.equipMask(p, 9);
+                case jeison -> {
+                    this.equipMask(p, 10);
+                    this.setBeastItem(p, Material.IRON_SWORD, 1, "&cMachete");
+                }
+                case it -> {
+                    this.equipMask(p, 11);
+                    this.setBeastItem(p, Material.BRICK, 14, "&cGlobo");
+                }
+                case slenderman -> {
+                    this.equipMask(p, 12);
+                    this.setBeastItem(p, Material.BRICK, 15, "&0Tentaculo");
+                }
+            }
         });
 
         this.instance.broadcast((this.beasts.size() == 1 ? "&cLa bestia " : "&cLas bestias ") + "saldrán en " + this.getBeastConfig().getPlayerGracePeriod() + " segundos.");
@@ -539,5 +559,30 @@ public class BeastEngine extends BaseEngine {
         player.setFireTicks(0);
         this.freezeListener.unfreeze(player);
         instance.getGamesManager().getPlayerManager().getParticipant(player).setDead(false);
+    }
+
+    private void equipMask(Player player, int id) {
+        ItemStack item = new ItemStack(Material.BRICK);
+        ItemMeta itemMeta = item.getItemMeta();
+
+        itemMeta.setDisplayName(ChatColor.WHITE + " ");
+        itemMeta.setLore(List.of(ChatColor.GRAY + " "));
+        itemMeta.setCustomModelData(id);
+
+        item.setItemMeta(itemMeta);
+
+        player.getEquipment().setHelmet(item);
+    }
+
+    private void setBeastItem(Player player, Material mat, int id, String name) {
+        ItemStack item = new ItemStack(mat);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+        meta.setLore(List.of(ChatColor.GRAY + " "));
+        meta.setCustomModelData(id);
+        item.setItemMeta(meta);
+        for (int i = 0; i < 36; i++) {
+            player.getInventory().setItem(i, item);
+        }
     }
 }
