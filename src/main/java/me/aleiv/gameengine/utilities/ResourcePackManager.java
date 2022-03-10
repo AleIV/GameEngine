@@ -13,18 +13,27 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class ResourcePackManager implements Listener {
 
+    public enum PlayerStatus {
+        ASKING,
+        DOWNLOADING,
+        FINISHED,
+    }
+
     private boolean enabled;
 
     private @NonNull JavaPlugin javaPlugin;
-    private List<UUID> waitingPlayers;
+    private HashMap<UUID, PlayerStatus> waitingPlayers;
+    private HashMap<UUID, BukkitTask> playerTasks;
 
     private String questionMessage;
     private String kickMessage;
@@ -50,7 +59,8 @@ public class ResourcePackManager implements Listener {
      */
     public ResourcePackManager(JavaPlugin javaPlugin) {
         this.javaPlugin = javaPlugin;
-        this.waitingPlayers = new ArrayList<>();
+        this.waitingPlayers = new HashMap<>();
+        this.playerTasks = new HashMap<>();
         this.enabled = false;
 
         this.questionMessage = ChatColor.translateAlternateColorCodes('&', "");
@@ -68,13 +78,15 @@ public class ResourcePackManager implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         if (!enabled) return;
 
-        waitingPlayers.add(e.getPlayer().getUniqueId());
-        this.askTexturePack(e.getPlayer());
+        waitingPlayers.put(e.getPlayer().getUniqueId(), PlayerStatus.ASKING);
+        this.askTexturePack(e.getPlayer(), false);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         waitingPlayers.remove(e.getPlayer().getUniqueId());
+        BukkitTask task = playerTasks.remove(e.getPlayer().getUniqueId());
+        if (task != null) task.cancel();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -85,11 +97,14 @@ public class ResourcePackManager implements Listener {
         switch (e.getStatus()) {
             case FAILED_DOWNLOAD -> player.kickPlayer(this.failKickMessage);
             case SUCCESSFULLY_LOADED -> {
-                player.sendMessage(this.downloadedMessage);
                 this.waitingPlayers.remove(player.getUniqueId());
+                player.sendMessage(this.downloadedMessage);
                 Bukkit.getPluginManager().callEvent(new PlayerLoadedResourcePackEvent(player));
             }
-            case ACCEPTED -> player.sendMessage(this.downloadingMessage);
+            case ACCEPTED -> {
+                this.waitingPlayers.put(player.getUniqueId(), PlayerStatus.DOWNLOADING);
+                player.sendMessage(this.downloadingMessage);
+            }
             case DECLINED -> {
                 /*if (this.force) {
                     this.askTexturePack(player);
@@ -103,7 +118,7 @@ public class ResourcePackManager implements Listener {
         }
     }
 
-    private void askTexturePack(Player player) {
+    private void askTexturePack(Player player, boolean kick) {
         if (this.resoucePackURL == null || this.resourcePackHash == null) return;
 
         /*if (this.getVersionNumber() >= 18) {
@@ -112,6 +127,23 @@ public class ResourcePackManager implements Listener {
                 return;
             } catch (NoSuchMethodError ignored) {}
         }*/
+
+
+        this.playerTasks.put(player.getUniqueId(), Bukkit.getScheduler().runTaskLater(this.javaPlugin, () -> {
+            if (!this.waitingPlayers.containsKey(player.getUniqueId()))
+                return;
+
+            PlayerStatus status = this.waitingPlayers.get(player.getUniqueId());
+            if (status != PlayerStatus.ASKING)
+                return;
+
+            if (kick) {
+                player.kickPlayer(this.kickMessage);
+                return;
+            }
+
+            this.askTexturePack(player, true);
+        }, 100L));
         player.setResourcePack(this.resoucePackURL, this.resourcePackHash);
     }
 
@@ -122,14 +154,14 @@ public class ResourcePackManager implements Listener {
      * @return True if the player is waiting, false if player already has the resource pack loaded.
      */
     public boolean isPlayerWaiting(Player player) {
-        return waitingPlayers.contains(player.getUniqueId());
+        return waitingPlayers.containsKey(player.getUniqueId());
     }
 
     /**
      * @return List of the UUIDs of the players waiting for the resource pack to be downloaded or loaded.
      */
     public List<UUID> getWaitingPlayers() {
-        return new ArrayList<>(waitingPlayers);
+        return new ArrayList<>(waitingPlayers.keySet());
     }
 
     /**
@@ -138,13 +170,13 @@ public class ResourcePackManager implements Listener {
     public void forceRedownload() {
         if (!enabled) return;
 
-        this.waitingPlayers.forEach(uuid -> {
+        this.waitingPlayers.keySet().forEach(uuid -> {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
                 player.kickPlayer(this.failKickMessage);
             }
         });
-        Bukkit.getOnlinePlayers().forEach(this::askTexturePack);
+        Bukkit.getOnlinePlayers().forEach(p -> this.askTexturePack(p, false));
     }
 
     /**
