@@ -55,6 +55,13 @@ public class GamesManager {
         });
     }
 
+    public Player getPlayerAlive(){
+        Participant participant = playerManager.getFirstAliveParticipant();
+        if(participant == null) return null;
+
+        return participant.getPlayer();
+    }
+
     public BaseEngine getCurrentGame(){
         var engineGameMode = gameSettings.getEngineGameMode();
         return gameEngineList.get(engineGameMode);

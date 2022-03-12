@@ -92,11 +92,17 @@ public class PlayerListener implements Listener {
   final void onPlayerRespawn(PlayerRespawnEvent event) {
     Player player = event.getPlayer();
     Location location = player.getLocation();
+
+    if (plugin.getGamesManager().getPlayerAlive() != null) {
+      player.teleport(plugin.getGamesManager().getPlayerAlive().getPlayer().getLocation());
+      return;
+    }
+
     player.setVelocity(new Vector());
     if (location.getY() <= 0) {
       location.setY(10);
     }
-    player.teleport(player.getLocation().clone().add(0, 3, 0));
-    event.setRespawnLocation(event.getPlayer().getLocation());
+    player.teleport(location.add(0, 3, 0));
+    event.setRespawnLocation(location);
   }
 }
