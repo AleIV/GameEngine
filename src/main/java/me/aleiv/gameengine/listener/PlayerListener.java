@@ -56,6 +56,7 @@ public class PlayerListener implements Listener {
             if (p == null) return;
 
             if (p.getPlayerRole() == PlayerRole.PLAYER && !p.isDead()) {
+                e.setDamage(0);
                 Bukkit.getPluginManager().callEvent(new ParticipantDeathEvent(p, e.getDamager()));
             }
         }
