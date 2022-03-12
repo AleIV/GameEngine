@@ -25,6 +25,9 @@ public class LobbyListener implements Listener{
     public void onBreak(BlockBreakEvent e){
         var game = instance.getGamesManager().getCurrentGame();
         var player = e.getPlayer();
+
+        if(player.isOp()) return;
+
         if(game.getGameStage() != EngineEnums.GameStage.INGAME && !player.hasPermission(permission_lobby_edit)){
             e.setCancelled(true);
         }
@@ -34,6 +37,8 @@ public class LobbyListener implements Listener{
     public void onPlace(BlockPlaceEvent e){
         var game = instance.getGamesManager().getCurrentGame();
         var player = e.getPlayer();
+
+        if(player.isOp()) return;
         if(game.getGameStage() != EngineEnums.GameStage.INGAME && !player.hasPermission(permission_lobby_edit)){
             e.setCancelled(true);
         }
