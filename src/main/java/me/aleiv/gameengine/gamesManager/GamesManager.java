@@ -1,5 +1,7 @@
 package me.aleiv.gameengine.gamesManager;
 
+import java.util.HashMap;
+import java.util.List;
 import lombok.Getter;
 import me.aleiv.gameengine.Core;
 import me.aleiv.gameengine.exceptions.GameStartException;
@@ -17,9 +19,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-
-import java.util.HashMap;
-import java.util.List;
 
 public class GamesManager {
     Core instance;
@@ -100,7 +99,7 @@ public class GamesManager {
         if (this.getCurrentGame().getGameStage() == EngineEnums.GameStage.POSTGAME) return;
 
         if (force) {
-            this.resetGame();
+            this.resetGame(force);
         } else {
             this.getCurrentGame().setGameStage(EngineEnums.GameStage.POSTGAME);
             this.timer.runCountdown(15, this::resetGame);
@@ -109,8 +108,12 @@ public class GamesManager {
     }
 
     private void resetGame() {
+        resetGame(false);
+    }
+
+    private void resetGame(boolean force) {
         this.getCurrentGame().setGameStage(EngineEnums.GameStage.LOBBY);
-        this.timer.stop();
+        this.timer.stop(force);
         if (this.isGameLoaded()) {
             this.getCurrentGame().restartGame();
         }

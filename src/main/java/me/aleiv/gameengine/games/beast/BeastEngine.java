@@ -4,6 +4,13 @@ import com.google.common.collect.Lists;
 import com.ticxo.modelengine.api.ModelEngineAPI;
 import com.ticxo.modelengine.api.model.ActiveModel;
 import com.ticxo.modelengine.api.model.ModeledEntity;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
 import me.aleiv.cinematicCore.paper.core.NPCManager;
 import me.aleiv.cinematicCore.paper.objects.NPCInfo;
@@ -24,7 +31,12 @@ import me.aleiv.gameengine.utilities.FireworkUtils;
 import me.aleiv.gameengine.utilities.Frames;
 import me.aleiv.gameengine.utilities.ResourcePackManager;
 import me.aleiv.gameengine.utilities.SoundUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -39,22 +51,19 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class BeastEngine extends BaseEngine {
 
     Core instance;
 
-    private NPCManager npcManager;
+    private final NPCManager npcManager;
 
-    private BossBar logoBossBar;
+    private final BossBar logoBossBar;
 
     BeastMapsCMD beastCMD;
     BeastGlobalListener beastGlobalListener;
     BeastInGameListener beastInGameListener;
     BeastLobbyListener beastLobbyListener;
-    private FreezeListener freezeListener;
+    private final FreezeListener freezeListener;
 
     private @Getter final BeastConfig beastConfig;
     private @Getter final List<Player> beasts;
@@ -298,8 +307,12 @@ public class BeastEngine extends BaseEngine {
                 this.startBeastSoundTask("escape.slenderman");
 
                 AtomicInteger frameCounter = new AtomicInteger(0);
-                this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance, () -> this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p.getPlayer())).forEach(p -> {
-                    int d = this.beasts.stream().map(b -> (int) b.getLocation().distance(p.getPlayer().getLocation())).min(Comparator.naturalOrder()).orElse(99);
+                this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance, () ->
+                    this.instance.getGamesManager().getPlayerManager() 
+                        .filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p.getPlayer())).forEach(p -> {
+                    int d = this.beasts.stream()
+                        .filter(b -> b.getLocation().getWorld() == p.getPlayer().getLocation().getWorld())
+                        .map(b -> (int) b.getLocation().distance(p.getPlayer().getLocation())).min(Comparator.naturalOrder()).orElse(99);
                     Character titleChar = ' ';
 
                     int frame = frameCounter.getAndIncrement();
@@ -314,7 +327,7 @@ public class BeastEngine extends BaseEngine {
                     }
 
                     if (titleChar != ' ') {
-                        p.getPlayer().sendTitle(String.valueOf(titleChar), ChatColor.BLACK.toString() + " ", 0, 5, 5);
+                        p.getPlayer().sendTitle(String.valueOf(titleChar), ChatColor.BLACK + " ", 0, 5, 5);
                     }
                 }), 0L, 2L));
             }
@@ -431,9 +444,7 @@ public class BeastEngine extends BaseEngine {
     public void leavePlayer(Player player) {
         if (this.getGameStage() == EngineEnums.GameStage.INGAME) {
             this.instance.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.");
-            if (this.beasts.contains(player)) {
-                this.beasts.remove(player);
-            }
+            this.beasts.remove(player);
             this.checkPlayerCount();
             this.resetPlayer(player);
         }
@@ -460,7 +471,6 @@ public class BeastEngine extends BaseEngine {
 
     private void checkPlayerCount(boolean forced) {
         if (this.alreadyFinished) return;
-        this.alreadyFinished = true;
         List<Participant> beastsP = this.beasts.parallelStream().map(p -> this.instance.getGamesManager().getPlayerManager().getParticipant(p)).toList();
         List<Participant> normalPlayers = this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).parallelStream().filter(part -> !this.beasts.contains(part.getPlayer())).toList();
         if (forced) {
@@ -491,7 +501,7 @@ public class BeastEngine extends BaseEngine {
         for (int i = 0; i < 15; i += 3) {
             Bukkit.getScheduler().runTaskLater(this.instance, () -> winners.forEach(p -> FireworkUtils.spawnWinnerFirework(p.getLocation())), i*20L);
         }
-
+        this.alreadyFinished = true;
         this.instance.sendTitle(winChar, null, 20, 8*20, 3*20);
     }
 
@@ -547,6 +557,9 @@ public class BeastEngine extends BaseEngine {
 
     private void resetPlayer(Player player) {
         this.undisguiseBeast(player);
+
+        if(player.isDead()) player.spigot().respawn();
+
         player.setNoDamageTicks(20);
         player.setGameMode(GameMode.ADVENTURE);
         player.teleport(this.getBeastConfig().getLobbyLoc());

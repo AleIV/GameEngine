@@ -4,9 +4,9 @@
  * This is a general purpose Gradle build.
  * Learn how to create Gradle builds at https://guides.gradle.org/creating-new-gradle-builds
  */
-plugins{
+plugins {
     id 'java'
-    id 'maven-publish'    
+    id 'maven-publish'
     id 'kr.entree.spigradle' version '2.2.4'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'io.freefair.lombok' version '6.1.0'
@@ -15,13 +15,13 @@ plugins{
 group = 'net.aleiv'
 version = '0.1-SNAPSHOT'
 
-compileJava{
+compileJava {
     options.encoding = 'UTF-8'
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(16)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 javadoc {
@@ -48,14 +48,14 @@ dependencies {
 
     //Lombok
     // Use Protocol Lib
-    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0";
+    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
     // MiniMessage
     implementation 'net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT'
 
-	compileOnly 'org.projectlombok:lombok:1.18.22'
-	annotationProcessor 'org.projectlombok:lombok:1.18.12'
-	testCompileOnly 'org.projectlombok:lombok:1.18.12'
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    testCompileOnly 'org.projectlombok:lombok:1.18.12'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
     //ACF
     implementation 'co.aikar:acf-paper:0.5.1-SNAPSHOT'
     //GUIs
@@ -63,7 +63,7 @@ dependencies {
     implementation 'com.github.stefvanschie.inventoryframework:IF:0.10.4'
 
     //modelapi
-    compileOnly 'com.ticxo.modelengine:api:R2.4.0'
+    compileOnly 'com.ticxo.modelengine:api:R2.5.0'
 
     // CinematicTool
     //compileOnly 'com.github.AleIV:CinematicCore-Premium:f3940d7'
@@ -86,10 +86,8 @@ shadowJar {
     relocate 'acf-core_', 'shadded.acf.properties.acf-core_'
     relocate 'us.jcedeno.libs.rapidinv', 'com.yourpackage.rapidinv'
 
-    minimize();
+    minimize()
 }
-
-
 
 
 build.dependsOn shadowJar

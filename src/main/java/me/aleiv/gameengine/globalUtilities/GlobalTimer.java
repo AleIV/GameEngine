@@ -13,90 +13,102 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 @EqualsAndHashCode(callSuper = false)
 public class GlobalTimer extends BukkitRunnable {
-    Core instance;
+  Core instance;
 
-    private boolean running;
+  private boolean running;
 
-    private long timer;
-    private long timeAddition;
-    private long timerLimit;
+  private long timer;
+  private long timeAddition;
+  private long timerLimit;
 
-    private BossBar bossBar;
+  private final BossBar bossBar;
 
-    private Runnable finishRunnable;
+  private Runnable finishRunnable;
 
-    public GlobalTimer(Core instance) {
-        this.instance = instance;
-        this.timer = 0;
-        this.timeAddition = 1;
+  public GlobalTimer(Core instance) {
+    this.instance = instance;
+    this.timer = 0;
+    this.timeAddition = 1;
 
-        this.bossBar = Bukkit.createBossBar(new NamespacedKey(instance, "TIMER"), "", BarColor.WHITE, BarStyle.SOLID);
-        bossBar.setVisible(false);
+    this.bossBar =
+        Bukkit.createBossBar(
+            new NamespacedKey(instance, "TIMER"), "", BarColor.WHITE, BarStyle.SOLID);
+    bossBar.setVisible(false);
+  }
+
+  @Override
+  public void run() {
+    if (!this.running) return;
+
+    long oldTime = this.timer;
+    this.timer += this.timeAddition;
+    update();
+    if (this.timer == this.timerLimit) {
+      Bukkit.getScheduler().runTask(instance, this.finishRunnable);
+      stop();
+    } else {
+      Bukkit.getScheduler()
+          .runTask(
+              instance,
+              () ->
+                  Bukkit.getPluginManager()
+                      .callEvent(new GlobalTimerSecondEvent(this, (int) this.timer)));
     }
+  }
 
-    @Override
-    public void run() {
-        if (!this.running) return;
+  public void runTimer(long time, Runnable whenFinish) {
+    if (this.running) this.stop();
 
-        long oldTime = this.timer;
-        this.timer += this.timeAddition;
-        update();
-        if (this.timer == this.timerLimit) {
-            Bukkit.getScheduler().runTask(instance, this.finishRunnable);
-            stop();
-        } else {
-            Bukkit.getScheduler().runTask(instance, () -> Bukkit.getPluginManager().callEvent(new GlobalTimerSecondEvent(this, (int) this.timer)));
-        }
+    this.timer = 0;
+    this.timeAddition = 1;
+    this.timerLimit = time;
+    this.finishRunnable = whenFinish;
+
+    this.start();
+  }
+
+  public void runCountdown(long time, Runnable whenFinish) {
+    if (this.running) this.stop();
+
+    this.timer = time;
+    this.timeAddition = -1;
+    this.timerLimit = 0;
+    this.finishRunnable = whenFinish;
+
+    this.start();
+  }
+
+  private void start() {
+    this.update();
+    this.bossBar.setVisible(true);
+    Bukkit.getOnlinePlayers().forEach(this.bossBar::addPlayer);
+    this.running = true;
+  }
+
+  private void update() {
+    String formattedTimer = String.format("%02d:%02d", this.timer / 60, this.timer % 60);
+    this.bossBar.setTitle(formattedTimer);
+  }
+
+  public void stop() {
+    this.stop(false);
+  }
+
+  public void stop(boolean forced) {
+    this.timeAddition = 0;
+    this.running = false;
+    this.finishRunnable = null;
+    this.bossBar.setVisible(false);
+
+    if (!forced) {
+      Bukkit.getScheduler()
+          .runTask(
+              instance,
+              () -> Bukkit.getPluginManager().callEvent(new GlobalTimerStopEvent(this, forced)));
     }
+  }
 
-    public void runTimer(long time, Runnable whenFinish) {
-        if (this.running) this.stop();
-
-        this.timer = 0;
-        this.timeAddition = 1;
-        this.timerLimit = time;
-        this.finishRunnable = whenFinish;
-
-        this.start();
-    }
-
-    public void runCountdown(long time, Runnable whenFinish) {
-        if (this.running) this.stop();
-
-        this.timer = time;
-        this.timeAddition = -1;
-        this.timerLimit = 0;
-        this.finishRunnable = whenFinish;
-
-        this.start();
-    }
-
-    private void start() {
-        this.update();
-        this.bossBar.setVisible(true);
-        Bukkit.getOnlinePlayers().forEach(this.bossBar::addPlayer);
-        this.running = true;
-    }
-
-    private void update() {
-        String formattedTimer = String.format("%02d:%02d", this.timer / 60, this.timer % 60);
-        this.bossBar.setTitle(formattedTimer);
-    }
-
-    public void stop() {
-        this.stop(false);
-    }
-
-    public void stop(boolean forced) {
-        this.timeAddition = 0;
-        this.running = false;
-        this.finishRunnable = null;
-        this.bossBar.setVisible(false);
-
-        Bukkit.getScheduler().runTask(instance, () -> Bukkit.getPluginManager().callEvent(new GlobalTimerStopEvent(this, forced)));
-    }
-
-    public boolean isRunning() {
-        return this.running;
-    }
+  public boolean isRunning() {
+    return this.running;
+  }
 }
