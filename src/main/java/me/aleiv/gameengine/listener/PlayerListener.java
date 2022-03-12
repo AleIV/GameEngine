@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -46,6 +47,21 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
+    public void onParticipantDeath(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+        Player player = (Player) e.getEntity();
+
+        if (e.getDamage() >= player.getHealth()) {
+            Participant p = plugin.getGamesManager().getPlayerManager().getParticipant(player);
+            if (p == null) return;
+
+            if (p.getPlayerRole() == PlayerRole.PLAYER && !p.isDead()) {
+                Bukkit.getPluginManager().callEvent(new ParticipantDeathEvent(p, e.getDamager()));
+            }
+        }
+    }
+
+    /*@EventHandler
     public void onParticipantDeath(PlayerDeathEvent e) {
         Player player = e.getEntity();
         Participant p = plugin.getGamesManager().getPlayerManager().getParticipant(player);
@@ -53,8 +69,7 @@ public class PlayerListener implements Listener {
         e.setDeathMessage(null);
 
         if (p.getPlayerRole() == PlayerRole.PLAYER && !p.isDead()) {
-            Bukkit.getPluginManager().callEvent(new ParticipantDeathEvent(p, player.getKiller(), e));
         }
-    }
+    }*/
 
 }

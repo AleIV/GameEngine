@@ -144,19 +144,12 @@ public class BeastGlobalListener implements Listener{
         this.engine.checkPlayerCount();
         this.engine.playKillSound(player.getLocation());
         player.getLocation().getWorld().strikeLightningEffect(player.getLocation());
-        e.getBukkitEvent().getDrops().clear();
         if (this.instance.getGamesManager().getGameSettings().getKickOnDeath()) {
             player.kickPlayer(ChatColor.translateAlternateColorCodes('&', "&cHas sido expulsado de la partida porque has muerto."));
             return;
         }
         this.instance.broadcast(ChatColor.RED + "El jugador " + player.getName() + " ha sido eliminado.");
-
-        Location lastLoc = player.getLocation().clone();
-        Bukkit.getScheduler().runTaskLater(instance, () -> {
-            player.spigot().respawn();
-            player.teleport(lastLoc);
-            player.setGameMode(GameMode.SPECTATOR);
-        }, 1L);
+        player.setGameMode(GameMode.SPECTATOR);
     }
 
 }

@@ -385,9 +385,7 @@ public class BeastEngine extends BaseEngine {
         instance.registerListener(beastLobbyListener);
         instance.unregisterListener(beastInGameListener);
 
-        if (!this.alreadyFinished) {
-            this.checkPlayerCount(true);
-        }
+        this.checkPlayerCount(true);
     }
 
     @Override
@@ -461,6 +459,7 @@ public class BeastEngine extends BaseEngine {
     }
 
     private void checkPlayerCount(boolean forced) {
+        if (this.alreadyFinished) return;
         this.alreadyFinished = true;
         List<Participant> beastsP = this.beasts.parallelStream().map(p -> this.instance.getGamesManager().getPlayerManager().getParticipant(p)).toList();
         List<Participant> normalPlayers = this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).parallelStream().filter(part -> !this.beasts.contains(part.getPlayer())).toList();

@@ -17,16 +17,14 @@ public class ParticipantDeathEvent extends ParticipantEvent {
     private final @Getter HandlerList Handlers = HandlerList;
 
     private final @Getter Entity killer;
-    private final @Getter PlayerDeathEvent bukkitEvent;
 
-    public ParticipantDeathEvent(Participant participant, @Nullable Entity killer, @NonNull PlayerDeathEvent event) {
+    public ParticipantDeathEvent(Participant participant, @Nullable Entity killer) {
         super(participant);
         this.killer = killer;
-        this.bukkitEvent = event;
     }
 
-    public ParticipantDeathEvent(Player player, @Nullable Entity killer, @NonNull PlayerDeathEvent event) {
-        this(Core.getInstance().getGamesManager().getPlayerManager().getParticipant(player), killer, event);
+    public ParticipantDeathEvent(Player player, @Nullable Entity killer) {
+        this(Core.getInstance().getGamesManager().getPlayerManager().getParticipant(player), killer);
     }
 
 }
