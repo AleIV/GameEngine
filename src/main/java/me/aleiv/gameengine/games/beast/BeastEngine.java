@@ -184,10 +184,18 @@ public class BeastEngine extends BaseEngine {
     @Override
     public void startGame() throws GameStartException {
         int beastsCount = this.getBeastConfig().getBeastsNumber();
-        List<Player> players = new ArrayList<>(this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).toList());
+        List<Player> players = new ArrayList<>(this.instance.getGamesManager()
+            .getPlayerManager()
+            .filter(PlayerRole.PLAYER)
+            .stream().map(Participant::getPlayer).toList());
         if (players.size() <= beastsCount) {
             throw new GameStartException(GameStartException.GameStartExceptionReason.NOT_ENOUGTH_PLAYERS);
         }
+
+        if(players.size() < 6){
+            beastsCount = 1;
+        }
+
         // Get beastsCount players randomly from players list without repeating
         for (int i = 0; i < beastsCount; i++) {
             int random = (int) (Math.random() * players.size());
@@ -195,6 +203,7 @@ public class BeastEngine extends BaseEngine {
             players.remove(random);
             this.beasts.add(beast);
         }
+
         SoundUtils.playSound(Sound.BLOCK_NOTE_BLOCK_BIT, 0.8f);
 
         players.forEach(p -> {
@@ -404,6 +413,13 @@ public class BeastEngine extends BaseEngine {
     @Override
     public void restartGame() {
         this.instance.getGamesManager().getWorldManager().resetWorld(this.getBeastConfig().getActiveMap());
+
+        List<Block> barrotes = this.beastConfig.getMap().getBarrotes();
+        if (barrotes.size() != 0) {
+            barrotes.forEach(b -> b.setType(Material.IRON_BARS));
+            barrotes.forEach(b -> b.getState().update(true));
+        }
+
         instance.registerListener(beastLobbyListener);
         instance.unregisterListener(beastInGameListener);
         this.beasts.clear();
@@ -411,12 +427,6 @@ public class BeastEngine extends BaseEngine {
 
         this.gameTasks.forEach(BukkitTask::cancel);
         this.gameTasks.clear();
-
-        List<Block> barrotes = this.beastConfig.getMap().getBarrotes();
-        if (barrotes.size() != 0) {
-            barrotes.forEach(b -> b.setType(Material.IRON_BARS));
-            barrotes.forEach(b -> b.getState().update(true));
-        }
 
         this.alreadyFinished = false;
         this.randomizeMap();
