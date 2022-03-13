@@ -95,6 +95,7 @@ public class PlayerListener implements Listener {
 
     if (plugin.getGamesManager().getPlayerAlive() != null) {
       player.teleport(plugin.getGamesManager().getPlayerAlive().getPlayer().getLocation());
+      event.setRespawnLocation(plugin.getGamesManager().getPlayerAlive().getPlayer().getLocation());
       return;
     }
 
@@ -102,6 +103,7 @@ public class PlayerListener implements Listener {
     if (location.getY() <= 0) {
       location.setY(10);
     }
+
     player.teleport(location.add(0, 3, 0));
     event.setRespawnLocation(location);
   }
