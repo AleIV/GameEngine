@@ -6,6 +6,7 @@ import java.util.UUID;
 import me.aleiv.gameengine.Core;
 import me.aleiv.gameengine.games.beast.BeastEngine;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -42,7 +43,9 @@ public class BeastInGameListener implements Listener {
     Player damager = (Player) e.getDamager();
 
     boolean damaged = false;
+
     e.setDamage(0);
+
     if (this.beastEngine.isBeastWaiting()
         || (beastEngine.getBeasts().contains(player) && beastEngine.getBeasts().contains(damager))
         || (!beastEngine.getBeasts().contains(player)
@@ -74,24 +77,33 @@ public class BeastInGameListener implements Listener {
   }
 
   @EventHandler
-  public void onPlayerMove(PlayerMoveEvent e) {
-    if (e.getTo().getBlockY() < 0 || e.getTo().getBlock().getType() == Material.LAVA) {
-      e.getPlayer().setHealth(0);
+  public void onPlayerMove(PlayerMoveEvent event) {
+
+    Location to = event.getTo();
+    Location from = event.getFrom();
+
+    if (to.getBlockX() == from.getBlockX() && to.getBlockZ() == from.getBlockZ()) {
       return;
     }
 
-    if (e.getPlayer().getGameMode() == GameMode.SPECTATOR) {
+    if (event.getPlayer().getGameMode() == GameMode.SPECTATOR) {
       return;
     }
 
-    boolean inside =
-        this.beastEngine.getBeastConfig().getMap().getEquipmentRegion().contains(e.getTo());
-    boolean alreadyInside = this.equipedPlayers.contains(e.getPlayer().getUniqueId());
+    if (to.getBlockY() < 0 || to.getBlock().getType() == Material.LAVA) {
+      event.getPlayer().setHealth(0);
+      return;
+    }
+
+    boolean inside = this.beastEngine.getBeastConfig().getMap().getEquipmentRegion().contains(to);
+
+    boolean alreadyInside = this.equipedPlayers.contains(event.getPlayer().getUniqueId());
+
     if (!alreadyInside && inside) {
-      this.equipedPlayers.add(e.getPlayer().getUniqueId());
-      this.beastEngine.giveBeastItems(e.getPlayer());
+      this.beastEngine.giveBeastItems(event.getPlayer());
+      this.equipedPlayers.add(event.getPlayer().getUniqueId());
     } else if (alreadyInside && !inside) {
-      this.equipedPlayers.remove(e.getPlayer().getUniqueId());
+      this.equipedPlayers.remove(event.getPlayer().getUniqueId());
     }
   }
 

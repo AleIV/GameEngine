@@ -231,12 +231,12 @@ public class BeastEngine extends BaseEngine {
             switch (Maps.getMap(this.getBeastConfig().getMap().getName())) {
                 case ghost -> {
                     this.equipMask(p, 8);
-                    this.setBeastItem(p, Material.IRON_SWORD, 2, "&cCuchillo");
+                    this.setBeastItem(p, Material.IRON_SWORD, 1, "&cCuchillo");
                 }
                 case puppyplaytime -> this.equipMask(p, 9);
                 case jeison -> {
                     this.equipMask(p, 10);
-                    this.setBeastItem(p, Material.IRON_SWORD, 1, "&cMachete");
+                    this.setBeastItem(p, Material.IRON_SWORD, 2, "&cMachete");
                 }
                 case it -> {
                     this.equipMask(p, 11);
@@ -303,7 +303,7 @@ public class BeastEngine extends BaseEngine {
                 p.removePotionEffect(PotionEffectType.SLOW);
                 p.removePotionEffect(PotionEffectType.INVISIBILITY);
 
-                p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fNo dejes que la bestia te cace &8[&c&l!&8]"), 0, 100, 30);
+                p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fNo dejes que la bestia te caze &8[&c&l!&8]"), 0, 100, 30);
                 SoundUtils.playSound(Sound.BLOCK_NOTE_BLOCK_BIT, 1.4f);
             });
             this.beasts.forEach(p -> p.removePotionEffect(PotionEffectType.SLOW));
@@ -412,13 +412,14 @@ public class BeastEngine extends BaseEngine {
 
     @Override
     public void restartGame() {
-        this.instance.getGamesManager().getWorldManager().resetWorld(this.getBeastConfig().getActiveMap());
 
         List<Block> barrotes = this.beastConfig.getMap().getBarrotes();
         if (barrotes.size() != 0) {
             barrotes.forEach(b -> b.setType(Material.IRON_BARS));
             barrotes.forEach(b -> b.getState().update(true));
         }
+
+        this.instance.getGamesManager().getWorldManager().resetWorld(this.getBeastConfig().getActiveMap());
 
         instance.registerListener(beastLobbyListener);
         instance.unregisterListener(beastInGameListener);

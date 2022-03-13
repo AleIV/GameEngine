@@ -1,13 +1,13 @@
 package me.aleiv.gameengine.listener;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class FreezeListener implements Listener {
 
@@ -19,6 +19,14 @@ public class FreezeListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
+
+        Location to = e.getTo();
+        Location from = e.getFrom();
+
+        if (to.getBlockX() == from.getBlockX() && to.getBlockZ() == from.getBlockZ()) {
+            return;
+        }
+
         if (isFrozen(e.getPlayer().getUniqueId())) {
             e.setCancelled(true);
         }
