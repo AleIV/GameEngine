@@ -11,15 +11,22 @@ import org.bukkit.inventory.meta.FireworkMeta;
 
 public class FireworkUtils {
 
-    public static void spawnWinnerFirework(final Location location) {
-        final Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
-        final FireworkMeta meta = firework.getFireworkMeta();
-        final FireworkEffect effect = FireworkEffect.builder().withColor(Color.GREEN).withFade(Color.RED).with(FireworkEffect.Type.BALL_LARGE).trail(true).build();
-        meta.addEffect(effect);
-        meta.setPower(50);
-        firework.setFireworkMeta(meta);
+  public static void spawnWinnerFirework(final Location location) {
+    final Firework firework =
+        (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
+    final FireworkMeta meta = firework.getFireworkMeta();
+    final FireworkEffect effect =
+        FireworkEffect.builder()
+            .withColor(Color.GREEN)
+            .withFade(Color.RED)
+            .with(FireworkEffect.Type.BALL_LARGE)
+            .trail(true)
+            .build();
 
-        Bukkit.getScheduler().runTaskLater(Core.getInstance(), firework::detonate, 5L);
-    }
+    meta.addEffect(effect);
+    meta.setPower(127);
+    firework.setFireworkMeta(meta);
 
+    Bukkit.getScheduler().runTaskLater(Core.getInstance(), firework::detonate, 5L);
+  }
 }

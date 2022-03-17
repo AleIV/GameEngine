@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.UUID;
 import me.aleiv.gameengine.Core;
 import me.aleiv.gameengine.games.beast.BeastEngine;
+import me.aleiv.gameengine.gamesManager.PlayerRole;
+import me.aleiv.gameengine.globalUtilities.events.participantEvents.ParticipantDeathEvent;
+import me.aleiv.gameengine.globalUtilities.objects.Participant;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,11 +16,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.util.Vector;
 
 public class BeastInGameListener implements Listener {
 
@@ -30,6 +37,30 @@ public class BeastInGameListener implements Listener {
     this.beastEngine = beastEngine;
 
     this.equipedPlayers = new ArrayList<>();
+  }
+
+  @EventHandler
+  public void onEntityDamage(EntityDamageEvent e) {
+    if (!(e.getEntity() instanceof Player player)) return;
+
+    if (e.getCause() == EntityDamageEvent.DamageCause.VOID) {
+      Participant p = instance.getGamesManager().getPlayerManager().getParticipant(player);
+
+      if(p == null) return;
+
+      if (p.getPlayerRole() == PlayerRole.PLAYER && !p.isDead()) {
+        Bukkit.getPluginManager().callEvent(new ParticipantDeathEvent(p, p.getPlayer().getKiller()));
+        Location location = player.getLocation();
+
+        player.setVelocity(new Vector());
+
+        if (location.getY() <= 0) {
+          location.setY(20);
+        }
+
+        player.teleport(location.add(0, 3, 0));
+      }
+    }
   }
 
   @EventHandler
@@ -58,7 +89,8 @@ public class BeastInGameListener implements Listener {
       damaged = true;
     } else if (beastEngine.getBeasts().contains(damager)) {
       double newHealth = player.getHealth() - (hasArmor(player) ? 4 : 10);
-      player.setHealth(newHealth >= 0 ? newHealth : 0);
+      // player.setHealth(newHealth >= 0 ? newHealth : 0);
+      e.setDamage(8);
       damaged = true;
     } else {
       e.setCancelled(true);
@@ -67,6 +99,11 @@ public class BeastInGameListener implements Listener {
     if (damaged) {
       player.setNoDamageTicks(15);
     }
+  }
+
+  @EventHandler
+  public void onItemDamage(PlayerItemDamageEvent event){
+    event.setCancelled(true);
   }
 
   private boolean hasArmor(Player player) {

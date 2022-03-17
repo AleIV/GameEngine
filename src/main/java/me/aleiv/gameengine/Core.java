@@ -1,6 +1,11 @@
 package me.aleiv.gameengine;
 
 import co.aikar.commands.PaperCommandManager;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import kr.entree.spigradle.annotations.SpigotPlugin;
 import lombok.Getter;
 import me.aleiv.gameengine.commands.ConfigCommand;
@@ -12,11 +17,17 @@ import me.aleiv.gameengine.gamesManager.PlayerRole;
 import me.aleiv.gameengine.listener.GamemodeHiderListener;
 import me.aleiv.gameengine.listener.PlayerListener;
 import me.aleiv.gameengine.listener.WorldListener;
+import me.aleiv.gameengine.trap.Trap;
+import me.aleiv.gameengine.trap.TrapListeners;
+import me.aleiv.gameengine.trap.command.TrapCommands;
 import me.aleiv.gameengine.utilities.NegativeSpaces;
 import me.aleiv.gameengine.utilities.TCT.BukkitTCT;
+import me.aleiv.gameengine.utilities.gson.LocationAdapter;
+import me.aleiv.gameengine.utilities.items.InteractItemListener;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -24,81 +35,103 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 import us.jcedeno.libs.rapidinv.RapidInvManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 @SpigotPlugin
 public class Core extends JavaPlugin {
 
-    private static @Getter Core instance;
-    private @Getter GamesManager gamesManager;
-    private @Getter PaperCommandManager commandManager;
-    private @Getter static MiniMessage miniMessage = MiniMessage.get();
-    private List<Listener> registeredListeners;
+  private static @Getter Core instance;
+  private @Getter GamesManager gamesManager;
+  private @Getter PaperCommandManager commandManager;
+  private final @Getter static MiniMessage miniMessage = MiniMessage.get();
+  private List<Listener> registeredListeners;
 
-    @Override
-    public void onEnable() {
-        instance = this;
+  @Getter
+  private static final Gson GSON =
+      new GsonBuilder()
+          .registerTypeHierarchyAdapter(Location.class, new LocationAdapter())
+          .serializeNulls()
+          .setPrettyPrinting()
+          .create();
 
-        this.registeredListeners = new ArrayList<>();
+  @Override
+  public void onEnable() {
+    instance = this;
 
-        RapidInvManager.register(this);
-        BukkitTCT.registerPlugin(this);
-        NegativeSpaces.registerCodes();
+    this.registeredListeners = new ArrayList<>();
 
-        gamesManager = new GamesManager(this);
+    RapidInvManager.register(this);
+    BukkitTCT.registerPlugin(this);
+    NegativeSpaces.registerCodes();
 
-        commandManager = new PaperCommandManager(this);
+    gamesManager = new GamesManager(this);
 
-        commandManager.getCommandCompletions().registerAsyncCompletion("worlds", (ctx) -> Bukkit.getWorlds().stream().map(World::getName).toList());
-        commandManager.getCommandCompletions().registerStaticCompletion("roles", Arrays.stream(PlayerRole.values()).map(PlayerRole::getName).toList());
+    commandManager = new PaperCommandManager(this);
 
-        commandManager.registerCommand(new ConfigCommand(this));
-        commandManager.registerCommand(new RoleCommand(this));
-        commandManager.registerCommand(new WorldCommand(this));
-        commandManager.registerCommand(new GameCommand(this));
+    commandManager
+        .getCommandCompletions()
+        .registerAsyncCompletion(
+            "worlds", (ctx) -> Bukkit.getWorlds().stream().map(World::getName).toList());
+    commandManager
+        .getCommandCompletions()
+        .registerStaticCompletion(
+            "roles", Arrays.stream(PlayerRole.values()).map(PlayerRole::getName).toList());
 
-        registerListener(new PlayerListener(this));
-        registerListener(new WorldListener(this));
-        registerListener(new GamemodeHiderListener(this));
+    commandManager.registerCommand(new ConfigCommand(this));
+    commandManager.registerCommand(new RoleCommand(this));
+    commandManager.registerCommand(new WorldCommand(this));
+    commandManager.registerCommand(new GameCommand(this));
+
+    commandManager.registerCommand(new TrapCommands());
+
+    registerListener(new PlayerListener(this));
+    registerListener(new WorldListener(this));
+    registerListener(new GamemodeHiderListener(this));
+    registerListener(new TrapListeners());
+
+    registerListener(new InteractItemListener());
+
+    Bukkit.getScheduler().runTaskLater(this, Trap::loadTraps, 20L * 5);
+  }
+
+  @Override
+  public void onDisable() {
+    Trap.saveTraps();
+    if (this.gamesManager.isGameLoaded()) {
+      this.gamesManager.stopGame(true);
     }
+    this.gamesManager.getGameSettings().save();
+  }
 
-    @Override
-    public void onDisable() {
-        if (this.gamesManager.isGameLoaded()) {
-            this.gamesManager.stopGame(true);
-        }
-        this.gamesManager.getGameSettings().save();
-    }
+  public void unregisterListener(Listener listener) {
+    if (!this.isListenerRegistered(listener)) return;
+    HandlerList.unregisterAll(listener);
+    this.registeredListeners.remove(listener);
+  }
 
-    public void unregisterListener(Listener listener) {
-        if (!this.isListenerRegistered(listener)) return;
-        HandlerList.unregisterAll(listener);
-        this.registeredListeners.remove(listener);
-    }
+  public void registerListener(Listener listener) {
+    if (this.isListenerRegistered(listener)) return;
+    Bukkit.getPluginManager().registerEvents(listener, this);
+    this.registeredListeners.add(listener);
+  }
 
-    public void registerListener(Listener listener) {
-        if (this.isListenerRegistered(listener)) return;
-        Bukkit.getPluginManager().registerEvents(listener, this);
-        this.registeredListeners.add(listener);
-    }
+  public boolean isListenerRegistered(Listener listener) {
+    return this.registeredListeners.contains(listener);
+  }
 
-    public boolean isListenerRegistered(Listener listener) {
-        return this.registeredListeners.contains(listener);
-    }
+  public void broadcast(final String message) {
+    if (message == null || message.isEmpty()) return;
+    String finalMessage = ChatColor.translateAlternateColorCodes('&', message);
+    Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(finalMessage));
+  }
 
-    public void broadcast(final String message) {
-        if (message == null || message.isEmpty()) return;
-        String finalMessage = ChatColor.translateAlternateColorCodes('&', message);
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(finalMessage));
-    }
+  public void sendTitle(
+      @Nullable String title, @Nullable String subtitle, int fadeIn, int stay, int fadeOut) {
+    String finalTitle =
+        ChatColor.translateAlternateColorCodes('&', title == null ? ChatColor.GRAY + " " : title);
+    String finalSubtitle =
+        ChatColor.translateAlternateColorCodes(
+            '&', subtitle == null ? ChatColor.GRAY + " " : subtitle);
 
-    public void sendTitle(@Nullable String title, @Nullable String subtitle, int fadeIn, int stay, int fadeOut) {
-        String finalTitle = ChatColor.translateAlternateColorCodes('&', title == null ? ChatColor.GRAY + " " : title);
-        String finalSubtitle = ChatColor.translateAlternateColorCodes('&', subtitle == null ? ChatColor.GRAY + " " : subtitle);
-
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle(finalTitle, finalSubtitle, fadeIn, stay, fadeOut));
-    }
-
+    Bukkit.getOnlinePlayers()
+        .forEach(p -> p.sendTitle(finalTitle, finalSubtitle, fadeIn, stay, fadeOut));
+  }
 }

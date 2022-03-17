@@ -11,49 +11,43 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class FreezeListener implements Listener {
 
-    private final List<UUID> frozenPlayers;
+  private final List<UUID> frozenPlayers;
 
-    public FreezeListener() {
-        this.frozenPlayers = new ArrayList<>();
+  public FreezeListener() {
+    this.frozenPlayers = new ArrayList<>();
+  }
+
+  @EventHandler
+  public void onPlayerMove(PlayerMoveEvent event) {
+    Location from = event.getFrom();
+
+    if (isFrozen(event.getPlayer().getUniqueId())) {
+      event.getPlayer().teleport(from);
+      event.setCancelled(true);
     }
+  }
 
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) {
+  public boolean isFrozen(UUID uuid) {
+    return frozenPlayers.contains(uuid);
+  }
 
-        Location to = e.getTo();
-        Location from = e.getFrom();
+  public void freeze(UUID uuid) {
+    frozenPlayers.add(uuid);
+  }
 
-        if (to.getBlockX() == from.getBlockX() && to.getBlockZ() == from.getBlockZ()) {
-            return;
-        }
+  public void unfreeze(UUID uuid) {
+    frozenPlayers.remove(uuid);
+  }
 
-        if (isFrozen(e.getPlayer().getUniqueId())) {
-            e.setCancelled(true);
-        }
-    }
+  public boolean isFrozen(Player player) {
+    return isFrozen(player.getUniqueId());
+  }
 
-    public boolean isFrozen(UUID uuid) {
-        return frozenPlayers.contains(uuid);
-    }
+  public void freeze(Player player) {
+    freeze(player.getUniqueId());
+  }
 
-    public void freeze(UUID uuid) {
-        frozenPlayers.add(uuid);
-    }
-
-    public void unfreeze(UUID uuid) {
-        frozenPlayers.remove(uuid);
-    }
-
-    public boolean isFrozen(Player player) {
-        return isFrozen(player.getUniqueId());
-    }
-
-    public void freeze(Player player) {
-        freeze(player.getUniqueId());
-    }
-
-    public void unfreeze(Player player) {
-        unfreeze(player.getUniqueId());
-    }
-
+  public void unfreeze(Player player) {
+    unfreeze(player.getUniqueId());
+  }
 }

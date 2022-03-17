@@ -27,6 +27,8 @@ import me.aleiv.gameengine.globalUtilities.EngineEnums;
 import me.aleiv.gameengine.globalUtilities.objects.BaseEngine;
 import me.aleiv.gameengine.globalUtilities.objects.Participant;
 import me.aleiv.gameengine.listener.FreezeListener;
+import me.aleiv.gameengine.trap.Trap;
+import me.aleiv.gameengine.trap.TrapListeners;
 import me.aleiv.gameengine.utilities.FireworkUtils;
 import me.aleiv.gameengine.utilities.Frames;
 import me.aleiv.gameengine.utilities.ResourcePackManager;
@@ -63,6 +65,7 @@ public class BeastEngine extends BaseEngine {
     BeastGlobalListener beastGlobalListener;
     BeastInGameListener beastInGameListener;
     BeastLobbyListener beastLobbyListener;
+    TrapListeners trapListeners;
     private final FreezeListener freezeListener;
 
     private @Getter final BeastConfig beastConfig;
@@ -72,6 +75,7 @@ public class BeastEngine extends BaseEngine {
 
     private final List<Character> LOWSTATIC = Frames.getFramesCharsIntegersAll(3401, 3407);
     private final List<Character> NORMALSTATIC = Frames.getFramesCharsIntegersAll(3408, 3414);
+    private final List<Character> LARGESTATIC = Frames.getFramesCharsIntegersAll(3401, 3407);
 
     public static final String[] MAPS = new String[]{"ghost", "it", "jeison", "puppyplaytime", "slenderman"};
     enum Maps {
@@ -112,6 +116,7 @@ public class BeastEngine extends BaseEngine {
         this.beastGlobalListener = new BeastGlobalListener(instance, this);
         this.beastInGameListener = new BeastInGameListener(instance, this);
         this.beastLobbyListener = new BeastLobbyListener(instance);
+        //this.trapListeners = new TrapListeners(this);
         this.freezeListener = new FreezeListener();
         this.instance.registerListener(this.freezeListener);
 
@@ -127,12 +132,14 @@ public class BeastEngine extends BaseEngine {
         instance.getCommandManager().registerCommand(beastCMD);
         instance.registerListener(beastGlobalListener);
         instance.registerListener(beastLobbyListener);
+        //instance.registerListener(trapListeners);
+
         //instance.registerListener(beastInGameListener);
         this.logoBossBar.setVisible(true);
 
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
-        rpm.setResoucePackURL("https://download.mc-packs.net/pack/4a7fdb267bb4241a84ee755e7991524542031ef8.zip");
-        rpm.setResourcePackHash("4a7fdb267bb4241a84ee755e7991524542031ef8");
+        rpm.setResoucePackURL("https://download.mc-packs.net/pack/7552b439f0269eeccdd15231a5cae0094f1ca9e8.zip");
+        rpm.setResourcePackHash("7552b439f0269eeccdd15231a5cae0094f1ca9e8");
         rpm.setEnabled(true);
     }
 
@@ -150,6 +157,7 @@ public class BeastEngine extends BaseEngine {
         instance.unregisterListener(beastInGameListener);
         instance.unregisterListener(beastLobbyListener);
         instance.unregisterListener(beastInGameListener);
+        //instance.unregisterListener(trapListeners);
     }
 
     private ModeledEntity getModeledEntity(Player player) {
@@ -255,6 +263,8 @@ public class BeastEngine extends BaseEngine {
 
         instance.registerListener(beastInGameListener);
         instance.unregisterListener(beastLobbyListener);
+
+        //Trap.getTraps().forEach(Trap::spawn);
     }
 
     private void beastsExit() {
@@ -319,7 +329,7 @@ public class BeastEngine extends BaseEngine {
                 this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance, () ->
                     this.instance.getGamesManager().getPlayerManager() 
                         .filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p.getPlayer())).forEach(p -> {
-                    int d = this.beasts.stream()
+                    int distance = this.beasts.stream()
                         .filter(b -> b.getLocation().getWorld() == p.getPlayer().getLocation().getWorld())
                         .map(b -> (int) b.getLocation().distance(p.getPlayer().getLocation())).min(Comparator.naturalOrder()).orElse(99);
                     Character titleChar = ' ';
@@ -329,10 +339,12 @@ public class BeastEngine extends BaseEngine {
                         frameCounter.set(0);
                         frame = 0;
                     }
-                    if (d < 4) {
+                    if (distance < 4) {
                         titleChar = NORMALSTATIC.get(frame);
-                    } else if (d < 10) {
+                    } else if (distance <= 10) {
                         titleChar = LOWSTATIC.get(frame);
+                    }else if (distance <= 15) {
+                        titleChar = LARGESTATIC.get(frame);
                     }
 
                     if (titleChar != ' ') {
@@ -408,6 +420,13 @@ public class BeastEngine extends BaseEngine {
         instance.unregisterListener(beastInGameListener);
 
         this.checkPlayerCount(true);
+
+        Trap.getTraps()
+            .forEach(
+                trap -> {
+                    trap.reset();
+                    trap.remove();
+                });
     }
 
     @Override
@@ -534,6 +553,8 @@ public class BeastEngine extends BaseEngine {
         eq.setLeggings(leggings);
         eq.setBoots(boots);
         player.updateInventory();
+
+        player.setHealth(player.getMaxHealth());
 
         player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_DIAMOND, 1.0f, 0.9f);
         Bukkit.getScheduler().runTaskLater(this.instance, () -> player.playSound(player.getLocation(), Sound.ITEM_ARMOR_EQUIP_NETHERITE, 1.0f, 1.4f), 5L);

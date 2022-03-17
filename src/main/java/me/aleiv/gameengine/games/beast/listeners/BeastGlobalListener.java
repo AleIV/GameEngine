@@ -12,6 +12,7 @@ import me.aleiv.gameengine.utilities.Frames;
 import me.aleiv.gameengine.utilities.SoundUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.GameRule;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,11 +22,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.WorldInitEvent;
 
 public class BeastGlobalListener implements Listener {
 
@@ -37,11 +38,6 @@ public class BeastGlobalListener implements Listener {
     this.instance = instance;
     this.engine = engine;
     this.animation = new Animation(Frames.getFramesCharsIntegers(0, 184), false);
-  }
-
-  @EventHandler
-  public void onRegen(EntityRegainHealthEvent e) {
-    e.setCancelled(true);
   }
 
   @EventHandler
@@ -57,6 +53,15 @@ public class BeastGlobalListener implements Listener {
 
   @EventHandler
   public void onEntityDamage(EntityDamageEvent e) {
+
+    if (!(e.getEntity() instanceof Player)) return;
+
+    if (e.getCause() == EntityDamageEvent.DamageCause.VOID) {
+      e.setCancelled(true);
+    }
+
+    if (e.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+
     if (!(e instanceof EntityDamageByEntityEvent)) {
       e.setCancelled(true);
     }
@@ -66,6 +71,8 @@ public class BeastGlobalListener implements Listener {
   public void onPlaceBlock(BlockPlaceEvent e) {
     Player p = e.getPlayer();
 
+    if (p.getGameMode() == GameMode.CREATIVE) return;
+
     if (this.check(p)) {
       e.setCancelled(true);
     }
@@ -74,6 +81,8 @@ public class BeastGlobalListener implements Listener {
   @EventHandler
   public void onBreakBlock(BlockBreakEvent e) {
     Player p = e.getPlayer();
+
+    if (p.getGameMode() == GameMode.CREATIVE) return;
 
     if (this.check(p)) {
       e.setCancelled(true);
@@ -127,6 +136,11 @@ public class BeastGlobalListener implements Listener {
         SoundUtils.playSound("escape.beep", 0.75f);
       }
     }
+  }
+
+  @EventHandler
+  public void onWorldInit(WorldInitEvent event) {
+    event.getWorld().setGameRule(GameRule.NATURAL_REGENERATION, false);
   }
 
   @EventHandler

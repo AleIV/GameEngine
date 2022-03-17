@@ -64,8 +64,13 @@ public class LobbyListener implements Listener{
 
     @EventHandler
     public void onDamage(EntityDamageEvent e){
+
+        if(!(e.getEntity() instanceof Player)) return;
+
+        if(e.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+
         var game = instance.getGamesManager().getCurrentGame();
-        
+
         if(e instanceof EntityDamageByEntityEvent) return;
 
         if(game.getGameStage() != EngineEnums.GameStage.INGAME){
