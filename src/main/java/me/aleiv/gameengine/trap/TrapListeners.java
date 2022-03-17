@@ -107,8 +107,6 @@ public class TrapListeners implements Listener {
           }else{
             armorStand.remove();
           }
-        }else if(armorStand.getEquipment().getHelmet() != null) {
-          armorStand.remove();
         }
       }
     }
