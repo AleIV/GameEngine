@@ -27,7 +27,6 @@ import me.aleiv.gameengine.globalUtilities.EngineEnums;
 import me.aleiv.gameengine.globalUtilities.objects.BaseEngine;
 import me.aleiv.gameengine.globalUtilities.objects.Participant;
 import me.aleiv.gameengine.listener.FreezeListener;
-import me.aleiv.gameengine.trap.Trap;
 import me.aleiv.gameengine.trap.TrapListeners;
 import me.aleiv.gameengine.utilities.FireworkUtils;
 import me.aleiv.gameengine.utilities.Frames;
@@ -420,13 +419,6 @@ public class BeastEngine extends BaseEngine {
         instance.unregisterListener(beastInGameListener);
 
         this.checkPlayerCount(true);
-
-        Trap.getTraps()
-            .forEach(
-                trap -> {
-                    trap.reset();
-                    trap.remove();
-                });
     }
 
     @Override
