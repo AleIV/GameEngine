@@ -65,9 +65,6 @@ dependencies {
     //modelapi
     compileOnly 'com.ticxo.modelengine:api:R2.5.0'
 
-    // CinematicTool
-    //compileOnly 'com.github.AleIV:CinematicCore-Premium:f3940d7'
-    compileOnly files("lib/CinematicTool.jar")
 }
 
 spigot {
