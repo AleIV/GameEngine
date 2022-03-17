@@ -12,8 +12,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
-import me.aleiv.cinematicCore.paper.core.NPCManager;
-import me.aleiv.cinematicCore.paper.objects.NPCInfo;
 import me.aleiv.gameengine.Core;
 import me.aleiv.gameengine.exceptions.GameStartException;
 import me.aleiv.gameengine.games.beast.commands.BeastMapsCMD;
@@ -57,8 +55,6 @@ public class BeastEngine extends BaseEngine {
 
     Core instance;
 
-    private final NPCManager npcManager;
-
     private final BossBar logoBossBar;
 
     BeastMapsCMD beastCMD;
@@ -101,8 +97,6 @@ public class BeastEngine extends BaseEngine {
     public BeastEngine(Core instance) {
         super(new BeastConfig(MAPS));
         this.instance = instance;
-
-        this.npcManager = new NPCManager(instance);
 
         this.logoBossBar = Bukkit.createBossBar("\uE201", BarColor.WHITE, BarStyle.SOLID);
         this.logoBossBar.setVisible(false);
@@ -273,7 +267,6 @@ public class BeastEngine extends BaseEngine {
         List<Player> normalPlayers = this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).filter(p -> !this.beasts.contains(p)).toList();
 
         HashMap<UUID, Location> locationCache = new HashMap<>();
-        HashMap<UUID, NPCInfo> NPCCache = new HashMap<>();
 
         Location cinematicLoc = this.getBeastConfig().getMap().getCinematicLoc();
 
@@ -283,10 +276,6 @@ public class BeastEngine extends BaseEngine {
         normalPlayers.forEach(p -> {
             locationCache.put(p.getUniqueId(), p.getLocation().clone());
 
-            NPCInfo npcInfo = new NPCInfo(p, false, true, false);
-            npcManager.spawnNPC(npcInfo);
-
-            NPCCache.put(p.getUniqueId(), npcInfo);
             p.setGameMode(GameMode.SPECTATOR);
 
             this.freezeListener.freeze(p);
@@ -306,7 +295,6 @@ public class BeastEngine extends BaseEngine {
             normalPlayers.forEach((p) -> {
                 // Stopping cinematic
                 this.freezeListener.unfreeze(p);
-                npcManager.removeNPC(NPCCache.remove(p.getUniqueId()));
                 p.setGameMode(GameMode.ADVENTURE);
                 p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 4, 10, false, false, false));
                 p.teleport(locationCache.remove(p.getUniqueId()));
