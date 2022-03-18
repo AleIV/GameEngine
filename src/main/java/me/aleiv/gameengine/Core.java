@@ -17,9 +17,6 @@ import me.aleiv.gameengine.gamesManager.PlayerRole;
 import me.aleiv.gameengine.listener.GamemodeHiderListener;
 import me.aleiv.gameengine.listener.PlayerListener;
 import me.aleiv.gameengine.listener.WorldListener;
-import me.aleiv.gameengine.trap.Trap;
-import me.aleiv.gameengine.trap.TrapListeners;
-import me.aleiv.gameengine.trap.command.TrapCommands;
 import me.aleiv.gameengine.utilities.NegativeSpaces;
 import me.aleiv.gameengine.utilities.TCT.BukkitTCT;
 import me.aleiv.gameengine.utilities.gson.LocationAdapter;
@@ -80,21 +77,16 @@ public class Core extends JavaPlugin {
     commandManager.registerCommand(new WorldCommand(this));
     commandManager.registerCommand(new GameCommand(this));
 
-    commandManager.registerCommand(new TrapCommands());
 
     registerListener(new PlayerListener(this));
     registerListener(new WorldListener(this));
     registerListener(new GamemodeHiderListener(this));
-    registerListener(new TrapListeners());
 
     registerListener(new InteractItemListener());
-
-    Bukkit.getScheduler().runTaskLater(this, Trap::loadTraps, 20L * 5);
   }
 
   @Override
   public void onDisable() {
-    Trap.saveTraps();
     this.gamesManager.getGameSettings().save();
     if (this.gamesManager.isGameLoaded()) {
       this.gamesManager.stopGame(true);

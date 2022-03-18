@@ -20,6 +20,9 @@ import me.aleiv.gameengine.games.beast.config.BeastMapConfig;
 import me.aleiv.gameengine.games.beast.listeners.BeastGlobalListener;
 import me.aleiv.gameengine.games.beast.listeners.BeastInGameListener;
 import me.aleiv.gameengine.games.beast.listeners.BeastLobbyListener;
+import me.aleiv.gameengine.games.beast.trap.Trap;
+import me.aleiv.gameengine.games.beast.trap.TrapListeners;
+import me.aleiv.gameengine.games.beast.trap.command.TrapCommands;
 import me.aleiv.gameengine.gamesManager.PlayerRole;
 import me.aleiv.gameengine.globalUtilities.EngineEnums;
 import me.aleiv.gameengine.globalUtilities.objects.BaseEngine;
@@ -56,10 +59,12 @@ public class BeastEngine extends BaseEngine {
     private final BossBar logoBossBar;
 
     BeastMapsCMD beastCMD;
+    private final TrapCommands trapCommands;
     BeastGlobalListener beastGlobalListener;
     BeastInGameListener beastInGameListener;
     BeastLobbyListener beastLobbyListener;
     private final FreezeListener freezeListener;
+    private final TrapListeners trapListeners;
 
     private @Getter final BeastConfig beastConfig;
     private @Getter final List<Player> beasts;
@@ -103,10 +108,11 @@ public class BeastEngine extends BaseEngine {
         this.gameTasks = new ArrayList<>();
 
         this.beastCMD = new BeastMapsCMD(this);
+        this.trapCommands = new TrapCommands();
         this.beastGlobalListener = new BeastGlobalListener(instance, this);
         this.beastInGameListener = new BeastInGameListener(instance, this);
         this.beastLobbyListener = new BeastLobbyListener(instance);
-        //this.trapListeners = new TrapListeners(this);
+        this.trapListeners = new TrapListeners();
         this.freezeListener = new FreezeListener();
         this.instance.registerListener(this.freezeListener);
 
@@ -120,9 +126,10 @@ public class BeastEngine extends BaseEngine {
         this.instance.getGamesManager().getWorldManager().load("beastlobby");
 
         instance.getCommandManager().registerCommand(beastCMD);
+        instance.getCommandManager().registerCommand(trapCommands);
         instance.registerListener(beastGlobalListener);
         instance.registerListener(beastLobbyListener);
-        //instance.registerListener(trapListeners);
+        instance.registerListener(trapListeners);
 
         //instance.registerListener(beastInGameListener);
         this.logoBossBar.setVisible(true);
@@ -131,10 +138,13 @@ public class BeastEngine extends BaseEngine {
         rpm.setResoucePackURL("https://download.mc-packs.net/pack/a42ff12f04ed8caf721c3e5a4c9c7ccd93de7ee7.zip");
         rpm.setResourcePackHash("a42ff12f04ed8caf721c3e5a4c9c7ccd93de7ee7");
         rpm.setEnabled(true);
+        Bukkit.getScheduler().runTaskLater(instance, Trap::loadTraps, 20L * 5);
     }
 
     @Override
     public void disable(){
+        Trap.saveTraps();
+
         this.instance.getGamesManager().getWorldManager().unloadWorld(false, MAPS);
         this.instance.getGamesManager().getWorldManager().unloadWorld(false, "beastlobby");
         this.logoBossBar.setVisible(false);
@@ -143,6 +153,7 @@ public class BeastEngine extends BaseEngine {
         rpm.setEnabled(false);
 
         instance.getCommandManager().unregisterCommand(beastCMD);
+        instance.getCommandManager().unregisterCommand(trapCommands);
         instance.unregisterListener(beastGlobalListener);
         instance.unregisterListener(beastInGameListener);
         instance.unregisterListener(beastLobbyListener);
@@ -206,7 +217,6 @@ public class BeastEngine extends BaseEngine {
 
         players.forEach(p -> {
             p.teleport(this.getBeastConfig().getMap().getPlayerLoc());
-            // TODO: Change message
             p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fEscapa de la bestia &8[&c&l!&8]"), 0, 100, 30);
         });
         this.beasts.forEach(p -> {

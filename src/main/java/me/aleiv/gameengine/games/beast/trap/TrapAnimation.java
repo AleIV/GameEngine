@@ -1,4 +1,4 @@
-package me.aleiv.gameengine.trap;
+package me.aleiv.gameengine.games.beast.trap;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

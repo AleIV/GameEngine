@@ -1,4 +1,4 @@
-package me.aleiv.gameengine.trap;
+package me.aleiv.gameengine.games.beast.trap;
 
 import me.aleiv.gameengine.utilities.CC;
 import org.bukkit.ChatColor;

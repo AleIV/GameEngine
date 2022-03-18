@@ -1,12 +1,12 @@
-package me.aleiv.gameengine.trap.command;
+package me.aleiv.gameengine.games.beast.trap.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import me.aleiv.gameengine.Core;
-import me.aleiv.gameengine.trap.Trap;
-import me.aleiv.gameengine.trap.TrapAnimation;
+import me.aleiv.gameengine.games.beast.trap.Trap;
+import me.aleiv.gameengine.games.beast.trap.TrapAnimation;
 import me.aleiv.gameengine.utilities.CC;
 import me.aleiv.gameengine.utilities.items.InteractItem;
 import org.bukkit.Bukkit;
