@@ -22,7 +22,9 @@ public class TrapListeners implements Listener {
 
     //if(engine.getGameStage() != GameStage.INGAME) return;
 
-    if (to.getBlockZ() == from.getBlockZ() && to.getBlockX() == from.getBlockX()) return;
+    if (to.getBlockZ() == from.getBlockZ()
+        && to.getBlockX() == from.getBlockX()
+    && to.getBlockY() == from.getBlockY()) return;
 
     Trap trap = Trap.getByLocation(to);
 

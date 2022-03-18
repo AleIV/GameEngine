@@ -23,6 +23,9 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class BeastInGameListener implements Listener {
@@ -89,8 +92,8 @@ public class BeastInGameListener implements Listener {
       damaged = true;
     } else if (beastEngine.getBeasts().contains(damager)) {
       double newHealth = player.getHealth() - (hasArmor(player) ? 4 : 10);
-      // player.setHealth(newHealth >= 0 ? newHealth : 0);
-      e.setDamage(8);
+      player.setHealth(newHealth >= 0 ? newHealth : 0);
+      //e.setDamage(8);
       damaged = true;
     } else {
       e.setCancelled(true);
@@ -98,6 +101,34 @@ public class BeastInGameListener implements Listener {
 
     if (damaged) {
       player.setNoDamageTicks(15);
+    }
+  }
+
+  @EventHandler
+  public void onTeleport(PlayerTeleportEvent event){
+    Player player = event.getPlayer();
+
+    if(event.getCause() == TeleportCause.SPECTATE){
+      event.setCancelled(true);
+    }
+
+  }
+
+  @EventHandler
+  public void onEntityVelocity(PlayerMoveEvent event){
+    Player player = event.getPlayer();
+
+    Location to = event.getTo();
+    Location from = event.getFrom();
+
+    if (to.getBlockZ() == from.getBlockZ()
+        && to.getBlockX() == from.getBlockX()
+        && to.getBlockY() == from.getBlockY()) return;
+
+    if(player.hasPotionEffect(PotionEffectType.JUMP)){
+      event.setCancelled(true);
+      player.teleport(from);
+      event.setTo(from);
     }
   }
 

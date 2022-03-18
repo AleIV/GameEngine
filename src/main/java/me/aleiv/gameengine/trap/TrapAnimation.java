@@ -60,7 +60,7 @@ public enum TrapAnimation {
       27,
       TrapType.SLOWNESS,
       new ItemBuilder(Material.ARMOR_STAND).name(CC.translate("&aPennyWise Gift Box")).build(),
-      ""),
+      "escape.gift_box"),
 
   GHOSTFACE_KNIFES(
       28,
@@ -73,7 +73,7 @@ public enum TrapAnimation {
       31,
       TrapType.SLOWNESS,
       new ItemBuilder(Material.ARMOR_STAND).name(CC.translate("&aGhostFace Block")).build(),
-      "");
+      "escape.block_crack");
 
   private int initCustomModelData;
   private int animateCustomModelData;

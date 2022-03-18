@@ -95,10 +95,10 @@ public class Core extends JavaPlugin {
   @Override
   public void onDisable() {
     Trap.saveTraps();
+    this.gamesManager.getGameSettings().save();
     if (this.gamesManager.isGameLoaded()) {
       this.gamesManager.stopGame(true);
     }
-    this.gamesManager.getGameSettings().save();
   }
 
   public void unregisterListener(Listener listener) {

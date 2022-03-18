@@ -13,6 +13,7 @@ import me.aleiv.gameengine.utilities.SoundUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
+import org.bukkit.World;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,7 +27,8 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.world.WorldInitEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 
 public class BeastGlobalListener implements Listener {
 
@@ -68,6 +70,17 @@ public class BeastGlobalListener implements Listener {
   }
 
   @EventHandler
+  public void onWeatherChange(WeatherChangeEvent event) {
+    World world = event.getWorld();
+
+    if (world.getName().equalsIgnoreCase("beastlobby")) {
+      if (event.toWeatherState()) {
+        event.setCancelled(true);
+      }
+    }
+  }
+
+  @EventHandler
   public void onPlaceBlock(BlockPlaceEvent e) {
     Player p = e.getPlayer();
 
@@ -92,6 +105,8 @@ public class BeastGlobalListener implements Listener {
   @EventHandler
   public void onPlayerInteract(PlayerInteractEvent e) {
     Player p = e.getPlayer();
+
+    if(p.getGameMode() == GameMode.CREATIVE) return;
 
     if (this.check(p)) {
       e.setCancelled(true);
@@ -139,7 +154,7 @@ public class BeastGlobalListener implements Listener {
   }
 
   @EventHandler
-  public void onWorldInit(WorldInitEvent event) {
+  public void onWorldInit(WorldLoadEvent event) {
     event.getWorld().setGameRule(GameRule.NATURAL_REGENERATION, false);
   }
 

@@ -1,7 +1,5 @@
 package me.aleiv.gameengine.utilities;
 
-import me.aleiv.gameengine.Core;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -24,9 +22,9 @@ public class FireworkUtils {
             .build();
 
     meta.addEffect(effect);
-    meta.setPower(127);
+    meta.setPower(30);
     firework.setFireworkMeta(meta);
 
-    Bukkit.getScheduler().runTaskLater(Core.getInstance(), firework::detonate, 5L);
+    // Bukkit.getScheduler().runTaskLater(Core.getInstance(), firework::detonate, 20L);
   }
 }

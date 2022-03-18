@@ -25,7 +25,6 @@ import me.aleiv.gameengine.globalUtilities.EngineEnums;
 import me.aleiv.gameengine.globalUtilities.objects.BaseEngine;
 import me.aleiv.gameengine.globalUtilities.objects.Participant;
 import me.aleiv.gameengine.listener.FreezeListener;
-import me.aleiv.gameengine.trap.TrapListeners;
 import me.aleiv.gameengine.utilities.FireworkUtils;
 import me.aleiv.gameengine.utilities.Frames;
 import me.aleiv.gameengine.utilities.ResourcePackManager;
@@ -60,7 +59,6 @@ public class BeastEngine extends BaseEngine {
     BeastGlobalListener beastGlobalListener;
     BeastInGameListener beastInGameListener;
     BeastLobbyListener beastLobbyListener;
-    TrapListeners trapListeners;
     private final FreezeListener freezeListener;
 
     private @Getter final BeastConfig beastConfig;
@@ -68,7 +66,6 @@ public class BeastEngine extends BaseEngine {
     private final List<Player> playersArrivedFinal;
     private final List<BukkitTask> gameTasks;
 
-    private final List<Character> LOWSTATIC = Frames.getFramesCharsIntegersAll(3401, 3407);
     private final List<Character> NORMALSTATIC = Frames.getFramesCharsIntegersAll(3408, 3414);
     private final List<Character> LARGESTATIC = Frames.getFramesCharsIntegersAll(3401, 3407);
 
@@ -131,8 +128,8 @@ public class BeastEngine extends BaseEngine {
         this.logoBossBar.setVisible(true);
 
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
-        rpm.setResoucePackURL("https://download.mc-packs.net/pack/7552b439f0269eeccdd15231a5cae0094f1ca9e8.zip");
-        rpm.setResourcePackHash("7552b439f0269eeccdd15231a5cae0094f1ca9e8");
+        rpm.setResoucePackURL("https://download.mc-packs.net/pack/a42ff12f04ed8caf721c3e5a4c9c7ccd93de7ee7.zip");
+        rpm.setResourcePackHash("a42ff12f04ed8caf721c3e5a4c9c7ccd93de7ee7");
         rpm.setEnabled(true);
     }
 
@@ -315,7 +312,10 @@ public class BeastEngine extends BaseEngine {
                 AtomicInteger frameCounter = new AtomicInteger(0);
                 this.gameTasks.add(Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance, () ->
                     this.instance.getGamesManager().getPlayerManager() 
-                        .filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p.getPlayer())).forEach(p -> {
+                        .filter(PlayerRole.PLAYER).stream().filter(p -> !p.isDead())
+                        .filter(p -> !this.beasts.contains(p.getPlayer()))
+                        .forEach(p -> {
+
                     int distance = this.beasts.stream()
                         .filter(b -> b.getLocation().getWorld() == p.getPlayer().getLocation().getWorld())
                         .map(b -> (int) b.getLocation().distance(p.getPlayer().getLocation())).min(Comparator.naturalOrder()).orElse(99);
@@ -326,10 +326,9 @@ public class BeastEngine extends BaseEngine {
                         frameCounter.set(0);
                         frame = 0;
                     }
-                    if (distance < 4) {
+
+                    if (distance <= 4) {
                         titleChar = NORMALSTATIC.get(frame);
-                    } else if (distance <= 10) {
-                        titleChar = LOWSTATIC.get(frame);
                     }else if (distance <= 15) {
                         titleChar = LARGESTATIC.get(frame);
                     }

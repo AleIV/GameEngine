@@ -67,7 +67,7 @@ public class Trap {
 
   public static void saveTraps() {
 
-    if(traps.isEmpty()) return;
+    if (traps.isEmpty()) return;
 
     val gson = Core.getGSON();
 
@@ -93,7 +93,12 @@ public class Trap {
   public void action(Player player) {
 
     if (animation.getType() == TrapType.SLOWNESS) {
-      player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 5, 3));
+      player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 5, 200, false, false));
+      player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 200, false, false));
+
+      player.setWalkSpeed(0.0F);
+      player.setFoodLevel(0);
+      player.setSprinting(false);
     } else {
       player.damage(6);
     }
@@ -116,6 +121,15 @@ public class Trap {
         .runTaskLater(
             Core.getInstance(),
             () -> {
+              player.setWalkSpeed(0.2F);
+              player.setFoodLevel(20);
+              player.setFlySpeed(0.1F);
+            },
+            20L * 5);Bukkit.getScheduler()
+
+        .runTaskLater(
+            Core.getInstance(),
+            () -> {
               if (active) {
                 active = false;
                 armorStand
@@ -125,7 +139,7 @@ public class Trap {
                             new ItemStack(Material.BRICK), animation.getInitCustomModelData()));
               }
             },
-            20L * 5);
+            20L * 7);
   }
 
   public void spawn() {
