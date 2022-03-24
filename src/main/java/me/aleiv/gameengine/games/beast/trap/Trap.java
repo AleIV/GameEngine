@@ -16,6 +16,7 @@ import me.aleiv.gameengine.Core;
 import me.aleiv.gameengine.utilities.CC;
 import me.aleiv.gameengine.utilities.items.ItemUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -91,17 +92,28 @@ public class Trap {
   }
 
   public void action(Player player) {
+    int time = 5;
+    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * time, 200, false, false, false));
+    player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * time, 200, false, false, false));
+    player.setSprinting(false);
+    String title = "";
 
     if (animation.getType() == TrapType.SLOWNESS) {
-      player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 5, 200, false, false));
-      player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 200, false, false));
-
-      player.setWalkSpeed(0.0F);
-      player.setFoodLevel(0);
-      player.setSprinting(false);
+      title = "\u3418";
     } else {
-      player.damage(6);
+      int damage = (int) (Math.random() * 4) + 2;
+
+      if (damage <= 3) {
+        title = "\u3415";
+      } else if (damage == 4) {
+        title = "\u3416";
+      } else {
+        title = "\u3417";
+      }
+
+      player.damage(damage);
     }
+    player.sendTitle(title, ChatColor.BLACK + " ", 2, 20*time, 2);
 
     if (!animation.getSound().isEmpty()) {
       player.playSound(player.getLocation(), animation.getSound(), 1, 1);
@@ -115,9 +127,9 @@ public class Trap {
 
     active = true;
 
-    player.sendMessage(CC.translate("&aHas caido en una trampa!"));
+    //player.sendMessage(CC.translate("&aHas caido en una trampa!"));
 
-    Bukkit.getScheduler()
+    /*Bukkit.getScheduler()
         .runTaskLater(
             Core.getInstance(),
             () -> {
@@ -125,8 +137,8 @@ public class Trap {
               player.setFoodLevel(20);
               player.setFlySpeed(0.1F);
             },
-            20L * 5);Bukkit.getScheduler()
-
+            20L * 5);*/
+    Bukkit.getScheduler()
         .runTaskLater(
             Core.getInstance(),
             () -> {
@@ -139,7 +151,7 @@ public class Trap {
                             new ItemStack(Material.BRICK), animation.getInitCustomModelData()));
               }
             },
-            20L * 7);
+            20L * time);
   }
 
   public void spawn() {
