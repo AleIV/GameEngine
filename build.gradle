@@ -24,6 +24,11 @@ java {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
+
+jar {
+    classifier = "original"
+}
+
 javadoc {
     options.encoding = 'UTF-8'
 }
@@ -74,6 +79,15 @@ spigot {
     name 'GameEngine'
     load STARTUP
     //depends = ['ProtocolLib']
+}
+
+
+shadowJar {
+    classifier = ""
+
+    relocate "net.kyori.adventure", "shadow.net.kyori.adventure"
+    relocate 'co.aikar.commands', 'shadow.acf'
+    relocate 'co.aikar.locales', 'shadow.locales'
 }
 
 
