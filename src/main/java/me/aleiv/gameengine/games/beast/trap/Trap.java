@@ -92,7 +92,7 @@ public class Trap {
   }
 
   public void action(Player player) {
-    int time = 5;
+    int time = animation.getType() == TrapType.DAMAGE ? 1 : 4;
     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * time, 200, false, false, false));
     player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * time, 200, false, false, false));
     player.setSprinting(false);
