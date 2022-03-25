@@ -507,11 +507,18 @@ public class BeastEngine extends BaseEngine {
         String winChar;
         this.instance.getGamesManager().stopGame(false);
 
-        if (beastsDead) {
+        if (beastsDead) { // Players win
             winChar = "\uE203";
             winners.addAll(normalPlayers.stream().map(Participant::getPlayer).toList());
-        } else {
-            winChar = "\uE202";
+        } else { // Beasts win
+            switch (Maps.getMap(this.beastConfig.getMap().getName())) {
+                case ghost -> winChar = "\uE207";
+                case jeison-> winChar = "\uE206";
+                case it -> winChar = "\uE208";
+                case slenderman -> winChar = "\uE209";
+                case puppyplaytime -> winChar = "\uE205";
+                default -> winChar = "\uE202";
+            }
             winners.addAll(this.beasts);
         }
 
