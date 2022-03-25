@@ -32,12 +32,7 @@ import me.aleiv.gameengine.utilities.FireworkUtils;
 import me.aleiv.gameengine.utilities.Frames;
 import me.aleiv.gameengine.utilities.ResourcePackManager;
 import me.aleiv.gameengine.utilities.SoundUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -46,8 +41,10 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -201,10 +198,6 @@ public class BeastEngine extends BaseEngine {
             throw new GameStartException(GameStartException.GameStartExceptionReason.NOT_ENOUGTH_PLAYERS);
         }
 
-        if(players.size() < 6){
-            beastsCount = 1;
-        }
-
         // Get beastsCount players randomly from players list without repeating
         for (int i = 0; i < beastsCount; i++) {
             int random = (int) (Math.random() * players.size());
@@ -215,9 +208,14 @@ public class BeastEngine extends BaseEngine {
 
         SoundUtils.playSound(Sound.BLOCK_NOTE_BLOCK_BIT, 0.8f);
 
+        boolean isItMap = Maps.getMap(this.getBeastConfig().getMap().getName()) == Maps.it;
         players.forEach(p -> {
             p.teleport(this.getBeastConfig().getMap().getPlayerLoc());
             p.sendTitle(ChatColor.GRAY + " ", ChatColor.translateAlternateColorCodes('&', "&8[&c&l!&8] &fEscapa de la bestia &8[&c&l!&8]"), 0, 100, 30);
+
+            if (isItMap) {
+                this.giveItArmour(p);
+            }
         });
         this.beasts.forEach(p -> {
             p.teleport(this.getBeastConfig().getMap().getBeastLoc());
@@ -617,5 +615,29 @@ public class BeastEngine extends BaseEngine {
         for (int i = 0; i < 36; i++) {
             player.getInventory().setItem(i, item);
         }
+    }
+
+    private void giveItArmour(Player player) {
+        Color color = Color.fromRGB(241, 202, 9);
+        String blank = ChatColor.WHITE + " ";
+
+        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+        LeatherArmorMeta helmetMeta = (LeatherArmorMeta) helmet.getItemMeta();
+        helmetMeta.setColor(color);
+        helmetMeta.setDisplayName(blank);
+        helmetMeta.setLore(List.of(blank));
+        helmetMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
+        helmet.setItemMeta(helmetMeta);
+
+        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
+        LeatherArmorMeta chestplateMeta = (LeatherArmorMeta) chestplate.getItemMeta();
+        chestplateMeta.setColor(color);
+        chestplateMeta.setDisplayName(blank);
+        chestplateMeta.setLore(List.of(blank));
+        chestplateMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
+        chestplate.setItemMeta(chestplateMeta);
+
+        player.getEquipment().setHelmet(helmet);
+        player.getEquipment().setChestplate(chestplate);
     }
 }
