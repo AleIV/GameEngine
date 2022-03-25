@@ -21,7 +21,6 @@ import me.aleiv.gameengine.utilities.NegativeSpaces;
 import me.aleiv.gameengine.utilities.TCT.BukkitTCT;
 import me.aleiv.gameengine.utilities.gson.LocationAdapter;
 import me.aleiv.gameengine.utilities.items.InteractItemListener;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -38,7 +37,6 @@ public class Core extends JavaPlugin {
   private static @Getter Core instance;
   private @Getter GamesManager gamesManager;
   private @Getter PaperCommandManager commandManager;
-  private final @Getter static MiniMessage miniMessage = MiniMessage.get();
   private List<Listener> registeredListeners;
 
   @Getter
