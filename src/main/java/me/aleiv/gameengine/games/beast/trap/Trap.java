@@ -98,9 +98,7 @@ public class Trap {
     player.setSprinting(false);
     String title = "";
 
-    if (animation.getType() == TrapType.SLOWNESS) {
-      title = "\u3418";
-    } else {
+    if (animation.getType() == TrapType.DAMAGE) {
       int damage = (int) (Math.random() * 4) + 2;
 
       if (damage <= 3) {
@@ -112,8 +110,13 @@ public class Trap {
       }
 
       player.damage(damage);
+    } else {
+      title = animation.getTitleChar();
     }
-    player.sendTitle(title, ChatColor.BLACK + " ", 2, 20*time, 2);
+
+    if (title != null) {
+      player.sendTitle(title, ChatColor.BLACK + " ", 2, 20 * time, 2);
+    }
 
     if (!animation.getSound().isEmpty()) {
       player.playSound(player.getLocation(), animation.getSound(), 1, 1);

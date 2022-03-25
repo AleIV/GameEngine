@@ -1,5 +1,7 @@
 package me.aleiv.gameengine.games.beast.trap;
 
+import me.aleiv.gameengine.games.beast.BeastEngine;
+import me.aleiv.gameengine.globalUtilities.EngineEnums;
 import me.aleiv.gameengine.utilities.CC;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -15,12 +17,18 @@ import org.bukkit.event.world.EntitiesLoadEvent;
 
 public class TrapListeners implements Listener {
 
+  private BeastEngine beastEngine;
+
+  public TrapListeners(BeastEngine beastEngine) {
+    this.beastEngine = beastEngine;
+  }
+
   @EventHandler
   public void onMove(PlayerMoveEvent event) {
     Location to = event.getTo();
     Location from = event.getFrom();
 
-    //if(engine.getGameStage() != GameStage.INGAME) return;
+    if (this.beastEngine.getGameStage() != EngineEnums.GameStage.INGAME) return;
 
     if (to.getBlockZ() == from.getBlockZ()
         && to.getBlockX() == from.getBlockX()

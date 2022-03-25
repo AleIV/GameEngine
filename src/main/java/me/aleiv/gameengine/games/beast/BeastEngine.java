@@ -112,7 +112,7 @@ public class BeastEngine extends BaseEngine {
         this.beastGlobalListener = new BeastGlobalListener(instance, this);
         this.beastInGameListener = new BeastInGameListener(instance, this);
         this.beastLobbyListener = new BeastLobbyListener(instance);
-        this.trapListeners = new TrapListeners();
+        this.trapListeners = new TrapListeners(this);
         this.freezeListener = new FreezeListener();
         this.instance.registerListener(this.freezeListener);
 
