@@ -36,7 +36,7 @@ public class TrapListeners implements Listener {
 
     Trap trap = Trap.getByLocation(to);
 
-    if (trap != null && !trap.isActive()) {
+    if (trap != null && !trap.isActive() && !beastEngine.getBeasts().contains(event.getPlayer())) {
       trap.action(event.getPlayer());
     }
   }
