@@ -93,10 +93,7 @@ public class Trap {
 
   public void action(Player player) {
     int time = animation.getType() == TrapType.DAMAGE ? 1 : 4;
-    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * time, 200, false, false, false));
-    player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * time, 200, false, false, false));
-    player.setSprinting(false);
-    String title = "";
+    String title;
 
     if (animation.getType() == TrapType.DAMAGE) {
       int damage = (int) (Math.random() * 4) + 2;
@@ -112,6 +109,9 @@ public class Trap {
       player.damage(damage);
     } else {
       title = animation.getTitleChar();
+      player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * time, 200, false, false, false));
+      player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * time, 200, false, false, false));
+      player.setSprinting(false);
     }
 
     if (title != null) {
