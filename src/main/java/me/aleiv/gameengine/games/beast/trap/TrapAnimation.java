@@ -16,7 +16,7 @@ public enum TrapAnimation {
       TrapType.DAMAGE,
       new ItemBuilder(Material.ARMOR_STAND).name(CC.translate("&aSlenderman Note")).build(),
       "escape.slenderman_tentacles",
-          "\u3419"
+          null
   ),
   SLENDERMAN_NOTE(
       16,
@@ -24,7 +24,7 @@ public enum TrapAnimation {
       TrapType.SLOWNESS,
       new ItemBuilder(Material.ARMOR_STAND).name(CC.translate("&aSlenderman Tentacles")).build(),
       "",
-          null
+          "\u3419"
           ),
 
   JASON_ROPE(
