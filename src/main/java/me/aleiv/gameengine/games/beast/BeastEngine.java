@@ -132,8 +132,8 @@ public class BeastEngine extends BaseEngine {
         this.logoBossBar.setVisible(true);
 
         ResourcePackManager rpm = this.instance.getGamesManager().getResourcePackManager();
-        rpm.setResoucePackURL("https://download.mc-packs.net/pack/a42ff12f04ed8caf721c3e5a4c9c7ccd93de7ee7.zip");
-        rpm.setResourcePackHash("a42ff12f04ed8caf721c3e5a4c9c7ccd93de7ee7");
+        rpm.setResoucePackURL("https://download.mc-packs.net/pack/eb3591e63f9638c65b216c29582f7a954afbae8c.zip");
+        rpm.setResourcePackHash("eb3591e63f9638c65b216c29582f7a954afbae8c");
         rpm.setEnabled(true);
         Bukkit.getScheduler().runTaskLater(instance, Trap::loadTraps, 20L * 5);
     }
