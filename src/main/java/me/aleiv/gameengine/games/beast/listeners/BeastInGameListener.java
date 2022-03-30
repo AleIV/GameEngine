@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -173,6 +174,17 @@ public class BeastInGameListener implements Listener {
     } else if (alreadyInside && !inside) {
       this.equipedPlayers.remove(event.getPlayer().getUniqueId());
     }
+  }
+
+  @EventHandler(priority = EventPriority.LOW)
+  public void onPlayerActiveTrap(PlayerMoveEvent e) {
+    this.beastEngine.getTraps().stream().filter(t -> !t.isActive()).forEach(trap -> {
+      Location trapLocation = trap.getLocation();
+      Location playerLocation = e.getPlayer().getLocation();
+      if (trapLocation.getBlockX() == playerLocation.getBlockX() && trapLocation.getBlockY() == playerLocation.getBlockY() && trapLocation.getBlockZ() == playerLocation.getBlockZ() && !beastEngine.getBeasts().contains(e.getPlayer())) {
+        trap.action(e.getPlayer());
+      }
+    });
   }
 
   @EventHandler

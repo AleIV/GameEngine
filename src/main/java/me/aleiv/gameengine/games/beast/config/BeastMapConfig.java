@@ -20,6 +20,8 @@ public class BeastMapConfig extends BaseConfig {
         cinematicloc("cinematicloc"),
         equipmentPos1loc("equipmentPos1loc"),
         equipmentPos2loc("equipmentPos2loc"),
+        damageTraps("damageTraps"),
+        slownessTraps("slownessTraps"),
         playerloc("playerloc");
 
         private String key;
@@ -46,7 +48,9 @@ public class BeastMapConfig extends BaseConfig {
                 ConfigParameter.create(keys.cinematicloc.getKey(), this.getString(keys.cinematicloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
                 ConfigParameter.create(keys.playerloc.getKey(), this.getString(keys.playerloc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
                 ConfigParameter.create(keys.equipmentPos1loc.getKey(), this.getString(keys.equipmentPos1loc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
-                ConfigParameter.create(keys.equipmentPos2loc.getKey(), this.getString(keys.equipmentPos2loc.getKey()), ConfigParameter.ConfigParameterType.LOCATION)
+                ConfigParameter.create(keys.equipmentPos2loc.getKey(), this.getString(keys.equipmentPos2loc.getKey()), ConfigParameter.ConfigParameterType.LOCATION),
+                ConfigParameter.create(keys.damageTraps.getKey(), this.getString(keys.damageTraps.getKey()), ConfigParameter.ConfigParameterType.LOCATIONLIST),
+                ConfigParameter.create(keys.slownessTraps.getKey(), this.getString(keys.slownessTraps.getKey()), ConfigParameter.ConfigParameterType.LOCATIONLIST)
         );
     }
 
@@ -70,9 +74,22 @@ public class BeastMapConfig extends BaseConfig {
         return this.getLoc(keys.cinematicloc);
     }
 
+    public List<Location> getDamageTraps() {
+        return this.getLocList(keys.damageTraps);
+    }
+
+    public List<Location> getSlownessTraps() {
+        return this.getLocList(keys.slownessTraps);
+    }
+
     private Location getLoc(keys key) {
         ConfigParameter param = this.getConfigParameter(key.getKey());
         return param == null ? null : param.getAsLocation();
+    }
+
+    private List<Location> getLocList(keys key) {
+        ConfigParameter param = this.getConfigParameter(key.getKey());
+        return param == null ? null : param.getAsLocationList();
     }
 
     public List<Block> getBarrotes() {

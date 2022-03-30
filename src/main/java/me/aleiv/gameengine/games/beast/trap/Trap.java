@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -31,67 +33,14 @@ import org.bukkit.potion.PotionEffectType;
 @RequiredArgsConstructor
 public class Trap {
 
-  @Getter private static List<Trap> traps = Lists.newArrayList();
-
   private final Location location;
   private final TrapAnimation animation;
   @Setter private transient ArmorStand armorStand;
   private boolean active;
 
-  public static void loadTraps() {
-    val gson = Core.getGSON();
-
-    val file = new File(Core.getInstance().getDataFolder(), "traps.json");
-
-    if (!file.exists()) {
-      return;
-    }
-
-    try {
-      val fr = new FileReader(file);
-      traps = gson.fromJson(fr, new TypeToken<List<Trap>>() {}.getType());
-      fr.close();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    for (val trap : traps) {
-      trap.setActive(false);
-    }
-
-    for (val trap : traps) {
-      if (trap.getArmorStand() == null || !trap.getArmorStand().isValid()) {
-        trap.spawn();
-      }
-    }
-  }
-
-  public static void saveTraps() {
-
-    if (traps.isEmpty()) return;
-
-    val gson = Core.getGSON();
-
-    if (!Core.getInstance().getDataFolder().exists()) {
-      Core.getInstance().getDataFolder().mkdir();
-    }
-
-    val file = new File(Core.getInstance().getDataFolder(), "traps.json");
-
-    try {
-      Writer writer = new FileWriter(file);
-      writer.write(gson.toJson(traps));
-      writer.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    for (val trap : traps) {
-      trap.remove();
-    }
-  }
-
   public void action(Player player) {
+    if (this.active) return;
+
     int time = animation.getType() == TrapType.DAMAGE ? 1 : 4;
     String title;
 
@@ -146,7 +95,6 @@ public class Trap {
             Core.getInstance(),
             () -> {
               if (active) {
-                active = false;
                 armorStand
                     .getEquipment()
                     .setHelmet(
@@ -155,6 +103,7 @@ public class Trap {
               }
             },
             20L * time);
+    Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> active = false, 20L * (time+2));
   }
 
   public void spawn() {
@@ -183,16 +132,4 @@ public class Trap {
                 new ItemStack(Material.BRICK), animation.getInitCustomModelData()));
   }
 
-  public static Trap getByLocation(Location location) {
-    return traps.stream().filter(trap -> trap.contains(location, 0.5)).findFirst().orElse(null);
-  }
-
-  public boolean contains(Location location, double radius) {
-    return location.getX() >= this.location.getX() - radius
-        && location.getX() <= this.location.getX() + radius
-        && location.getY() >= this.location.getY() - radius
-        && location.getY() <= this.location.getY() + radius
-        && location.getZ() >= this.location.getZ() - radius
-        && location.getZ() <= this.location.getZ() + radius;
-  }
 }

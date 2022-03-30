@@ -9,9 +9,11 @@ import me.aleiv.gameengine.globalUtilities.events.timerEvents.GlobalTimerStopEve
 import me.aleiv.gameengine.globalUtilities.objects.generic.LobbyListener;
 import me.aleiv.gameengine.utilities.Animation;
 import me.aleiv.gameengine.utilities.Frames;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 
 public class BeastLobbyListener extends LobbyListener{
 
@@ -31,6 +33,11 @@ public class BeastLobbyListener extends LobbyListener{
             }
         }
         e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerItemDrop(PlayerDropItemEvent e) {
+        if (e.getItemDrop().getItemStack().getType() == Material.BRICK) e.setCancelled(true);
     }
 
 }
