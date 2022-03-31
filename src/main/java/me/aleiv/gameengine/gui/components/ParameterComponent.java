@@ -240,7 +240,7 @@ public class ParameterComponent extends StaticPane {
     }
 
     private GuiItem openLocation() {
-        ItemStack item = this.generateItemStack(Material.END_PORTAL_FRAME, "Open location", "Click to open the location");
+        ItemStack item = this.generateItemStack(Material.END_PORTAL_FRAME,  this.param.getKey() + " - Open location", "Click to open the location");
 
         GuiItem guiItem = new GuiItem(item, (e) -> {
             e.setCancelled(true);
