@@ -287,7 +287,7 @@ public class BeastEngine extends BaseEngine {
     private void beastsExit() {
         if (this.getGameStage() != EngineEnums.GameStage.INGAME || !this.isBeastWaiting) return;
 
-        List<Player> normalPlayers = this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).filter(p -> !this.beasts.contains(p)).toList();
+        List<Player> normalPlayers = this.instance.getGamesManager().getPlayerManager().filter(PlayerRole.PLAYER).stream().map(Participant::getPlayer).filter(p -> !p.isDead()).filter(p -> !this.beasts.contains(p)).toList();
 
         HashMap<UUID, Location> locationCache = new HashMap<>();
 
