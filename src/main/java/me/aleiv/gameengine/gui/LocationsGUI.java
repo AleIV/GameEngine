@@ -72,6 +72,8 @@ public class LocationsGUI {
         navigation.addItem(goBackItem, 4, 0);
         navigation.addItem(nextPageItem, 8, 0);
         navigation.addItem(previousPageItem, 0, 0);
+
+        this.chestGui.addPane(navigation);
     }
 
     private void generateLocations() {
@@ -95,6 +97,8 @@ public class LocationsGUI {
                 }
             });
         }).toList());
+
+        this.chestGui.addPane(this.paginatedPane);
     }
 
     private void updateTitle() {
