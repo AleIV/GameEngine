@@ -444,6 +444,7 @@ public class BeastEngine extends BaseEngine {
             barrotes.forEach(b -> b.getState().update(true));
         }
 
+        this.unloadTraps();
         this.instance.getGamesManager().getWorldManager().resetWorld(this.getBeastConfig().getActiveMap());
 
         instance.registerListener(beastLobbyListener);
