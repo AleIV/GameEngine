@@ -22,6 +22,7 @@ import me.aleiv.gameengine.games.beast.listeners.BeastInGameListener;
 import me.aleiv.gameengine.games.beast.listeners.BeastLobbyListener;
 import me.aleiv.gameengine.games.beast.trap.Trap;
 import me.aleiv.gameengine.games.beast.trap.TrapAnimation;
+import me.aleiv.gameengine.games.beast.trap.TrapCommand;
 import me.aleiv.gameengine.gamesManager.PlayerRole;
 import me.aleiv.gameengine.globalUtilities.EngineEnums;
 import me.aleiv.gameengine.globalUtilities.objects.BaseEngine;
@@ -66,6 +67,8 @@ public class BeastEngine extends BaseEngine {
     private final List<Player> playersArrivedFinal;
     private final List<BukkitTask> gameTasks;
     private @Getter final List<Trap> traps;
+
+    private final TrapCommand trapCommand;
 
     private final List<Character> NORMALSTATIC = Frames.getFramesCharsIntegersAll(3408, 3414);
     private final List<Character> LARGESTATIC = Frames.getFramesCharsIntegersAll(3401, 3407);
@@ -120,6 +123,8 @@ public class BeastEngine extends BaseEngine {
         this.gameTasks = new ArrayList<>();
         this.traps = new ArrayList<>();
 
+        this.trapCommand = new TrapCommand(this);
+
         this.beastCMD = new BeastMapsCMD(this);
         this.beastGlobalListener = new BeastGlobalListener(instance, this);
         this.beastInGameListener = new BeastInGameListener(instance, this);
@@ -139,6 +144,8 @@ public class BeastEngine extends BaseEngine {
         instance.getCommandManager().registerCommand(beastCMD);
         instance.registerListener(beastGlobalListener);
         instance.registerListener(beastLobbyListener);
+
+        instance.getCommandManager().registerCommand(this.trapCommand);
 
         //instance.registerListener(beastInGameListener);
         this.logoBossBar.setVisible(true);
@@ -163,6 +170,8 @@ public class BeastEngine extends BaseEngine {
         instance.unregisterListener(beastInGameListener);
         instance.unregisterListener(beastLobbyListener);
         instance.unregisterListener(beastInGameListener);
+
+        instance.getCommandManager().unregisterCommand(this.trapCommand);
     }
 
     private ModeledEntity getModeledEntity(Player player) {
