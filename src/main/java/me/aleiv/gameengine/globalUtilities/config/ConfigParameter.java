@@ -92,7 +92,7 @@ public class ConfigParameter {
     }
 
     public List<Location> getAsLocationList() {
-        return Arrays.stream(((String) value).split("\\||")).map(ParseUtils::stringToLocation).filter(Objects::nonNull).toList();
+        return Arrays.stream(((String) value).split("\\Q||\\E")).map(ParseUtils::stringToLocation).filter(Objects::nonNull).toList();
     }
 
     public void addToNumber(double amount) {
@@ -125,7 +125,7 @@ public class ConfigParameter {
             return;
         }
 
-        String[] split = ((String) this.value).split("\\||");
+        String[] split = ((String) this.value).split("\\Q||\\E");
         List<String> list = new ArrayList<>(Arrays.asList(split));
         list.remove(ParseUtils.locationToString(loc));
         this.value = String.join("||", list);
