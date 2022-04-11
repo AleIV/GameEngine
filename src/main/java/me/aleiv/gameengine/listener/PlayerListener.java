@@ -82,8 +82,11 @@ public class PlayerListener implements Listener {
           .runTaskLater(
               plugin,
               () ->
-                  Bukkit.getPluginManager()
-                      .callEvent(new ParticipantDeathEvent(p, p.getPlayer().getKiller())),
+              {
+                player.spigot().respawn();
+                Bukkit.getPluginManager()
+                        .callEvent(new ParticipantDeathEvent(p, p.getPlayer().getKiller()));
+              },
               4L);
     }
   }
